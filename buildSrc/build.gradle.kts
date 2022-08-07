@@ -29,4 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
     implementation("org.litote.kmongo:kmongo-coroutine:4.6.1")
+
+    implementation("com.github.ajalt:mordant:1.2.1")
+    implementation("com.github.ajalt.clikt:clikt:3.5.0")
 }
