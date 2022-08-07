@@ -3,6 +3,10 @@ plugins {
     id("io.realm.kotlin")
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation("io.realm.kotlin:library-base:1.0.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
