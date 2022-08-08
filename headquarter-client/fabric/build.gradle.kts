@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     `kotlin-project-script`
+    `websocket-client-script`
     `fabric-build-script`
 }
 

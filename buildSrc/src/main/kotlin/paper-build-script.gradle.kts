@@ -13,7 +13,7 @@ dependencies {
     library(kotlin("stdlib"))
 }
 
-tasks {
+/*tasks {
     processResources {
         val props = mapOf(
             "version" to project.version,
@@ -27,3 +27,5 @@ tasks {
         }
     }
 }
+
+ */

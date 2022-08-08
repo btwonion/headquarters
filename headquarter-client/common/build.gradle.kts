@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    application
     `websocket-client-script`
     `kotlin-project-script`
 }
