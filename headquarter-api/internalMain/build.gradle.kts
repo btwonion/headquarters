@@ -2,6 +2,6 @@ plugins {
     kotlin("jvm")
     `kotlin-project-script`
     `mongo-script`
-    `realms-script`
-    `terminal-script`
+    `websocket-client-script`
+    `websocket-server-script`
 }
