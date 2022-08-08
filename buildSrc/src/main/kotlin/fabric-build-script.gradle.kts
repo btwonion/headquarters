@@ -20,7 +20,7 @@ dependencies {
 
     minecraft("com.mojang:minecraft:$minecraftVersion")
     mappings(loom.layered {
-        //addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:$quiltMappingsVersion"))
+        addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:$quiltMappingsVersion"))
         officialMojangMappings()
     })
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
@@ -28,7 +28,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:$fabricLanguageKotlinVersion")
 }
 
-tasks {
+/*tasks {
     processResources {
         val props = mapOf(
             "version" to project.version,
@@ -43,3 +43,4 @@ tasks {
         }
     }
 }
+ */
