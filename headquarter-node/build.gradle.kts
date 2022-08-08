@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm")
-    `http-client-script`
-    `http-server-script`
+    application
     `kotlin-project-script`
     `mongo-script`
     `realms-script`

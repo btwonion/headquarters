@@ -1,8 +1,8 @@
 plugins {
     kotlin("jvm")
+    application
     `websocket-client-script`
     `kotlin-project-script`
-    `http-client-script`
 }
 
 dependencies {
