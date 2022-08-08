@@ -1,4 +1,4 @@
-package net.nyon.headquarter.api.common
+package dev.nyon.headquarter.api.common
 
 @Retention(value = AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)

@@ -1,4 +1,4 @@
-package net.nyon.headquarter.api.database
+package dev.nyon.headquarter.api.database
 
 import com.mongodb.client.model.Filters
 import kotlinx.coroutines.flow.Flow

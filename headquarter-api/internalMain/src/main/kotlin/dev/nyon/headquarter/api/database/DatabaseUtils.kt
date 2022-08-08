@@ -1,4 +1,4 @@
-package net.nyon.headquarter.api.database
+package dev.nyon.headquarter.api.database
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
