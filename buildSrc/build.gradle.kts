@@ -8,6 +8,10 @@ plugins {
 repositories {
     gradlePluginPortal()
     mavenCentral()
+    maven("https://maven.fabricmc.net/")
+    maven("https://server.bbkr.space/artifactory/libs-release/")
+    maven("https://maven.quiltmc.org/repository/release/")
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
@@ -27,8 +31,7 @@ dependencies {
 
     //Database
     val realmVersion = "1.0.2"
-    compileOnly(pluginDep("io.realm.kotlin", realmVersion))
-    runtimeOnly(pluginDep("io.realm.kotlin", realmVersion))
+    implementation(pluginDep("io.realm.kotlin", realmVersion))
     implementation("io.realm.kotlin:library-base:$realmVersion")
 
     implementation("org.litote.kmongo:kmongo-coroutine:4.6.1")
@@ -54,4 +57,16 @@ dependencies {
     val dockerVersion = "3.2.13"
     implementation("com.github.docker-java:docker-java-transport-httpclient5:$dockerVersion")
     implementation("com.github.docker-java:docker-java-core:$dockerVersion")
+
+    //Fabric
+    implementation(pluginDep("fabric-loom", "0.13-SNAPSHOT"))
+    implementation(pluginDep("io.github.juuxel.loom-quiltflower", "1.7.3"))
+    implementation(pluginDep("org.quiltmc.quilt-mappings-on-loom", "4.2.1"))
+
+    //Paper
+    implementation(pluginDep("io.papermc.paperweight.userdev", "1.3.8"))
+    implementation(pluginDep("net.minecrell.plugin-yml.bukkit", "0.5.2"))
+
+    //Velocity
+    implementation("com.velocitypowered:velocity-api:3.0.1")
 }
