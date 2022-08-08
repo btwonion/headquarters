@@ -1,5 +1,7 @@
 plugins {
     kotlin("jvm")
+    `kotlin-project-script`
+    `fabric-build-script`
 }
 
 dependencies {
