@@ -1,8 +1,5 @@
 plugins {
     `kotlin-dsl`
-    val kotlinVersion = "1.7.10"
-    kotlin("jvm") version kotlinVersion
-    kotlin("plugin.serialization") version kotlinVersion
 }
 
 repositories {
@@ -27,8 +24,7 @@ dependencies {
     runtimeOnly(pluginDep("org.jetbrains.kotlin.plugin.serialization", kotlinVersion))
 
     //Database
-    val realmVersion = "1.0.2"
-    implementation(pluginDep("io.realm.kotlin", realmVersion))
+    implementation(pluginDep("io.realm.kotlin", "1.0.2"))
 
     //Fabric
     implementation(pluginDep("fabric-loom", "0.13-SNAPSHOT"))
