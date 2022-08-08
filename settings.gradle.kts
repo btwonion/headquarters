@@ -7,5 +7,10 @@ pluginManagement {
     }
 }
 
-include(":$projectName-api:internalMain")
-findProject(":$projectName-api:internalMain")?.name = "$projectName-internalApi"
+fun includeWithName(path: String, name: String) {
+    include(path)
+    findProject(path)?.name = name
+}
+
+includeWithName(":$projectName-api:internalMain", "$projectName-internalApi")
+includeWithName(":$projectName-api:publicMain", "$projectName-publicApi")
