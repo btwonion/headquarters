@@ -1,15 +1,6 @@
 # Headquarter
 
-Is an great tool, written in Kotli, to manage your Minecraft-Server. <br>
-It hase multiple features like ...
-
-## 📥 Installation
-
-Coming soon ...
-
-## 🎲 Good to know!
-
-Coming soon ...
+Minecraft-Server managing tool written in Kotlin and using Docker.
 
 ## 💸 Support
 
