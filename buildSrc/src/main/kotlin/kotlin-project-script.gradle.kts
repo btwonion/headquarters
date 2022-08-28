@@ -25,9 +25,14 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "18"
-            listOf("InternalHeadquarterAPI", "ExperimentalHeadquarterApi").forEach {
-                freeCompilerArgs += "dev.nyon.headquarter.api.common.$it"
-            }
+        }
+    }
+}
+
+kotlin.sourceSets.all {
+    languageSettings {
+        listOf("InternalHeadquarterAPI", "ExperimentalHeadquarterApi").forEach {
+            optIn("dev.nyon.headquarter.api.common.${it}")
         }
     }
 }
