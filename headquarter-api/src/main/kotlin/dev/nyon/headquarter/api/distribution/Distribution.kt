@@ -7,10 +7,9 @@ import java.util.*
 
 @InternalHeadquarterAPI
 @Serializable
-sealed class Distribution(val uuid: @Serializable(with = UUIDSerializer::class) UUID) {
-
-    abstract val host: String
-    abstract val availableMemory: Int
-    abstract val usedMemory: Int
-
-}
+sealed class Distribution(
+    val uuid: @Serializable(with = UUIDSerializer::class) UUID,
+    val host: String,
+    val availableMemory: Int,
+    val usedMemory: Int
+)
