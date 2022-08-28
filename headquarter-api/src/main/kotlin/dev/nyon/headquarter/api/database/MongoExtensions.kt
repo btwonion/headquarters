@@ -18,7 +18,7 @@ suspend fun <T : @Serializable Any> CoroutineCollection<T>.replace(key: String, 
     this.replaceOne(Filters.eq(key, value), doc)
 }
 
-suspend fun CoroutineDatabase.getAndCreateCollection(name: String): CoroutineCollection<@Serializable Any> {
+suspend inline fun <reified T : @Serializable Any> CoroutineDatabase.getAndCreateCollection(name: String): CoroutineCollection<T> {
     return if (this.listCollectionNames().contains(name)) this.getCollection(name)
     else {
         this.createCollection(name)

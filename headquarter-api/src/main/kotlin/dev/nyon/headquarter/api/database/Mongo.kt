@@ -3,7 +3,6 @@ package dev.nyon.headquarter.api.database
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import dev.nyon.headquarter.api.common.InternalHeadquarterAPI
-import kotlinx.serialization.Serializable
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
@@ -23,10 +22,15 @@ val mongoClient =
 @InternalHeadquarterAPI
 val db = mongoClient.getDatabase(System.getenv("MONGO_DATABASE"))
 
-@InternalHeadquarterAPI
-lateinit var nodes: CoroutineCollection<@Serializable Any>
+lateinit var nodes: CoroutineCollection<Node>
+lateinit var groups: CoroutineCollection<Group>
+lateinit var templates: CoroutineCollection<Template>
+lateinit var players: CoroutineCollection<NetworkPlayer>
 
 @InternalHeadquarterAPI
 suspend fun initMongoDbs() {
     nodes = db.getAndCreateCollection("nodes")
+    groups = db.getAndCreateCollection("groups")
+    templates = db.getAndCreateCollection("templates")
+    players = db.getAndCreateCollection("players")
 }
