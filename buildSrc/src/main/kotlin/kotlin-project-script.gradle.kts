@@ -31,3 +31,8 @@ tasks {
         }
     }
 }
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}

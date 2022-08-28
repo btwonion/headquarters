@@ -1,6 +1,6 @@
 # Headquarter
 
-Minecraft-Server managing tool written in Kotlin and using Docker.
+"A kubernetes based managing tool to manage minecraft servers and proxies"
 
 ## 💸 Support
 

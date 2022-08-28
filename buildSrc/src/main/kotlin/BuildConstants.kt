@@ -2,6 +2,9 @@ object BuildConstants {
 
     val version = "1.0.0"
     val projectName = "headquarter"
+    val authors = listOf("btwonion", "fuer_den_flex")
+    val githubRepo = "btwonion/headquarter"
+    val isSnapshot = true
 
     val kubernetesVersion = "16.0.0"
 

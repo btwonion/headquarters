@@ -4,4 +4,5 @@ plugins {
     `mongo-script`
     `websocket-client-script`
     `websocket-server-script`
+    `project-publish-script`
 }
