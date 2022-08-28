@@ -10,8 +10,8 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${BuildConstants.coroutinesVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${BuildConstants.serializationVersion}")
 }
 
 tasks {
@@ -25,7 +25,9 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "18"
-            freeCompilerArgs += "-opt-in=org.mylibrary.OptInAnnotation"
+            listOf("InternalHeadquarterAPI", "ExperimentalHeadquarterApi").forEach {
+                freeCompilerArgs += "dev.nyon.headquarter.api.common.$it"
+            }
         }
     }
 }

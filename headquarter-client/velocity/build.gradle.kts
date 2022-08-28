@@ -5,6 +5,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":$projectName-api:$projectName-internalApi"))
-    implementation(project(":$projectName-client:$projectName-client-common"))
+    implementation(project(":${BuildConstants.projectName}-api"))
+    implementation(project(":${BuildConstants.projectName}-client:${BuildConstants.projectName}-client-common"))
 }

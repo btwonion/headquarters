@@ -12,23 +12,17 @@ repositories {
 }
 
 dependencies {
-    val minecraftVersion = "1.19.2"
-    val quiltMappingsVersion = "1.19.2+build.1:v2"
-    val fabricAPIVersion = "0.59.0+1.19.2"
-    val fabricLoaderVersion = "0.14.9"
-    val fabricLanguageKotlinVersion = "1.8.2+kotlin.1.7.10"
-
-    minecraft("com.mojang:minecraft:$minecraftVersion")
+    minecraft("com.mojang:minecraft:${BuildConstants.minecraftVersion}")
     mappings(loom.layered {
-        addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:$quiltMappingsVersion"))
+        addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${BuildConstants.quiltMappingsVersion}"))
         officialMojangMappings()
     })
-    modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:$fabricAPIVersion")
-    modImplementation("net.fabricmc:fabric-language-kotlin:$fabricLanguageKotlinVersion")
+    modImplementation("net.fabricmc:fabric-loader:${BuildConstants.fabricLoaderVersion}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${BuildConstants.fabricAPIVersion}")
+    modImplementation("net.fabricmc:fabric-language-kotlin:${BuildConstants.fabricLanguageKotlinVersion}")
 }
 
-/*tasks {
+tasks {
     processResources {
         val props = mapOf(
             "version" to project.version,
@@ -43,4 +37,3 @@ dependencies {
         }
     }
 }
- */

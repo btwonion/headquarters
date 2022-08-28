@@ -7,5 +7,5 @@ repositories {
 }
 
 dependencies {
-    implementation("com.velocitypowered:velocity-api:3.0.1")
+    implementation("com.velocitypowered:velocity-api:${BuildConstants.velocityVersion}")
 }

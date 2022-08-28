@@ -13,14 +13,13 @@ fun includeWithName(path: String, name: String) {
 }
 
 //Api
-includeWithName(":$projectName-api:internalMain", "$projectName-internalApi")
-includeWithName(":$projectName-api:publicMain", "$projectName-publicApi")
+include(":$projectName-api")
 
 //Node
 include(":$projectName-node")
 
 //Manager
-include(":$projectName-manager")
+include(":$projectName-server")
 
 //Client
 includeWithName(":$projectName-client:common", "$projectName-client-common")

@@ -8,5 +8,5 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":$projectName-api:$projectName-internalApi"))
+    implementation(project(":${BuildConstants.projectName}-api"))
 }

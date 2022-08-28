@@ -9,11 +9,11 @@ repositories {
 }
 
 dependencies {
-    paperDevBundle("1.19.2-R0.1-SNAPSHOT")
+    paperDevBundle(BuildConstants.paperDevBundleMinecraftVersion)
     library(kotlin("stdlib"))
 }
 
-/*tasks {
+tasks {
     processResources {
         val props = mapOf(
             "version" to project.version,
@@ -27,5 +27,3 @@ dependencies {
         }
     }
 }
-
- */

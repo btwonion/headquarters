@@ -8,6 +8,6 @@ repositories {
 }
 
 dependencies{
-    implementation("com.github.ajalt:mordant:1.2.1")
-    implementation("com.github.ajalt.clikt:clikt:3.5.0")
+    implementation("com.github.ajalt.mordant:mordant:${BuildConstants.mordantVersion}")
+    implementation("com.github.ajalt.clikt:clikt:${BuildConstants.cliktVersion}")
 }

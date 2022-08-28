@@ -6,10 +6,12 @@ plugins {
     `realms-script`
     `websocket-client-script`
     `websocket-server-script`
-    `docker-script`
-    `terminal-script`
 }
 
 dependencies {
-    implementation(project(":$projectName-api:$projectName-internalApi"))
+    implementation(project(":${BuildConstants.projectName}-api"))
+}
+
+application {
+    mainClass.set("dev.nyon.headquarter.manager.Manager")
 }
