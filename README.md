@@ -1,6 +1,6 @@
 # Headquarter
 
-"A kubernetes based managing tool to manage minecraft servers and proxies"
+> A kubernetes based managing tool to manage minecraft servers and proxies
 
 ## 💸 Support
 

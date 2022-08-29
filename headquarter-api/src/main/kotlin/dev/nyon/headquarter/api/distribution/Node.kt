@@ -1,6 +1,7 @@
 package dev.nyon.headquarter.api.distribution
 
 import dev.nyon.headquarter.api.common.UUIDSerializer
+import io.realm.kotlin.types.RealmObject
 import kotlinx.serialization.Serializable
 import java.util.*
 
@@ -12,4 +13,4 @@ data class Node(
     val usedMemorY: Int
 ) : Distribution(
     uuiD, hosT, availableMemorY, usedMemorY
-) {}
+), RealmObject {}

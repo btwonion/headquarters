@@ -5,4 +5,5 @@ plugins {
     `websocket-client-script`
     `websocket-server-script`
     `project-publish-script`
+    `realms-script`
 }

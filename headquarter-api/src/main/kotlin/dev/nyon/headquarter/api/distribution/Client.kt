@@ -1,6 +1,7 @@
 package dev.nyon.headquarter.api.distribution
 
 import dev.nyon.headquarter.api.common.UUIDSerializer
+import io.realm.kotlin.types.RealmObject
 import kotlinx.serialization.Serializable
 import java.util.*
 
@@ -13,7 +14,7 @@ data class Client(
     val clientType: ClientType
 ) : Distribution(
     uuiD, hosT, availableMemorY, usedMemorY
-) {}
+), RealmObject {}
 
 @Serializable
 enum class ClientType {

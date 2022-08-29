@@ -7,6 +7,8 @@ import dev.nyon.headquarter.api.distribution.Node
 import dev.nyon.headquarter.api.group.Group
 import dev.nyon.headquarter.api.group.Template
 import dev.nyon.headquarter.api.player.NetworkPlayer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
@@ -32,9 +34,11 @@ lateinit var templates: CoroutineCollection<Template>
 lateinit var players: CoroutineCollection<NetworkPlayer>
 
 @InternalHeadquarterAPI
-suspend fun initMongoDbs() {
-    nodes = db.getAndCreateCollection("nodes")
-    groups = db.getAndCreateCollection("groups")
-    templates = db.getAndCreateCollection("templates")
-    players = db.getAndCreateCollection("players")
+fun CoroutineScope.initMongoDbs() {
+    launch {
+        nodes = db.getAndCreateCollection("nodes")
+        groups = db.getAndCreateCollection("groups")
+        templates = db.getAndCreateCollection("templates")
+        players = db.getAndCreateCollection("players")
+    }
 }
