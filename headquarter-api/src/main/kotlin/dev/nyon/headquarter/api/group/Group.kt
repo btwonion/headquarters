@@ -8,7 +8,10 @@ import java.util.*
 data class Group(
     val uuid: @Serializable(with = UUIDSerializer::class) UUID,
     val name: String,
-    val description: String?,
-    val templates: List<Template>,
-    val static: Boolean
+    val description: String,
+    val template: Template,
+    val static: Boolean,
+    val maxMemory: Int,
+    val maxRunningServices: Int,
+    val minRunningServices: Int
 )
