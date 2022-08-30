@@ -12,7 +12,7 @@ sealed class NetworkMessage
 data class NodeRequest(val uuid: @Serializable(with = UUIDSerializer::class) UUID) : NetworkMessage()
 
 @Serializable
-data class NodeRequestAnswer(val node: Node) : NetworkMessage()
+data class NodeRequestAnswer(val node: Node?) : NetworkMessage()
 
 @Serializable
 data class NodeCreate(val node: Node) : NetworkMessage()

@@ -10,45 +10,37 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
+import kotlinx.serialization.Serializable
 import java.util.*
 
 val webClient = HttpClient(CIO) {
     install(WebSockets)
 }
 
-suspend inline fun listenChannel(channel: String, crossinline block: suspend DefaultClientWebSocketSession.() -> Unit) {
-    webClient.webSocket(
-        method = HttpMethod.Get,
-        host = env("WEBSOCKET_CLIENT_ADDRESS"),
-        port = env("WEBSOCKET_PORT").toInt(),
-        path = "/$channel"
-    ) {
-        send(Frame.Text("jo"))
-        block.invoke(this)
-    }
-}
-
-suspend fun requestNode(uuid: UUID, block: Node.() -> Unit) {
-    listenChannel("node") {
+suspend fun requestNode(uuid: UUID, block: Node?.() -> Unit) {
+    webSocketClient("node") {
         sendSerialized(NodeRequest(uuid))
         for (frame in incoming) {
             if (receiveDeserialized<NetworkMessage>() !is NodeRequestAnswer) continue
             block.invoke(receiveDeserialized<NodeRequestAnswer>().node)
-            return@listenChannel
+            return@webSocketClient
         }
     }
 }
 
-suspend fun send(channel: String, frame: Frame) {
-    webClient.webSocket(
-        method = HttpMethod.Get,
-        host = env("WEBSOCKET_CLIENT_ADDRESS"),
-        port = env("WEBSOCKET_PORT").toInt(),
-        path = "/$channel"
-    ) {
-        send(frame)
-    }
+suspend fun send(channel: String, frame: Frame) = webSocketClient(channel) {
+    send(frame)
 }
 
-suspend inline fun listen(crossinline session: suspend DefaultClientWebSocketSession.() -> Unit) =
-    listenChannel("network", session)
+suspend fun sendSerialized(channel: String, text: @Serializable NetworkMessage) = webSocketClient(channel) { sendSerialized(text) }
+
+suspend inline fun webSocketClient(
+    channel: String, crossinline block: suspend DefaultClientWebSocketSession.() -> Unit
+) {
+    webClient.webSocket(
+        method = HttpMethod.Get,
+        host = env("INTERNAL_SERVER_HOST"),
+        port = env("INTERNAL_SERVER_PORT").toInt(),
+        path = "/$channel"
+    ) { block.invoke(this) }
+}
