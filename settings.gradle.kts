@@ -16,7 +16,7 @@ fun includeWithName(path: String, name: String) {
 include(":$projectName-api")
 
 //Node
-include(":$projectName-node")
+include(":$projectName-manager")
 
 //Manager
 include(":$projectName-server")

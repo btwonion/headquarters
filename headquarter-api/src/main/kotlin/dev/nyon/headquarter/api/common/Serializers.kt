@@ -6,7 +6,15 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
 import java.util.*
+
+val json: Json = Json {
+    prettyPrint = true
+    ignoreUnknownKeys = true
+    coerceInputValues = true
+    encodeDefaults = true
+}
 
 class UUIDSerializer : KSerializer<UUID> {
 

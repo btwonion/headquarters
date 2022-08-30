@@ -3,7 +3,6 @@ package dev.nyon.headquarter.api.database
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import dev.nyon.headquarter.api.common.InternalHeadquarterAPI
-import dev.nyon.headquarter.api.distribution.Node
 import dev.nyon.headquarter.api.group.Group
 import dev.nyon.headquarter.api.group.Template
 import dev.nyon.headquarter.api.player.NetworkPlayer

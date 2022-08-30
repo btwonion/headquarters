@@ -1,7 +1,6 @@
 package dev.nyon.headquarter.api.database
 
 import dev.nyon.headquarter.api.common.env
-import dev.nyon.headquarter.api.distribution.Node
 import dev.nyon.headquarter.api.networking.NetworkMessage
 import dev.nyon.headquarter.api.networking.NodeRequest
 import dev.nyon.headquarter.api.networking.NodeRequestAnswer

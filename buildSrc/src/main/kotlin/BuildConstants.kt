@@ -6,7 +6,7 @@ object BuildConstants {
     val githubRepo = "btwonion/headquarter"
     val isSnapshot = true
 
-    val kubernetesVersion = "16.0.0"
+    val kubernetesVersion = "6.0.0"
 
     //Kotlin
     val kotlinVersion = "1.7.10"

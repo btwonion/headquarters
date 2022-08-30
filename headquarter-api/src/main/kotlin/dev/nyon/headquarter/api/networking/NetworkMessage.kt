@@ -1,7 +1,6 @@
 package dev.nyon.headquarter.api.networking
 
 import dev.nyon.headquarter.api.common.UUIDSerializer
-import dev.nyon.headquarter.api.distribution.Node
 import kotlinx.serialization.Serializable
 import java.util.*
 

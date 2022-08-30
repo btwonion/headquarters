@@ -1,7 +1,6 @@
 package dev.nyon.headquarter.server
 
 import dev.nyon.headquarter.api.common.env
-import dev.nyon.headquarter.api.distribution.Node
 import dev.nyon.headquarter.api.networking.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*

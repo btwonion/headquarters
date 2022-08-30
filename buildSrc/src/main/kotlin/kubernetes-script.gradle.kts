@@ -7,5 +7,5 @@ repositories{
 }
 
 dependencies {
-    implementation("io.kubernetes:client-java:${BuildConstants.kubernetesVersion}")
+    implementation("io.fabric8:kubernetes-client:${BuildConstants.kubernetesVersion}")
 }

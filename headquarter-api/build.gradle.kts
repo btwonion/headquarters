@@ -6,4 +6,5 @@ plugins {
     `websocket-server-script`
     `project-publish-script`
     `realms-script`
+    `kubernetes-script`
 }
