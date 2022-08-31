@@ -39,7 +39,7 @@ class GroupCommand : CliktCommand(name = "group", help = "This is the root headq
 
         private val name by option("--name", "-n", help = "Sets the name of the group")
         private val description by option("--description", "-d", help = "Sets the description of the group")
-        private val template by templateOption("Sets the template of the group")
+        private val defaultTemplate by templateOption("Sets the default template of the group")
         private val maxMemory by option(
             "--maxMemory", "--memory", "-m", help = "Sets the max memory for each service of the group"
         ).int()
@@ -56,7 +56,7 @@ class GroupCommand : CliktCommand(name = "group", help = "This is the root headq
         override fun run() = launchJob {
             if (name != null) group.name = name!!
             if (description != null) group.description = description!!
-            if (template != null) group.template = template
+            if (defaultTemplate != null) group.defaultTemplate = defaultTemplate
             if (maxMemory != null) group.maxMemory = maxMemory!!
             if (minRunningServices != null) group.minRunningServices = minRunningServices!!
             if (maxRunningServices != null) group.maxRunningServices = maxRunningServices!!
@@ -71,7 +71,7 @@ class GroupCommand : CliktCommand(name = "group", help = "This is the root headq
 
         private val name by option(help = "The name of the new group").prompt("Name")
         private val description by option(help = "The description for the new group").prompt("$name's description")
-        private val template by templateOption("The template of the new group").prompt("Template")
+        private val defaultTemplate by templateOption("The template of the new group").prompt("Default Template")
         private val maxMemory by option(help = "The maximum memory of each service").int()
             .prompt("Maximum memory of each service (in mb)").check { it % 2 == 0 }
         private val minRunningServices by option(help = "The minimum number of running services").int()
@@ -85,7 +85,7 @@ class GroupCommand : CliktCommand(name = "group", help = "This is the root headq
             while (groupCache.containsKey(newUUID)) newUUID = UUID.randomUUID()
 
             val group = Group(
-                newUUID, name, description, template, static, maxMemory, maxRunningServices, minRunningServices
+                newUUID, name, description, defaultTemplate, static, maxMemory, maxRunningServices, minRunningServices
             )
 
             groupCache[newUUID] = group
@@ -104,7 +104,7 @@ class GroupCommand : CliktCommand(name = "group", help = "This is the root headq
                 "Name" to group.name,
                 "UUID" to group.uuid.toString(),
                 "Description" to group.description,
-                "Template" to "${group.template?.name} - ${group.template?.uuid.toString()}",
+                "Default Template" to "${group.defaultTemplate?.name} - ${group.defaultTemplate?.uuid.toString()}",
                 "Static" to group.static.toString(),
                 "Max memory" to group.maxMemory.toString(),
                 "Max running services" to group.maxRunningServices.toString(),
@@ -128,22 +128,3 @@ class GroupCommand : CliktCommand(name = "group", help = "This is the root headq
 
     }
 }
-
-fun CliktCommand.groupArgument(description: String) = argument(
-    "group", description
-).choice(kotlin.run {
-    val choices = mutableMapOf<String, Group>()
-    groupCache.forEach {
-        choices[it.value.name] = it.value
-    }
-    return@run choices
-})
-
-fun CliktCommand.templateOption(description: String) =
-    option("--template", "-t", help = description).choice(kotlin.run {
-        val choices = mutableMapOf<String, dev.nyon.headquarter.api.group.Template>()
-        templateCache.forEach {
-            choices[it.value.name] = it.value
-        }
-        return@run choices
-    })
