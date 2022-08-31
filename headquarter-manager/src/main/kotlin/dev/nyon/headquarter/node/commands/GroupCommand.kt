@@ -21,10 +21,18 @@ import java.util.*
 class GroupCommand : CliktCommand(name = "group", help = "This is the root headquarter group command") {
 
     init {
-        subcommands(Create(), Info(), Remove(), Modify())
+        subcommands(Create(), Info(), Remove(), Modify(), List())
     }
 
     override fun run() {}
+
+    inner class List : CliktCommand(name = "list", help = "Lists all groups") {
+        override fun run() = launchJob {
+            groupCache.forEach {
+                terminal.println("${blue(it.value.name)} - ${white(it.value.uuid.toString())}")
+            }
+        }
+    }
 
     inner class Modify : CliktCommand(name = "modify", help = "Modifies the given group") {
         private val group by groupArgument("The requested group")
