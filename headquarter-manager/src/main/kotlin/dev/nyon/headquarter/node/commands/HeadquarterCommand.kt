@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 class HeadquarterCommand : CliktCommand(name = "headquarter", help = "This is the headquarter root command") {
 
     init {
-        subcommands(GroupCommand())
+        subcommands(GroupCommand(), TemplateCommand())
     }
 
     override fun run() {}
