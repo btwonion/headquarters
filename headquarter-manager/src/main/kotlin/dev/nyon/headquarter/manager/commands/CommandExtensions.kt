@@ -1,4 +1,4 @@
-package dev.nyon.headquarter.node.commands
+package dev.nyon.headquarter.manager.commands
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -6,8 +6,8 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.choice
 import dev.nyon.headquarter.api.group.Group
 import dev.nyon.headquarter.api.group.Template
-import dev.nyon.headquarter.node.groupCache
-import dev.nyon.headquarter.node.templateCache
+import dev.nyon.headquarter.manager.groupCache
+import dev.nyon.headquarter.manager.templateCache
 
 fun CliktCommand.groupArgument(description: String) = argument(
     "group", description

@@ -1,4 +1,4 @@
-package dev.nyon.headquarter.node
+package dev.nyon.headquarter.manager
 
 import dev.nyon.headquarter.api.database.groups
 import dev.nyon.headquarter.api.database.templates

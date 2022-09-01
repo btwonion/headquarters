@@ -1,8 +1,7 @@
-package dev.nyon.headquarter.node.commands
+package dev.nyon.headquarter.manager.commands
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
-import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.check
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
@@ -12,9 +11,8 @@ import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.mordant.rendering.TextColors.*
 import dev.nyon.headquarter.api.database.groups
 import dev.nyon.headquarter.api.group.Group
-import dev.nyon.headquarter.node.groupCache
-import dev.nyon.headquarter.node.templateCache
-import dev.nyon.headquarter.node.terminal
+import dev.nyon.headquarter.manager.groupCache
+import dev.nyon.headquarter.manager.terminal
 import org.litote.kmongo.eq
 import java.util.*
 

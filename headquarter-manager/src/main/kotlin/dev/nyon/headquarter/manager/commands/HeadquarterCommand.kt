@@ -1,8 +1,8 @@
-package dev.nyon.headquarter.node.commands
+package dev.nyon.headquarter.manager.commands
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
-import dev.nyon.headquarter.node.mainScope
+import dev.nyon.headquarter.manager.mainScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
