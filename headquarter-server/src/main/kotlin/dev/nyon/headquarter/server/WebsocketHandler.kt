@@ -1,7 +1,9 @@
 package dev.nyon.headquarter.server
 
 import dev.nyon.headquarter.api.common.env
+import dev.nyon.headquarter.api.distribution.Client
 import dev.nyon.headquarter.api.networking.*
+import dev.nyon.headquarter.api.player.NetworkPlayer
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -45,41 +47,81 @@ fun CoroutineScope.configureWebsockets() {
                     }
                 }
 
-                webSocket("/nodedb") {
+                webSocket("/playerDb") {
                     for (frame in incoming) {
                         if (frame !is Frame.Text) continue
-                        if (frame.readText() == "jo")continue
                         when (val message = receiveDeserialized<NetworkMessage>()) {
-                            is NodeRequest -> {
+                            is PlayerRequest -> {
                                 newScope {
-                                    nodeRealm.query<Node>("uuid = '${message.uuid}'").asFlow().collect {
-                                        sendSerialized(NodeRequestAnswer(it.list[0]))
+                                    playerRealm.query<NetworkPlayer>("uuid = '${message.uuid}'").asFlow().collect {
+                                        sendSerialized(PlayerRequestAnswer(it.list[0]))
                                     }
                                 }
                             }
 
-                            is NodeDelete -> {
+                            is PlayerDelete -> {
                                 newScope {
-                                    nodeRealm.write {
-                                        val query = query<Node>("uuid = '${message.uuid}'")
+                                    playerRealm.write {
+                                        val query = query<NetworkPlayer>("uuid = '${message.uuid}'")
                                         delete(query)
                                     }
                                 }
                             }
 
-                            is NodeUpdate -> {
+                            is PlayerUpdate -> {
                                 newScope {
-                                    nodeRealm.write {
-                                        val query = query<Node>("uuid = '${message.node.uuid}'")
+                                    playerRealm.write {
+                                        val query = query<NetworkPlayer>("uuid = '${message.player.uuid}'")
                                         delete(query)
-                                        copyToRealm(message.node)
+                                        copyToRealm(message.player)
                                     }
                                 }
                             }
 
-                            is NodeCreate -> {
+                            is PlayerCreate -> {
                                 newScope {
-                                    nodeRealm.write { copyToRealm(message.node) }
+                                    playerRealm.write { copyToRealm(message.player) }
+                                }
+                            }
+
+                            else -> {}
+                        }
+                    }
+                }
+                webSocket("/clientDb") {
+                    for (frame in incoming) {
+                        if (frame !is Frame.Text) continue
+                        when (val message = receiveDeserialized<NetworkMessage>()) {
+                            is ServiceRequest -> {
+                                newScope {
+                                    clientRealm.query<Client>("uuid = '${message.uuid}'").asFlow().collect {
+                                            sendSerialized(ServiceRequestAnswer(it.list[0]))
+                                        }
+                                }
+                            }
+
+                            is ServiceDelete -> {
+                                newScope {
+                                    clientRealm.write {
+                                        val query = query<Client>("uuid = '${message.uuid}'")
+                                        delete(query)
+                                    }
+                                }
+                            }
+
+                            is ServiceUpdate -> {
+                                newScope {
+                                    clientRealm.write {
+                                        val query = query<Client>("uuid = '${message.service.uuid}'")
+                                        delete(query)
+                                        copyToRealm(message.service)
+                                    }
+                                }
+                            }
+
+                            is ServiceCreate -> {
+                                newScope {
+                                    clientRealm.write { copyToRealm(message.service) }
                                 }
                             }
 
