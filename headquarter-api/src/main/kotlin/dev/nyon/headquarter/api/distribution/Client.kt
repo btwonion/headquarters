@@ -8,13 +8,12 @@ import java.util.*
 
 @Serializable
 data class Client(
-    val uuiD: @Serializable(with = UUIDSerializer::class) UUID,
-    val hosT: Host,
-    val availableMemorY: Int,
+    override val uuid: @Serializable(with = UUIDSerializer::class) UUID,
+    val displayName: String,
+    override val host: Host,
+    override val availableMemory: Int,
     val clientType: ClientType
-) : Distribution(
-    uuiD, hosT, availableMemorY
-), RealmObject {}
+) : Distribution, RealmObject {}
 
 @Serializable
 enum class ClientType {

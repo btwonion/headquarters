@@ -7,9 +7,10 @@ import kotlinx.serialization.Serializable
 import java.util.*
 
 @InternalHeadquarterAPI
-@Serializable
-sealed class Distribution(
-    val uuid: @Serializable(with = UUIDSerializer::class) UUID,
-    val host: Host,
+interface Distribution {
+
+    val uuid: @Serializable(with = UUIDSerializer::class) UUID
+    val host: Host
     val availableMemory: Int
-)
+
+}
