@@ -14,6 +14,7 @@ object BuildConstants {
     val coroutinesVersion = "1.6.4"
     val ktorVersion = "2.1.0"
 
+    //Logger
     val logbackVersion = "1.4.0"
 
     //Terminal
