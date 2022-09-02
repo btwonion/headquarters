@@ -6,7 +6,7 @@ object BuildConstants {
     val githubRepo = "btwonion/headquarter"
     val isSnapshot = true
 
-    val kubernetesVersion = "6.0.0"
+    val kubernetesVersion = "6.1.1"
 
     //Kotlin
     val kotlinVersion = "1.7.10"
@@ -27,13 +27,13 @@ object BuildConstants {
 
     //Fabric
     val minecraftVersion = "1.19.2"
-    val quiltMappingsVersion = "1.19.2+build.12:v2"
+    val quiltMappingsVersion = "1.19.2+build.14:v2"
     val fabricLoaderVersion = "0.14.9"
     val fabricAPIVersion = "0.60.0+1.19.2"
     val fabricLanguageKotlinVersion = "1.8.3+kotlin.1.7.10"
 
     //Velocity
-    val velocityVersion = "3.0.1"
+    val velocityVersion = "4.0.0-SNAPSHOT"
 
     //Paper
     val paperDevBundleMinecraftVersion = "1.19.2-R0.1-SNAPSHOT"
