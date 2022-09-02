@@ -47,47 +47,6 @@ fun CoroutineScope.configureWebsockets() {
                     }
                 }
 
-                webSocket("/playerDb") {
-                    for (frame in incoming) {
-                        if (frame !is Frame.Text) continue
-                        when (val message = receiveDeserialized<NetworkMessage>()) {
-                            is PlayerRequest -> {
-                                newScope {
-                                    playerRealm.query<NetworkPlayer>("uuid = '${message.uuid}'").asFlow().collect {
-                                        sendSerialized(PlayerRequestAnswer(it.list[0]))
-                                    }
-                                }
-                            }
-
-                            is PlayerDelete -> {
-                                newScope {
-                                    playerRealm.write {
-                                        val query = query<NetworkPlayer>("uuid = '${message.uuid}'")
-                                        delete(query)
-                                    }
-                                }
-                            }
-
-                            is PlayerUpdate -> {
-                                newScope {
-                                    playerRealm.write {
-                                        val query = query<NetworkPlayer>("uuid = '${message.player.uuid}'")
-                                        delete(query)
-                                        copyToRealm(message.player)
-                                    }
-                                }
-                            }
-
-                            is PlayerCreate -> {
-                                newScope {
-                                    playerRealm.write { copyToRealm(message.player) }
-                                }
-                            }
-
-                            else -> {}
-                        }
-                    }
-                }
                 webSocket("/clientDb") {
                     for (frame in incoming) {
                         if (frame !is Frame.Text) continue
