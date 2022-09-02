@@ -5,7 +5,7 @@ import com.mongodb.MongoClientSettings
 import dev.nyon.headquarter.api.common.InternalHeadquarterAPI
 import dev.nyon.headquarter.api.group.Group
 import dev.nyon.headquarter.api.group.Template
-import dev.nyon.headquarter.api.player.NetworkPlayer
+import kotlinx.coroutines.CoroutineScope
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
@@ -25,15 +25,10 @@ val mongoClient =
 @InternalHeadquarterAPI
 val db = mongoClient.getDatabase(System.getenv("MONGO_DATABASE"))
 
-lateinit var nodes: CoroutineCollection<Node>
 lateinit var groups: CoroutineCollection<Group>
 lateinit var templates: CoroutineCollection<Template>
-lateinit var players: CoroutineCollection<NetworkPlayer>
-
 @InternalHeadquarterAPI
-suspend fun initMongoDbs() {
-    nodes = db.getAndCreateCollection("nodes")
+suspend fun CoroutineScope.initMongoDbs() {
     groups = db.getAndCreateCollection("groups")
     templates = db.getAndCreateCollection("templates")
-    players = db.getAndCreateCollection("players")
 }

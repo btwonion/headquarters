@@ -7,13 +7,15 @@ import kotlinx.serialization.Serializable
 import java.util.*
 
 @Serializable
-data class Client(
-    override val uuid: @Serializable(with = UUIDSerializer::class) UUID,
-    val displayName: String,
-    override val host: Host,
-    override val availableMemory: Int,
-    val clientType: ClientType
-) : Distribution, RealmObject {}
+class Client : RealmObject {
+
+    var uuid: @Serializable(with = UUIDSerializer::class) UUID = UUID.randomUUID()
+    var displayName: String = ""
+    var host: Host = Host("0.0.0.0", null)
+    var availableMemory: Int = 0
+    var clientType: ClientType = ClientType.Fabric
+
+}
 
 @Serializable
 enum class ClientType {

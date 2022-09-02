@@ -1,9 +1,10 @@
 package dev.nyon.headquarter.api.database
 
 import dev.nyon.headquarter.api.common.env
+import dev.nyon.headquarter.api.distribution.Client
 import dev.nyon.headquarter.api.networking.NetworkMessage
-import dev.nyon.headquarter.api.networking.NodeRequest
-import dev.nyon.headquarter.api.networking.NodeRequestAnswer
+import dev.nyon.headquarter.api.networking.ServiceRequest
+import dev.nyon.headquarter.api.networking.ServiceRequestAnswer
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -16,12 +17,12 @@ val webClient = HttpClient(CIO) {
     install(WebSockets)
 }
 
-suspend fun requestNode(uuid: UUID, block: Node?.() -> Unit) {
-    webSocketClient("node") {
-        sendSerialized(NodeRequest(uuid))
+suspend fun requestService(uuid: UUID, block: Client?.() -> Unit) {
+    webSocketClient("db") {
+        sendSerialized(ServiceRequest(uuid))
         for (frame in incoming) {
-            if (receiveDeserialized<NetworkMessage>() !is NodeRequestAnswer) continue
-            block.invoke(receiveDeserialized<NodeRequestAnswer>().node)
+            if (receiveDeserialized<NetworkMessage>() !is ServiceRequestAnswer) continue
+            block.invoke(receiveDeserialized<ServiceRequestAnswer>().service)
             return@webSocketClient
         }
     }
@@ -31,7 +32,8 @@ suspend fun send(channel: String, frame: Frame) = webSocketClient(channel) {
     send(frame)
 }
 
-suspend fun sendSerialized(channel: String, text: @Serializable NetworkMessage) = webSocketClient(channel) { sendSerialized(text) }
+suspend fun sendSerialized(channel: String, text: @Serializable NetworkMessage) =
+    webSocketClient(channel) { sendSerialized(text) }
 
 suspend inline fun webSocketClient(
     channel: String, crossinline block: suspend DefaultClientWebSocketSession.() -> Unit

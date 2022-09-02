@@ -2,8 +2,10 @@ package dev.nyon.headquarter.server
 
 import dev.nyon.headquarter.api.common.env
 import dev.nyon.headquarter.api.distribution.Client
-import dev.nyon.headquarter.api.networking.*
-import dev.nyon.headquarter.api.player.NetworkPlayer
+import dev.nyon.headquarter.api.networking.NetworkMessage
+import dev.nyon.headquarter.api.networking.ServiceModify
+import dev.nyon.headquarter.api.networking.ServiceRequest
+import dev.nyon.headquarter.api.networking.ServiceRequestAnswer
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -15,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import java.time.Duration
 
@@ -47,40 +50,34 @@ fun CoroutineScope.configureWebsockets() {
                     }
                 }
 
-                webSocket("/clientDb") {
+                webSocket("/db") {
                     for (frame in incoming) {
                         if (frame !is Frame.Text) continue
                         when (val message = receiveDeserialized<NetworkMessage>()) {
                             is ServiceRequest -> {
                                 newScope {
                                     clientRealm.query<Client>("uuid = '${message.uuid}'").asFlow().collect {
-                                            sendSerialized(ServiceRequestAnswer(it.list[0]))
+                                        sendSerialized(ServiceRequestAnswer(it.list.getOrNull(0)))
+                                    }
+                                }
+                            }
+
+                            is ServiceModify -> {
+                                newScope {
+                                    if (message.service == null && message.uuid != null) clientRealm.write {
+                                        val query = query<Client>("uuid = '${message.uuid}")
+                                        delete(query)
+                                    }
+                                    if (message.service != null) {
+                                        clientRealm.write {
+                                            launch {
+                                                val query = query<Client>("uuid = '${message.service!!.uuid}'")
+                                                if (query.asFlow().toList().isNotEmpty()) delete(query)
+                                                copyToRealm(message.service!!)
+                                            }
                                         }
-                                }
-                            }
-
-                            is ServiceDelete -> {
-                                newScope {
-                                    clientRealm.write {
-                                        val query = query<Client>("uuid = '${message.uuid}'")
-                                        delete(query)
                                     }
-                                }
-                            }
 
-                            is ServiceUpdate -> {
-                                newScope {
-                                    clientRealm.write {
-                                        val query = query<Client>("uuid = '${message.service.uuid}'")
-                                        delete(query)
-                                        copyToRealm(message.service)
-                                    }
-                                }
-                            }
-
-                            is ServiceCreate -> {
-                                newScope {
-                                    clientRealm.write { copyToRealm(message.service) }
                                 }
                             }
 
