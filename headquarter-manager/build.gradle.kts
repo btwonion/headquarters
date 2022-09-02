@@ -12,4 +12,4 @@ dependencies {
     implementation(project(":${BuildConstants.projectName}-api"))
 }
 
-application.mainClass.set("dev.nyon.headquarter.node.NodeRunnerKt")
+application.mainClass.set("dev.nyon.headquarter.manager.ManagerRunnerKt")

@@ -1,6 +1,6 @@
 package dev.nyon.headquarter.manager
 
-import com.github.ajalt.mordant.rendering.TextColors.red
+import com.github.ajalt.mordant.rendering.TextColors.*
 import com.github.ajalt.mordant.terminal.Terminal
 import dev.nyon.headquarter.api.database.initMongoDbs
 import dev.nyon.headquarter.manager.commands.HeadquarterCommand
@@ -18,7 +18,8 @@ suspend fun main() {
             mainScope = this
             initMongoDbs()
             loadCaches()
-            initDatabases()
+
+            terminal.println(green("Manager successfully started!"))
 
             launch {
                 while (true) {
