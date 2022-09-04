@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 import java.util.*
 
 @Serializable
-data class Group(
-    val uuid: @Serializable(with = UUIDSerializer::class) UUID,
-    var name: String,
-    var description: String,
-    var defaultTemplate: Template?,
+open class Group(
+    open val uuid: @Serializable(with = UUIDSerializer::class) UUID,
+    open var name: String,
+    open var description: String,
+    open var defaultTemplate: Template?,
     var static: Boolean,
-    var maxMemory: Int,
-    var maxRunningServices: Int,
-    var minRunningServices: Int
+    open var maxMemory: Int,
+    open var maxRunningServices: Int,
+    open var minRunningServices: Int
 )

@@ -9,8 +9,9 @@ import com.github.ajalt.clikt.parameters.options.prompt
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.mordant.rendering.TextColors.*
-import dev.nyon.headquarter.api.database.groups
 import dev.nyon.headquarter.api.group.Group
+import dev.nyon.headquarter.api.group.StaticGroup
+import dev.nyon.headquarter.api.networking.groups
 import dev.nyon.headquarter.manager.groupCache
 import dev.nyon.headquarter.manager.terminal
 import org.litote.kmongo.eq
@@ -69,20 +70,37 @@ class GroupCommand : CliktCommand(name = "group", help = "This is the root headq
 
         private val name by option(help = "The name of the new group").prompt("Name")
         private val description by option(help = "The description for the new group").prompt("$name's description")
+
         private val defaultTemplate by templateOption("The template of the new group").prompt("Default Template")
+
         private val maxMemory by option(help = "The maximum memory of each service").int()
             .prompt("Maximum memory of each service (in mb)").check { it % 2 == 0 }
         private val minRunningServices by option(help = "The minimum number of running services").int()
             .prompt("Minimum running services")
         private val maxRunningServices by option(help = "The maximum number of running services").int()
             .prompt("Maximum running services (uncapped = -1)")
-        private val static by option("--static", "-s").flag()
+
+        private val static by option("--static", "-s", help = "Marks the group as static").flag()
+        private val runningHost by option("--host", "-h", help = "Sets the running host of the static group")
+        private val runningDirectory by option(
+            "--directory", "-d", help = "Sets the running directory of the static group on the specific host"
+        )
 
         override fun run() = launchJob {
             var newUUID = UUID.randomUUID()
             while (groupCache.containsKey(newUUID)) newUUID = UUID.randomUUID()
 
-            val group = Group(
+            val group = if (static) StaticGroup(
+                newUUID,
+                name,
+                description,
+                defaultTemplate,
+                maxMemory,
+                maxRunningServices,
+                minRunningServices,
+                runningHost!!,
+                runningDirectory!!
+            ) else Group(
                 newUUID, name, description, defaultTemplate, static, maxMemory, maxRunningServices, minRunningServices
             )
 
