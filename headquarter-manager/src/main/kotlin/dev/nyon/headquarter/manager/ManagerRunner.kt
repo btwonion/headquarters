@@ -2,7 +2,7 @@ package dev.nyon.headquarter.manager
 
 import com.github.ajalt.mordant.rendering.TextColors.*
 import com.github.ajalt.mordant.terminal.Terminal
-import dev.nyon.headquarter.api.database.initMongoDbs
+import dev.nyon.headquarter.api.networking.initMongoDbs
 import dev.nyon.headquarter.manager.commands.HeadquarterCommand
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope

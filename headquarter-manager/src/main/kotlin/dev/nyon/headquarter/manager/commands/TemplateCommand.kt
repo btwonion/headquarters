@@ -7,7 +7,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.prompt
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.mordant.rendering.TextColors.*
-import dev.nyon.headquarter.api.database.templates
+import dev.nyon.headquarter.api.networking.templates
 import dev.nyon.headquarter.api.group.Template
 import dev.nyon.headquarter.api.networking.Host
 import dev.nyon.headquarter.manager.templateCache

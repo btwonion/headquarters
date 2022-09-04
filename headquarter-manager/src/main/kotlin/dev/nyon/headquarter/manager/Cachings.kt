@@ -1,7 +1,7 @@
 package dev.nyon.headquarter.manager
 
-import dev.nyon.headquarter.api.database.groups
-import dev.nyon.headquarter.api.database.templates
+import dev.nyon.headquarter.api.networking.groups
+import dev.nyon.headquarter.api.networking.templates
 import dev.nyon.headquarter.api.group.Group
 import dev.nyon.headquarter.api.group.Template
 import java.util.*

@@ -1,4 +1,4 @@
-package dev.nyon.headquarter.api.database
+package dev.nyon.headquarter.api.networking
 
 import dev.nyon.headquarter.api.common.InternalHeadquarterAPI
 import kotlinx.coroutines.CoroutineScope

@@ -1,10 +1,7 @@
-package dev.nyon.headquarter.api.database
+package dev.nyon.headquarter.api.networking
 
 import dev.nyon.headquarter.api.common.env
 import dev.nyon.headquarter.api.distribution.Client
-import dev.nyon.headquarter.api.networking.NetworkMessage
-import dev.nyon.headquarter.api.networking.ServiceRequest
-import dev.nyon.headquarter.api.networking.ServiceRequestAnswer
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*

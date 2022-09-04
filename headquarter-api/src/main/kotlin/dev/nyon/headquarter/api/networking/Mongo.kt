@@ -1,4 +1,4 @@
-package dev.nyon.headquarter.api.database
+package dev.nyon.headquarter.api.networking
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
