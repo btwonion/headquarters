@@ -12,27 +12,20 @@ repositories {
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${BuildConstants.coroutinesVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${BuildConstants.serializationVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:${BuildConstants.datetimeVersion}")
 }
 
 tasks {
     withType<JavaCompile> {
         options.apply {
-            release.set(18)
+            release.set(19)
             encoding = "UTF-8"
         }
     }
 
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "18"
-        }
-    }
-}
-
-kotlin.sourceSets.all {
-    languageSettings {
-        listOf("InternalHeadquarterAPI", "ExperimentalHeadquarterApi").forEach {
-            optIn("dev.nyon.headquarter.api.common.${it}")
+            jvmTarget = "19"
         }
     }
 }
