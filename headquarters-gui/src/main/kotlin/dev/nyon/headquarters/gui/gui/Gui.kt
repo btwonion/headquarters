@@ -15,10 +15,7 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
-import compose.icons.feathericons.Moon
-import compose.icons.feathericons.Package
-import compose.icons.feathericons.Sun
-import compose.icons.feathericons.User
+import compose.icons.feathericons.*
 
 fun initGui() {
     application {
@@ -29,73 +26,82 @@ fun initGui() {
             title = "Headquarters",
             state = rememberWindowState(WindowPlacement.Maximized)
         ) {
-            Column {
-                Row(
-                    Modifier.fillMaxWidth().background(theme.surface), horizontalArrangement = Arrangement.End
+            // ganzes in zwei teile vertikal
+            Row {
+                // zweiter teil
+                Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Bottom
                 ) {
-                    Box {
-                        var opened by remember { mutableStateOf(false) }
-                        ExtendedFloatingActionButton(
-                            { Text("current game profile") },
-                            { opened = true },
-                            icon = { Icon(FeatherIcons.Package, "game profile") },
-                            contentColor = theme.primary,
-                            backgroundColor = theme.secondary
-                        )
-
-                        DropdownMenu(
-                            opened, { opened = false }, modifier = Modifier.background(theme.secondary)
-                        ) {
-                            DropdownMenuItem({}) {
-                                Text("coclcl")
-                            }
-                            Divider()
-                            DropdownMenuItem({}) {
-                                Text("asdaw")
-                            }
-                        }
-                    }
-
-                    Spacer(Modifier.width(10.dp))
-
-                    Box {
-                        var opened by remember { mutableStateOf(false) }
-                        IconButton({ opened = true }) {
-                            Icon(FeatherIcons.User, "profile")
-                        }
-
-                        DropdownMenu(
-                            opened, { opened = false }, modifier = Modifier.background(theme.secondary)
-                        ) {
-                            DropdownMenuItem({}) {
-                                Text("coclcl")
-                            }
-                            Divider()
-                            DropdownMenuItem({}) {
-                                Text("asdaw")
-                            }
-                        }
-                    }
-
-                    Spacer(Modifier.width(5.dp))
-                }
-
-                Row(Modifier.fillMaxHeight()) {
-                    Column(
-                        Modifier.fillMaxHeight().background(theme.onSurface), verticalArrangement = Arrangement.Bottom
-                    ) {
+                    // sidebar
+                    Column(Modifier.fillMaxHeight().background(theme.onSurface)) {
                         IconButton({ theme = if (theme == darkColors) lightColors else darkColors }) {
                             Icon(if (theme == darkColors) FeatherIcons.Sun else FeatherIcons.Moon, "toggle theme")
                         }
                     }
-                    Column(Modifier.fillMaxSize().background(theme.background)) {
 
+                    // surface
+                    Box(Modifier.fillMaxSize().background(theme.background)) {
+
+                    }
+                }
+
+                // erster teil
+                Column {
+                    // topbar
+                    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth().background(theme.onBackground)) {
+                        Box {
+                            var opened by remember { mutableStateOf(false) }
+                            ExtendedFloatingActionButton(
+                                { Text("current game profile") },
+                                { opened = true },
+                                icon = { Icon(FeatherIcons.Package, "game profile") },
+                                contentColor = theme.primary,
+                                backgroundColor = theme.secondary
+                            )
+
+                            DropdownMenu(
+                                opened, { opened = false }, modifier = Modifier.background(theme.secondary)
+                            ) {
+                                DropdownMenuItem({}) {
+                                    Text("coclcl")
+                                }
+                                Divider()
+                                DropdownMenuItem({}) {
+                                    Text("asdaw")
+                                }
+                            }
+                        }
+
+                        Spacer(Modifier.width(10.dp))
+
+                        Box {
+                            var opened by remember { mutableStateOf(false) }
+                            IconButton({ opened = true }) {
+                                Icon(FeatherIcons.User, "profile")
+                            }
+
+                            DropdownMenu(
+                                opened, { opened = false }, modifier = Modifier.background(theme.secondary)
+                            ) {
+                                DropdownMenuItem({}) {
+                                    Text("coclcl")
+                                }
+                                Divider()
+                                DropdownMenuItem({}) {
+                                    Text("asdaw")
+                                }
+                            }
+                        }
+
+                        Spacer(Modifier.width(5.dp))
                     }
                 }
             }
         }
     }
 }
+
 
 /**
  * Color usage:
