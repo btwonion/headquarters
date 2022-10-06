@@ -18,14 +18,14 @@ dependencies {
 tasks {
     withType<JavaCompile> {
         options.apply {
-            release.set(19)
+            release.set(18)
             encoding = "UTF-8"
         }
     }
 
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "19"
+            jvmTarget = "18"
         }
     }
 }

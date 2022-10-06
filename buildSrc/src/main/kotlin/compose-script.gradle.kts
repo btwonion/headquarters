@@ -14,13 +14,6 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
-    @OptIn(ExperimentalComposeLibrary::class) implementation(compose.material3)
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:${BuildConstants.composeIconVersion}")
     implementation("br.com.devsrsouza.compose.icons.jetbrains:tabler-icons:${BuildConstants.composeIconVersion}")
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
 }

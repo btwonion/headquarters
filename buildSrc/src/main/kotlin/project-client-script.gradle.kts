@@ -9,5 +9,9 @@ repositories {
 dependencies {
     implementation("dev.nyon:headquarters-connector-modrinth:${BuildConstants.connectorVersion}")
     implementation("dev.nyon:headquarters-connector-core:${BuildConstants.connectorVersion}")
-    implementation("io.ktor:ktor-server-auth:${BuildConstants.ktorVersion}")
+
+    implementation("io.ktor:ktor-client-core:${BuildConstants.ktorVersion}")
+    implementation("io.ktor:ktor-client-cio:${BuildConstants.ktorVersion}")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:${BuildConstants.ktorVersion}")
+    implementation("io.ktor:ktor-client-content-negotiation:${BuildConstants.ktorVersion}")
 }
