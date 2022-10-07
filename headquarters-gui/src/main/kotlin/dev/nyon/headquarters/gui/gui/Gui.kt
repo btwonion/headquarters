@@ -26,42 +26,44 @@ fun initGui() {
             title = "Headquarters",
             state = rememberWindowState(WindowPlacement.Maximized)
         ) {
-            // ganzes in zwei teile vertikal
-            Row {
-                // zweiter teil
-                Column(
-                    Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Bottom
-                ) {
-                    // sidebar
-                    Column(Modifier.fillMaxHeight().background(theme.onSurface)) {
-                        IconButton({ theme = if (theme == darkColors) lightColors else darkColors }) {
-                            Icon(if (theme == darkColors) FeatherIcons.Sun else FeatherIcons.Moon, "toggle theme")
-                        }
+            /**
+             * Splits the window into two horizontal spaces
+             */
+            Column {
+                /**
+                 * Creates the layout for the top bar
+                 */
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    /**
+                     * Home Button
+                     */
+                    Box(modifier = Modifier.background(theme.onBackground)) {
+                        IconButton({}, Modifier.padding(5.dp)) { Icon(FeatherIcons.Home, "home") }
                     }
 
-                    // surface
-                    Box(Modifier.fillMaxSize().background(theme.background)) {
-
-                    }
-                }
-
-                // erster teil
-                Column {
-                    // topbar
-                    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth().background(theme.onBackground)) {
+                    /**
+                     * The top bar entries
+                     */
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth().background(theme.onBackground)
+                    ) {
+                        /**
+                         * Game profile button with dropdownMenu
+                         */
                         Box {
                             var opened by remember { mutableStateOf(false) }
                             ExtendedFloatingActionButton(
                                 { Text("current game profile") },
                                 { opened = true },
+                                Modifier.padding(5.dp),
                                 icon = { Icon(FeatherIcons.Package, "game profile") },
                                 contentColor = theme.primary,
-                                backgroundColor = theme.secondary
+                                backgroundColor = theme.primaryVariant
                             )
 
                             DropdownMenu(
-                                opened, { opened = false }, modifier = Modifier.background(theme.secondary)
+                                opened, { opened = false }, modifier = Modifier.background(theme.secondaryVariant)
                             ) {
                                 DropdownMenuItem({}) {
                                     Text("coclcl")
@@ -73,16 +75,17 @@ fun initGui() {
                             }
                         }
 
-                        Spacer(Modifier.width(10.dp))
-
+                        /**
+                         * Account button with dropdownMenu
+                         */
                         Box {
                             var opened by remember { mutableStateOf(false) }
-                            IconButton({ opened = true }) {
-                                Icon(FeatherIcons.User, "profile")
+                            IconButton({ opened = true }, Modifier.padding(5.dp)) {
+                                Icon(FeatherIcons.User, "account")
                             }
 
                             DropdownMenu(
-                                opened, { opened = false }, modifier = Modifier.background(theme.secondary)
+                                opened, { opened = false }, modifier = Modifier.background(theme.secondaryVariant)
                             ) {
                                 DropdownMenuItem({}) {
                                     Text("coclcl")
@@ -93,8 +96,30 @@ fun initGui() {
                                 }
                             }
                         }
+                    }
+                }
 
-                        Spacer(Modifier.width(5.dp))
+                /**
+                 * Second part of the window
+                 */
+                Row {
+                    /**
+                     * Creates the sidebar
+                     */
+                    Column(
+                        Modifier.fillMaxHeight().background(theme.onSurface), verticalArrangement = Arrangement.Bottom
+                    ) {
+                        // sidebar
+                        IconButton({ theme = if (theme == darkColors) lightColors else darkColors }) {
+                            Icon(if (theme == darkColors) FeatherIcons.Sun else FeatherIcons.Moon, "toggle theme")
+                        }
+                    }
+
+                    /**
+                     * The main surface
+                     */
+                    Box(Modifier.fillMaxSize().background(theme.background)) {
+
                     }
                 }
             }
@@ -120,7 +145,7 @@ fun initGui() {
  */
 val darkColors = Colors(
     Color(0x991B3A4B),
-    Color(0x99212F45),
+    Color(0x99287379),
     Color(0x99144552),
     Color(0x990B525B),
     Color(0x993E1F47),
