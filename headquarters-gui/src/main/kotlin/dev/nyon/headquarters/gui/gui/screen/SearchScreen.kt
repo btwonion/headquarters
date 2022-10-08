@@ -1,25 +1,18 @@
-package dev.nyon.headquarters.gui.gui.screen.search
+package dev.nyon.headquarters.gui.gui.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TextField
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import compose.icons.TablerIcons
-import compose.icons.tablericons.MoodSad
 import dev.nyon.headquarters.app.connector
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
@@ -29,18 +22,14 @@ import io.kamel.image.lazyPainterResource
 import io.ktor.http.*
 import kotlinx.coroutines.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen() {
-    var searchResponse by remember {
-        mutableStateOf<SearchResult>(
-            SearchResult.SearchResultFailure(
-                "inital", "This is just an initial value"
-            )
-        )
-    }
-    var hits by remember { mutableStateOf(arrayListOf<ProjectResult>()) }
+fun SearchScreen(theme: ColorScheme) {
+    var searchResponse by remember { mutableStateOf<SearchResult>(SearchResult.SearchResultSuccess(listOf(), 0, 0, 0)) }
+    val currentItems = remember { mutableStateListOf<ProjectResult>() }
     var currentInput by remember { mutableStateOf("") }
     val searchScope = rememberCoroutineScope()
+    val gridState = rememberLazyGridState()
 
     fun search(typing: Boolean) {
         val term = currentInput
@@ -51,14 +40,20 @@ fun SearchScreen() {
                 if (currentInput != term) return@launch
             }
 
-            val offset =
-                if (searchResponse is SearchResult.SearchResultSuccess) (searchResponse as SearchResult.SearchResultSuccess).totalHits + (searchResponse as SearchResult.SearchResultSuccess).offset else 0
-            val result = connector.searchProjects(term, limit = 25, offset = if (term == currentInput) offset else null)
+            val result = connector.searchProjects(term, limit = 25)
             searchResponse = result
-            if (result !is SearchResult.SearchResultSuccess) return@launch
-            if (term == currentInput) hits += result.hits
-            else hits = result.hits as ArrayList<ProjectResult>
+            if (result is SearchResult.SearchResultSuccess) {
+                currentItems.clear()
+                currentItems.addAll(result.hits)
+            }
+            if (term != currentInput) gridState.animateScrollToItem(1)
         }
+    }
+
+    gridState.onReachEnd {
+        val result = connector.searchProjects(currentInput, offset = it, limit = 20)
+        if (result is SearchResult.SearchResultSuccess) currentItems.addAll(result.hits)
+        searchResponse = result
     }
 
     Column {
@@ -71,22 +66,54 @@ fun SearchScreen() {
             )
         }
 
-        val gridState = rememberLazyGridState()
-
-        Box {
+        Box(Modifier.fillMaxSize()) {
             when (val response = searchResponse) {
                 is SearchResult.SearchResultFailure -> {
-                    Column {
-                        Image(
-                            TablerIcons.MoodSad, "error", alignment = Alignment.Center, contentScale = ContentScale.Fit
+                    ElevatedCard(
+                        colors = CardDefaults.elevatedCardColors(theme.errorContainer, theme.error),
+                        modifier = Modifier.size(350.dp, 500.dp).align(Alignment.TopCenter).padding(top = 100.dp)
+                    ) {
+                        Text(
+                            "Error",
+                            Modifier.fillMaxWidth().align(Alignment.CenterHorizontally).padding(50.dp),
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
                         )
                         Spacer(Modifier.height(50.dp))
-                        Text(response.error, Modifier.padding(10.dp), fontSize = 18.sp)
-                        Text(response.description, Modifier.padding(10.dp), fontSize = 12.sp)
+
+                        Text(
+                            response.error,
+                            Modifier.align(Alignment.CenterHorizontally).padding(10.dp),
+                            fontSize = 25.sp
+                        )
+                        Text(
+                            response.description,
+                            Modifier.align(Alignment.CenterHorizontally).padding(10.dp),
+                            fontSize = 20.sp
+                        )
                     }
                 }
 
                 is SearchResult.SearchResultSuccess -> {
+                    if (response.totalHits <= 0) {
+                        ElevatedCard(
+                            colors = CardDefaults.elevatedCardColors(theme.primaryContainer, theme.primary),
+                            modifier = Modifier.size(400.dp, 100.dp).align(Alignment.Center)
+                        ) {
+                            Box(Modifier.fillMaxSize()) {
+                                Text(
+                                    "No projects found",
+                                    Modifier.align(Alignment.Center),
+                                    fontSize = 20.sp,
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Bold,
+                                    color = theme.primary
+                                )
+                            }
+                        }
+                    }
+
                     LazyVerticalGrid(
                         state = gridState,
                         columns = GridCells.Adaptive(500.dp),
@@ -94,7 +121,7 @@ fun SearchScreen() {
                         horizontalArrangement = Arrangement.spacedBy(15.dp),
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
-                        items(hits) {
+                        items(currentItems) {
                             ProjectItem(it)
                         }
                     }
@@ -125,5 +152,21 @@ fun ProjectItem(project: ProjectResult) {
                 Text(project.description)
             }
         }
+    }
+}
+
+@Composable
+private fun LazyGridState.onReachEnd(buffer: Int = 5, onReachEnd: suspend (total: Int) -> Unit) =
+    layoutInfo.onReachEnd(buffer, onReachEnd)
+
+@Composable
+private fun LazyGridLayoutInfo.onReachEnd(buffer: Int = 5, onReachEnd: suspend (total: Int) -> Unit) {
+    val hasReachedEnd = remember(this) {
+        val lastVisibleItemIndex = visibleItemsInfo.lastOrNull()?.index ?: 0
+        (lastVisibleItemIndex + 1 > (totalItemsCount - buffer)) to totalItemsCount
+    }
+
+    LaunchedEffect(hasReachedEnd) {
+        if (hasReachedEnd.first) onReachEnd(totalItemsCount)
     }
 }
