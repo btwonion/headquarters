@@ -16,6 +16,5 @@ dependencies {
     implementation(compose.desktop.currentOs)
     @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class) implementation(compose.material3)
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:${BuildConstants.composeIconVersion}")
-    implementation("br.com.devsrsouza.compose.icons.jetbrains:tabler-icons:${BuildConstants.composeIconVersion}")
     implementation("com.alialbaali.kamel:kamel-image:${BuildConstants.kamelVersion}")
 }
