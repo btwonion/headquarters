@@ -1,6 +1,14 @@
 # Headquarter
 
-> A kubernetes based managing tool to manage minecraft servers and proxies
+A Mincraft GUI-Launcher with features like a Mod-System and Mutch more ...
+
+## 📥 Installation
+
+Comming soon ...
+
+## ❗️ Features
+
+Comming soon ...
 
 ## 💸 Support
 
