@@ -10,10 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
@@ -27,7 +25,7 @@ fun BoxScope.HomeScreen() {
         "Latest Minecraft News",
         "Subtitle oder so",
         "trtrtrotkrotkorkoasdjdoiashjdoashduioashdiuashgdhjasgdjhkasgdjhkgasdjhkgasjhdkgasjhkdgasjhkgdjhkasgdjhkasghjdgasjhdgasjhdgasjhdgajshdgjahksgdjhasgdjhasd",
-        lazyPainterResource(Url("https://www.minecraft.net/etc.clientlibs/minecraft/clientlibs/main/resources/img/GrassBlock_HighRes.png")),
+        lazyPainterResource(Url("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.redd.it%2Flhyfpzbifpo21.png&f=1&nofb=1&ipt=a976be89f9fd9cd46c9f2c92fb49de59c7744d8d4cebc54f57f6fcb645aff793&ipo=images")),
         "minecraft"
     )
 
@@ -45,12 +43,12 @@ fun BoxScope.HomeScreen() {
         "Latest Modrinth Updates",
         "Subtitle oder so",
         "trtrtrotkrotkorkoasdjdoiashjdoashduioashdiuashgdhjasgdjhkasgdjhkgasdjhkgasjhdkgasjhkdgasjhkgdjhkasgdjhkasghjdgasjhdgasjhdgasjhdgajshdgjahksgdjhasgdjhasd",
-        lazyPainterResource(Url("https://github.com/modrinth/art/blob/main/Branding/Mark/mark-dark__256x256.png")),
+        lazyPainterResource(Url("https://github.com/modrinth/art/blob/main/Branding/Mark/mark-dark__256x256.png?raw=true")),
         "modrinth"
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUnitApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NewsCard(
     onClick: () -> Unit,
@@ -68,14 +66,14 @@ private fun NewsCard(
             Text(
                 title,
                 Modifier.align(Alignment.CenterHorizontally).padding(top = 20.dp),
-                fontSize = TextUnit(25F, TextUnitType.Sp),
+                fontSize = 25.sp,
                 fontFamily = FontFamily.Monospace
             )
 
             Text(
                 subtitle,
                 Modifier.fillMaxWidth().padding(top = 20.dp),
-                fontSize = TextUnit(20F, TextUnitType.Sp),
+                fontSize = 20.sp,
                 fontFamily = FontFamily.Monospace,
                 textAlign = TextAlign.Center
             )
@@ -83,7 +81,7 @@ private fun NewsCard(
             Text(
                 previewText,
                 Modifier.padding(30.dp).padding(top = 40.dp).fillMaxWidth(),
-                fontSize = TextUnit(16F, TextUnitType.Sp),
+                fontSize = 16.sp,
                 fontFamily = FontFamily.Monospace,
                 textAlign = TextAlign.Center
             )
@@ -91,7 +89,7 @@ private fun NewsCard(
             Spacer(Modifier.height(50.dp))
 
             if (image != null) KamelImage(
-                image, imageDescription, modifier = Modifier.fillMaxWidth().padding(50.dp), alignment = Alignment.Center
+                image, imageDescription, modifier = Modifier.fillMaxSize().padding(50.dp), alignment = Alignment.Center
             )
         }
     }

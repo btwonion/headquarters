@@ -140,7 +140,7 @@ fun SearchScreen(theme: ColorScheme) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectItem(project: ProjectResult) {
-    ElevatedCard(modifier = Modifier.height(135.dp)) {
+    ElevatedCard({}, modifier = Modifier.height(135.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             KamelImage(
                 lazyPainterResource(data = Url(project.iconUrl ?: "https://cdn-raw.modrinth.com//placeholder.svg")),
