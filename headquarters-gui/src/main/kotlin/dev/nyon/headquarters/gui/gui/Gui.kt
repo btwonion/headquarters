@@ -3,12 +3,14 @@ package dev.nyon.headquarters.gui.gui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
@@ -16,10 +18,13 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
+import dev.nyon.headquarters.gui.gui.screen.HomeScreen
+import dev.nyon.headquarters.gui.gui.screen.search.SearchScreen
 
 fun initGui() {
     application {
-        var theme by remember { mutableStateOf(darkColors) }
+        var screen by remember { mutableStateOf(Screen.Home) }
+        var theme by remember { mutableStateOf(darkTheme) }
 
         Window(
             onCloseRequest = { this.exitApplication() },
@@ -37,8 +42,8 @@ fun initGui() {
                     /**
                      * Home Button
                      */
-                    Box(modifier = Modifier.background(theme.onBackground)) {
-                        IconButton({}, Modifier.padding(5.dp)) { Icon(FeatherIcons.Home, "home") }
+                    Box(modifier = Modifier.background(theme.surfaceVariant)) {
+                        IconButton({ screen = Screen.Home }, Modifier.padding(5.dp)) { Icon(FeatherIcons.Home, "home") }
                     }
 
                     /**
@@ -46,7 +51,7 @@ fun initGui() {
                      */
                     Row(
                         horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.fillMaxWidth().background(theme.onBackground)
+                        modifier = Modifier.fillMaxWidth().background(theme.surfaceVariant)
                     ) {
                         /**
                          * Game profile button with dropdownMenu
@@ -58,19 +63,19 @@ fun initGui() {
                                 { opened = true },
                                 Modifier.padding(5.dp),
                                 icon = { Icon(FeatherIcons.Package, "game profile") },
-                                contentColor = theme.primary,
-                                backgroundColor = theme.primaryVariant
+                                contentColor = theme.primaryContainer,
+                                backgroundColor = theme.onPrimaryContainer
                             )
 
                             DropdownMenu(
-                                opened, { opened = false }, modifier = Modifier.background(theme.secondaryVariant)
+                                opened, { opened = false }, modifier = Modifier.background(theme.primary)
                             ) {
                                 DropdownMenuItem({}) {
-                                    Text("coclcl")
+                                    Text("coclcl", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize())
                                 }
                                 Divider()
                                 DropdownMenuItem({}) {
-                                    Text("asdaw")
+                                    Text("coclcl", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize())
                                 }
                             }
                         }
@@ -85,15 +90,9 @@ fun initGui() {
                             }
 
                             DropdownMenu(
-                                opened, { opened = false }, modifier = Modifier.background(theme.secondaryVariant)
+                                opened, { opened = false }, modifier = Modifier.background(theme.primary)
                             ) {
-                                DropdownMenuItem({}) {
-                                    Text("coclcl")
-                                }
-                                Divider()
-                                DropdownMenuItem({}) {
-                                    Text("asdaw")
-                                }
+
                             }
                         }
                     }
@@ -107,11 +106,28 @@ fun initGui() {
                      * Creates the sidebar
                      */
                     Column(
-                        Modifier.fillMaxHeight().background(theme.onSurface), verticalArrangement = Arrangement.Bottom
+                        Modifier.fillMaxHeight().background(theme.surfaceVariant),
+                        verticalArrangement = Arrangement.Bottom
                     ) {
-                        // sidebar
-                        IconButton({ theme = if (theme == darkColors) lightColors else darkColors }) {
-                            Icon(if (theme == darkColors) FeatherIcons.Sun else FeatherIcons.Moon, "toggle theme")
+                        IconButton({}, Modifier.padding(5.dp)) {
+                            Icon(FeatherIcons.Compass, "discover")
+                        }
+
+                        IconButton({ screen = Screen.Search }, Modifier.padding(5.dp)) {
+                            Icon(FeatherIcons.Search, "search")
+                        }
+
+                        IconButton({}, Modifier.padding(5.dp)) {
+                            Icon(FeatherIcons.Archive, "mods")
+                        }
+
+                        Spacer(Modifier.size(20.dp))
+                        IconButton({
+                            theme = if (theme == darkTheme) lightTheme else darkTheme
+                        }, Modifier.padding(5.dp)) {
+                            Icon(
+                                if (theme == darkTheme) FeatherIcons.Sun else FeatherIcons.Moon, "toggle theme"
+                            )
                         }
                     }
 
@@ -119,7 +135,11 @@ fun initGui() {
                      * The main surface
                      */
                     Box(Modifier.fillMaxSize().background(theme.background)) {
-
+                        when (screen) {
+                            Screen.Home -> this.HomeScreen()
+                            Screen.Search -> SearchScreen()
+                            else -> {}
+                        }
                     }
                 }
             }
@@ -127,50 +147,5 @@ fun initGui() {
     }
 }
 
-
-/**
- * Color usage:
- * primary - writing
- * primaryVariant - writing background
- * secondary - second primary writing
- * secondaryVariant - second primary background
- * background - background
- * surface - surface
- * error - error
- * onPrimary - primary hover
- * onSecondary - second hover
- * onBackground - second background color
- * onSurface - third background color
- * onError - error hover
- */
-val darkColors = Colors(
-    Color(0x991B3A4B),
-    Color(0x99287379),
-    Color(0x99144552),
-    Color(0x990B525B),
-    Color(0x993E1F47),
-    Color(0x994D194D),
-    Color(0x99391017),
-    Color(0x99312244),
-    Color(0x99272640),
-    Color(0x99065A60),
-    Color(0x99006466),
-    Color(0x997A493B),
-    false
-)
-
-val lightColors = Colors(
-    Color(0x992A6F97),
-    Color(0x992C7DA0),
-    Color(0x99468FAF),
-    Color(0x9961A5C2),
-    Color(0x99014F86),
-    Color(0x9901497C),
-    Color(0x9989C2D9),
-    Color(0x99312244),
-    Color(0x99A9D6E5),
-    Color(0x99012A4A),
-    Color(0x99013A63),
-    Color(0x997A493B),
-    true
-)
+val darkTheme = darkColorScheme()
+val lightTheme = lightColorScheme()
