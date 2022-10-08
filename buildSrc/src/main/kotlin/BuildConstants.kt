@@ -14,7 +14,8 @@ object BuildConstants {
 
     val kmongoVersion = "4.7.1"
 
-    val connectorVersion = "1.1.0"
+    val connectorVersion = "1.2.0"
 
     val composeIconVersion = "1.0.0"
+    val kamelVersion = "0.4.1"
 }
