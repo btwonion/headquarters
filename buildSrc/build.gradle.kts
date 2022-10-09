@@ -20,4 +20,6 @@ dependencies {
     runtimeOnly(pluginDep("org.jetbrains.kotlin.plugin.serialization", kotlinVersion))
 
     implementation(pluginDep("org.jetbrains.compose", "1.2.0-beta02"))
+
+    implementation(pluginDep("io.realm.kotlin", "1.2.0"))
 }

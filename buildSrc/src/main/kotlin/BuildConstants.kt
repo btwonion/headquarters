@@ -13,6 +13,7 @@ object BuildConstants {
     val cliktVersion = "3.5.0"
 
     val kmongoVersion = "4.7.1"
+    val realmVersion = "1.2.0"
 
     val connectorVersion = "1.2.0"
 
