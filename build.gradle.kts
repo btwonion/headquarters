@@ -1,5 +1,5 @@
 allprojects {
     group = "dev.nyon"
-    description = "Mod manager mainly using Modrinth"
+    description = "Modern mod manager"
     version = "1.0.0"
 }
