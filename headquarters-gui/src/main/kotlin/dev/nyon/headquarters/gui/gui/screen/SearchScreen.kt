@@ -19,8 +19,10 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import compose.icons.feathericons.Heart
 import dev.nyon.headquarters.app.connector
+import dev.nyon.headquarters.connector.modrinth.models.project.Project
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
+import dev.nyon.headquarters.connector.modrinth.requests.getProject
 import dev.nyon.headquarters.connector.modrinth.requests.searchProjects
 import dev.nyon.headquarters.gui.util.toPrettyString
 import io.kamel.image.KamelImage
@@ -128,7 +130,7 @@ fun SearchScreen(theme: ColorScheme) {
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
                         items(currentItems) {
-                            ProjectItem(it)
+                            ProjectItem(it, theme)
                         }
                     }
                 }
@@ -139,8 +141,11 @@ fun SearchScreen(theme: ColorScheme) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProjectItem(project: ProjectResult) {
-    ElevatedCard({}, modifier = Modifier.height(135.dp)) {
+fun ProjectItem(project: ProjectResult, theme: ColorScheme) {
+    var openedDialog by remember { mutableStateOf(false) }
+
+    if (openedDialog) ProjectDialog(project, theme) { openedDialog = false }
+    ElevatedCard({ openedDialog = true }, modifier = Modifier.height(135.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             KamelImage(
                 lazyPainterResource(data = Url(project.iconUrl ?: "https://cdn-raw.modrinth.com//placeholder.svg")),
@@ -183,6 +188,16 @@ fun ProjectItem(project: ProjectResult) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ProjectDialog(projectResult: ProjectResult, theme: ColorScheme, onClose: () -> Unit) {
+    var opened by remember { mutableStateOf(true) }
+    val projectScope = rememberCoroutineScope()
+    var project: Project? = null
+    projectScope.launch {
+        project = connector.getProject(projectResult.projectID)
     }
 }
 
