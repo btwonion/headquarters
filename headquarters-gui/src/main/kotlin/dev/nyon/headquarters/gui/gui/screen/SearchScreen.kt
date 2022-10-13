@@ -20,6 +20,7 @@ import compose.icons.feathericons.Download
 import compose.icons.feathericons.Heart
 import dev.nyon.headquarters.app.connector
 import dev.nyon.headquarters.connector.modrinth.models.project.Project
+import dev.nyon.headquarters.connector.modrinth.models.request.Facet
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
 import dev.nyon.headquarters.connector.modrinth.requests.getProject
@@ -49,7 +50,7 @@ fun SearchScreen(theme: ColorScheme) {
                 if (currentInput != term) return@launch
             }
 
-            val result = connector.searchProjects(term, limit = 25)
+            val result = connector.searchProjects(term, limit = 25, facets = listOf(Facet.Categories(listOf("fabric"))))
             searchResponse = result
             if (result is SearchResult.SearchResultSuccess) {
                 currentItems.clear()
