@@ -13,7 +13,7 @@ object BuildConstants {
     const val kmongoVersion = "4.7.1"
     const val realmVersion = "1.2.0"
 
-    const val connectorVersion = "1.2.0"
+    const val connectorVersion = "1.2.1"
 
     const val composeIconVersion = "1.0.0"
     const val kamelVersion = "0.4.1"
