@@ -2,6 +2,7 @@ package dev.nyon.headquarters.gui.gui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -10,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -18,13 +20,30 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
+import dev.nyon.headquarters.app.profile.local.realm
+import dev.nyon.headquarters.app.profile.models.LocalProfile
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
+import io.realm.kotlin.ext.query
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 fun initGui() {
     application {
         var screen by remember { mutableStateOf(Screen.Home) }
         var theme by remember { mutableStateOf(darkTheme) }
+        var profile by remember {
+            mutableStateOf(realm.query<LocalProfile>().find().getOrNull(0) ?: kotlin.run {
+                val newProfile = LocalProfile("default", "abcedf", "")
+                CoroutineScope(Dispatchers.Default).launch {
+                    realm.write {
+                        copyToRealm(newProfile)
+                    }
+                }
+                newProfile
+            })
+        }
 
         Window(
             onCloseRequest = { this.exitApplication() },
@@ -59,7 +78,7 @@ fun initGui() {
                         Box {
                             var opened by remember { mutableStateOf(false) }
                             ExtendedFloatingActionButton(
-                                { Text("current game profile") },
+                                { Text(profile.name) },
                                 { opened = true },
                                 Modifier.padding(5.dp),
                                 icon = { Icon(FeatherIcons.Package, "game profile") },
@@ -68,14 +87,22 @@ fun initGui() {
                             )
 
                             DropdownMenu(
-                                opened, { opened = false }, modifier = Modifier.background(theme.primary)
+                                opened, { opened = false }, modifier = Modifier.background(theme.primary).clip(
+                                    RoundedCornerShape(8.dp)
+                                )
                             ) {
-                                DropdownMenuItem({}) {
-                                    Text("coclcl", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize())
-                                }
-                                Divider()
-                                DropdownMenuItem({}) {
-                                    Text("coclcl", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize())
+                                val profiles = realm.query<LocalProfile>().find()
+                                profiles.forEachIndexed { index, localProfile ->
+                                    DropdownMenuItem({
+                                        profile = localProfile
+                                    }, enabled = profile == localProfile) {
+                                        Text(
+                                            localProfile.name,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
+                                    if (index < profiles.size - 1) Divider()
                                 }
                             }
                         }
