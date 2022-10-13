@@ -1,14 +1,8 @@
-# Headquarter
+# Headquarters
 
-A Mincraft GUI-Launcher with features like a Mod-System and Mutch more ...
+> A modern Minecraft launcher with integrated mod manager and (in future) shared game profiles
 
-## 📥 Installation
-
-Comming soon ...
-
-## ❗️ Features
-
-Comming soon ...
+Currently under heavy development
 
 ## 💸 Support
 
