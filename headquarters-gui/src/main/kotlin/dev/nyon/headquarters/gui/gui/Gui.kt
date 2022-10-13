@@ -136,7 +136,7 @@ fun initGui() {
                      */
                     Box(Modifier.fillMaxSize().background(theme.background)) {
                         when (screen) {
-                            Screen.Home -> this.HomeScreen()
+                            Screen.Home -> HomeScreen()
                             Screen.Search -> SearchScreen(theme)
                             else -> {}
                         }

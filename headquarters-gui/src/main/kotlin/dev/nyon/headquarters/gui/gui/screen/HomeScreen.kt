@@ -17,8 +17,9 @@ import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
 import io.ktor.http.*
 
+context(BoxScope)
 @Composable
-fun BoxScope.HomeScreen() {
+fun HomeScreen() {
     NewsCard(
         {},
         Modifier.align(Alignment.TopStart).padding(50.dp).size(500.dp, 800.dp),
@@ -48,6 +49,8 @@ fun BoxScope.HomeScreen() {
     )
 }
 
+
+context(BoxScope)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NewsCard(

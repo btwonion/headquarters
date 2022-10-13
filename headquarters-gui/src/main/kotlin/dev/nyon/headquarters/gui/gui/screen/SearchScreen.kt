@@ -30,6 +30,7 @@ import io.kamel.image.lazyPainterResource
 import io.ktor.http.*
 import kotlinx.coroutines.*
 
+context(BoxScope)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(theme: ColorScheme) {
@@ -139,6 +140,7 @@ fun SearchScreen(theme: ColorScheme) {
     }
 }
 
+context(LazyGridItemScope)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectItem(project: ProjectResult, theme: ColorScheme) {
