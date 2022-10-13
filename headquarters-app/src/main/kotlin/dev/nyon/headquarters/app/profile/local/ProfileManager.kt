@@ -3,7 +3,6 @@ package dev.nyon.headquarters.app.profile.local
 import dev.nyon.headquarters.app.connector
 import dev.nyon.headquarters.app.downloadFile
 import dev.nyon.headquarters.app.ktorClient
-import dev.nyon.headquarters.app.profile.models.Config
 import dev.nyon.headquarters.app.profile.models.LocalProfile
 import dev.nyon.headquarters.app.profile.models.Profile
 import dev.nyon.headquarters.app.profile.models.ProjectEntry

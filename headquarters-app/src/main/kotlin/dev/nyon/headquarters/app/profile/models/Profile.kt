@@ -22,9 +22,9 @@ sealed interface Profile {
 }
 
 class LocalProfile() : RealmObject {
-    var name: String = ""
-    var profileID: String = ""
-    var sharedProfileID: String = ""
+    var name = ""
+    var profileID = ""
+    var sharedProfileID = ""
 
     constructor(name: String, profileID: String, sharedProfileID: String) : this() {
         this.name = name
