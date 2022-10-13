@@ -4,6 +4,14 @@
 
 Currently under heavy development
 
+## Features
+
+- [ ] discover page
+- [ ] news page
+- [ ] shared profiles
+- [x] search page
+- [ ] GitHub OAuth
+
 ## 💸 Support
 
 <a href="https://www.buymeacoffee.com/btwonion" target="_blank">
