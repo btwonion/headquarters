@@ -18,12 +18,11 @@ import androidx.compose.ui.unit.sp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import compose.icons.feathericons.Heart
+import compose.icons.feathericons.X
 import dev.nyon.headquarters.app.connector
-import dev.nyon.headquarters.connector.modrinth.models.project.Project
 import dev.nyon.headquarters.connector.modrinth.models.request.Facet
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
-import dev.nyon.headquarters.connector.modrinth.requests.getProject
 import dev.nyon.headquarters.connector.modrinth.requests.searchProjects
 import dev.nyon.headquarters.gui.util.toPrettyString
 import io.kamel.image.KamelImage
@@ -32,14 +31,22 @@ import io.ktor.http.*
 import kotlinx.coroutines.*
 
 context(BoxScope)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
+        @OptIn(ExperimentalMaterial3Api::class)
+        @Composable
 fun SearchScreen(theme: ColorScheme) {
-    var searchResponse by remember { mutableStateOf<SearchResult>(SearchResult.SearchResultSuccess(listOf(), 0, 0, 0)) }
+    var searchResponse by remember {
+        mutableStateOf<SearchResult>(
+            SearchResult.SearchResultSuccess(
+                listOf(), 0, 0, 0
+            )
+        )
+    }
     val currentItems = remember { mutableStateListOf<ProjectResult>() }
     var currentInput by remember { mutableStateOf("") }
     val searchScope = rememberCoroutineScope()
     val gridState = rememberLazyGridState()
+    var selectedProject by remember { mutableStateOf<ProjectResult?>(null) }
+    var showPopup by remember { mutableStateOf(false) }
 
     fun search(typing: Boolean) {
         val term = currentInput
@@ -66,73 +73,94 @@ fun SearchScreen(theme: ColorScheme) {
         searchResponse = result
     }
 
-    Column {
-        Box(Modifier.fillMaxWidth()) {
-            TextField(
-                currentInput, {
-                    currentInput = it
-                    search(true)
-                }, modifier = Modifier.fillMaxWidth().padding(10.dp).align(Alignment.TopCenter), maxLines = 1
-            )
-        }
+    Box {
+        Column {
+            Box(Modifier.fillMaxWidth()) {
+                TextField(
+                    currentInput, {
+                        currentInput = it
+                        search(true)
+                    }, modifier = Modifier.fillMaxWidth().padding(10.dp).align(Alignment.TopCenter), maxLines = 1
+                )
+            }
 
-        Box(Modifier.fillMaxSize()) {
-            when (val response = searchResponse) {
-                is SearchResult.SearchResultFailure -> {
-                    ElevatedCard(
-                        colors = CardDefaults.elevatedCardColors(theme.errorContainer, theme.error),
-                        modifier = Modifier.size(350.dp, 500.dp).align(Alignment.TopCenter).padding(top = 100.dp)
-                    ) {
-                        Text(
-                            "Error",
-                            Modifier.fillMaxWidth().align(Alignment.CenterHorizontally).padding(50.dp),
-                            fontSize = 30.sp,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(50.dp))
-
-                        Text(
-                            response.error,
-                            Modifier.align(Alignment.CenterHorizontally).padding(10.dp),
-                            fontSize = 25.sp
-                        )
-                        Text(
-                            response.description,
-                            Modifier.align(Alignment.CenterHorizontally).padding(10.dp),
-                            fontSize = 20.sp
-                        )
-                    }
-                }
-
-                is SearchResult.SearchResultSuccess -> {
-                    if (response.totalHits <= 0) {
+            Box(Modifier.fillMaxSize()) {
+                when (val response = searchResponse) {
+                    is SearchResult.SearchResultFailure -> {
                         ElevatedCard(
-                            colors = CardDefaults.elevatedCardColors(theme.primaryContainer, theme.primary),
-                            modifier = Modifier.size(400.dp, 100.dp).align(Alignment.Center)
+                            colors = CardDefaults.elevatedCardColors(theme.errorContainer, theme.error),
+                            modifier = Modifier.size(350.dp, 500.dp).align(Alignment.TopCenter).padding(top = 100.dp)
                         ) {
-                            Box(Modifier.fillMaxSize()) {
-                                Text(
-                                    "No projects found",
-                                    Modifier.align(Alignment.Center),
-                                    fontSize = 20.sp,
-                                    textAlign = TextAlign.Center,
-                                    fontWeight = FontWeight.Bold,
-                                    color = theme.primary
-                                )
-                            }
+                            Text(
+                                "Error",
+                                Modifier.fillMaxWidth().align(Alignment.CenterHorizontally).padding(50.dp),
+                                fontSize = 30.sp,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(Modifier.height(50.dp))
+
+                            Text(
+                                response.error,
+                                Modifier.align(Alignment.CenterHorizontally).padding(10.dp),
+                                fontSize = 25.sp
+                            )
+                            Text(
+                                response.description,
+                                Modifier.align(Alignment.CenterHorizontally).padding(10.dp),
+                                fontSize = 20.sp
+                            )
                         }
                     }
 
-                    LazyVerticalGrid(
-                        state = gridState,
-                        columns = GridCells.Adaptive(500.dp),
-                        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 20.dp),
-                        horizontalArrangement = Arrangement.spacedBy(15.dp),
-                        verticalArrangement = Arrangement.spacedBy(15.dp)
-                    ) {
-                        items(currentItems) {
-                            ProjectItem(it, theme)
+                    is SearchResult.SearchResultSuccess -> {
+                        if (response.totalHits <= 0) {
+                            ElevatedCard(
+                                colors = CardDefaults.elevatedCardColors(theme.primaryContainer, theme.primary),
+                                modifier = Modifier.size(400.dp, 100.dp).align(Alignment.Center)
+                            ) {
+                                Box(Modifier.fillMaxSize()) {
+                                    Text(
+                                        "No projects found",
+                                        Modifier.align(Alignment.Center),
+                                        fontSize = 20.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Bold,
+                                        color = theme.primary
+                                    )
+                                }
+                            }
+                        }
+
+                        LazyVerticalGrid(
+                            state = gridState,
+                            columns = GridCells.Adaptive(500.dp),
+                            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(15.dp)
+                        ) {
+                            items(currentItems) {
+                                ProjectItem(it) {
+                                    showPopup = true
+                                    selectedProject = it
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                if (showPopup) {
+                    ElevatedCard(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp)) {
+                        Column {
+                            Box(Modifier.fillMaxWidth()) {
+                                IconButton({
+                                    showPopup = false
+                                    selectedProject = null
+                                }, Modifier.align(Alignment.CenterEnd).padding(5.dp)) {
+                                    Icon(FeatherIcons.X, "exit screen")
+                                }
+                            }
                         }
                     }
                 }
@@ -142,13 +170,10 @@ fun SearchScreen(theme: ColorScheme) {
 }
 
 context(LazyGridItemScope)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ProjectItem(project: ProjectResult, theme: ColorScheme) {
-    var openedDialog by remember { mutableStateOf(false) }
-
-    if (openedDialog) ProjectDialog(project, theme) { openedDialog = false }
-    ElevatedCard({ openedDialog = true }, modifier = Modifier.height(135.dp)) {
+        @OptIn(ExperimentalMaterial3Api::class)
+        @Composable
+fun ProjectItem(project: ProjectResult, onClick: () -> Unit) {
+    ElevatedCard(onClick, modifier = Modifier.height(135.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             KamelImage(
                 lazyPainterResource(data = Url(project.iconUrl ?: "https://cdn-raw.modrinth.com//placeholder.svg")),
@@ -191,16 +216,6 @@ fun ProjectItem(project: ProjectResult, theme: ColorScheme) {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ProjectDialog(projectResult: ProjectResult, theme: ColorScheme, onClose: () -> Unit) {
-    var opened by remember { mutableStateOf(true) }
-    val projectScope = rememberCoroutineScope()
-    var project: Project? = null
-    projectScope.launch {
-        project = connector.getProject(projectResult.projectID)
     }
 }
 
