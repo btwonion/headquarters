@@ -3,33 +3,43 @@ package dev.nyon.headquarters.gui.gui.screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import compose.icons.FeatherIcons
-import compose.icons.feathericons.Download
-import compose.icons.feathericons.DownloadCloud
-import compose.icons.feathericons.Heart
-import compose.icons.feathericons.X
+import compose.icons.feathericons.*
 import dev.nyon.headquarters.app.connector
+import dev.nyon.headquarters.connector.modrinth.models.project.Project
 import dev.nyon.headquarters.connector.modrinth.models.request.Facet
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
+import dev.nyon.headquarters.connector.modrinth.requests.getProject
 import dev.nyon.headquarters.connector.modrinth.requests.searchProjects
+import dev.nyon.headquarters.gui.util.distance
 import dev.nyon.headquarters.gui.util.toPrettyString
 import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
 import io.ktor.http.*
 import kotlinx.coroutines.*
+import kotlinx.datetime.Clock
+import java.awt.Desktop
+import java.net.URI
 import java.text.NumberFormat
 
 context(BoxScope)
@@ -153,8 +163,15 @@ fun SearchScreen(theme: ColorScheme) {
 
 
                 if (showPopup && selectedProject != null) {
+                    var project by remember { mutableStateOf<Project?>(null) }
+                    searchScope.launch {
+                        project = connector.getProject(selectedProject!!.slug)
+                    }
+
                     ElevatedCard(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp)) {
-                        Column {
+                        if (project == null) Box(Modifier.fillMaxSize()) {
+                            Text("Loading...", Modifier.align(Alignment.Center), fontSize = 20.sp)
+                        } else Column {
                             Box(Modifier.fillMaxWidth()) {
                                 IconButton({
                                     showPopup = false
@@ -165,7 +182,12 @@ fun SearchScreen(theme: ColorScheme) {
 
                                 Button({}, Modifier.align(Alignment.CenterStart).padding(5.dp)) {
                                     Icon(FeatherIcons.DownloadCloud, "install")
-                                    Text("Install", Modifier.padding(5.dp), fontWeight = FontWeight.Bold)
+                                    Text(
+                                        "Install",
+                                        Modifier.padding(5.dp),
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
                                 }
 
                                 Divider(Modifier.align(Alignment.BottomCenter).padding(start = 5.dp, end = 5.dp))
@@ -179,7 +201,7 @@ fun SearchScreen(theme: ColorScheme) {
                             }
 
                             Row {
-                                Column(Modifier.width(220.dp)) {
+                                Column(Modifier.width(210.dp)) {
                                     KamelImage(
                                         lazyPainterResource(
                                             data = Url(
@@ -194,23 +216,84 @@ fun SearchScreen(theme: ColorScheme) {
                                     )
 
                                     Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
-                                        Icon(FeatherIcons.Heart, "downloads", Modifier.padding(end = 5.dp))
-                                        Text(NumberFormat.getInstance().format(selectedProject!!.downloads))
+                                        Icon(FeatherIcons.Download, "downloads", Modifier.padding(end = 5.dp))
+                                        Text(
+                                            NumberFormat.getInstance().format(selectedProject!!.downloads)
+                                                .replace(",", ".")
+                                        )
                                     }
 
                                     Row(Modifier.padding(top = 5.dp, start = 10.dp)) {
-                                        Icon(FeatherIcons.Download, "follows", Modifier.padding(end = 5.dp))
-                                        Text(NumberFormat.getInstance().format(selectedProject!!.follows))
+                                        Icon(FeatherIcons.Heart, "follows", Modifier.padding(end = 5.dp))
+                                        Text(
+                                            NumberFormat.getInstance().format(selectedProject!!.follows)
+                                                .replace(",", ".")
+                                        )
+                                    }
+                                    Divider(Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp))
+
+                                    if (project?.sourceUrl != null) ProjectSpec(
+                                        FeatherIcons.Terminal, "Source Code", project!!.sourceUrl!!
+                                    )
+
+                                    if (project?.issuesUrl != null) ProjectSpec(
+                                        FeatherIcons.AlertTriangle, "Issue Tracker", project!!.issuesUrl!!
+                                    )
+
+                                    if (project?.discordUrl != null) ProjectSpec(
+                                        FeatherIcons.Share2, "Discord", project!!.discordUrl!!
+                                    )
+
+                                    if (project?.donationUrl != null) project?.donationUrl?.forEach {
+                                        ProjectSpec(FeatherIcons.Gift, it.platform, it.url)
                                     }
 
-                                    Box {
-                                        if (selectedProject?.categories != null) {
-                                            selectedProject!!.categories?.forEach {
-                                                ElevatedSuggestionChip({}, label = { Text(it) })
-                                            }
-                                        }
+                                    if (project?.wikiUrl != null) ProjectSpec(
+                                        FeatherIcons.BookOpen, "Wiki", project!!.wikiUrl!!
+                                    )
+                                    Divider(Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp))
+
+                                    Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
+                                        Icon(FeatherIcons.RefreshCw, "updated")
+                                        Spacer(Modifier.width(5.dp))
+                                        Text(
+                                            (project!!.updated - Clock.System.now()).distance(),
+                                            Modifier.align(Alignment.CenterVertically)
+                                        )
                                     }
+
+                                    Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
+                                        Icon(FeatherIcons.UploadCloud, "created")
+                                        Spacer(Modifier.width(5.dp))
+                                        Text(
+                                            (project!!.published - Clock.System.now()).distance(),
+                                            Modifier.align(Alignment.CenterVertically)
+                                        )
+                                    }
+                                    Divider(Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp))
+
+                                    Text(
+                                        "Project ID: ${project!!.id}",
+                                        Modifier.padding(top = 20.dp, start = 10.dp),
+                                        fontStyle = FontStyle.Italic
+                                    )
+                                    Text(
+                                        "Client Side: ${project!!.clientSide.name}",
+                                        Modifier.padding(top = 5.dp, start = 10.dp),
+                                        fontStyle = FontStyle.Italic
+                                    )
+                                    Text(
+                                        "Server Side: ${project!!.serverSide.name}",
+                                        Modifier.padding(top = 5.dp, start = 10.dp),
+                                        fontStyle = FontStyle.Italic
+                                    )
+                                    Text(
+                                        "License: ${project!!.license.id.uppercase()}",
+                                        Modifier.padding(top = 5.dp, start = 10.dp),
+                                        fontStyle = FontStyle.Italic
+                                    )
                                 }
+
                                 Column {
 
                                 }
@@ -218,6 +301,36 @@ fun SearchScreen(theme: ColorScheme) {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+context(ColumnScope)
+        @Composable
+        private fun ProjectSpec(icon: ImageVector, text: String, link: String) {
+    val annotatedLinkString = buildAnnotatedString {
+        append(text)
+
+        addStyle(
+            style = SpanStyle(
+                textDecoration = TextDecoration.Underline
+            ), start = 0, end = text.length
+        )
+
+        addStringAnnotation(
+            tag = "URL", annotation = link, 0, text.length
+        )
+    }
+
+    Row(Modifier.padding(start = 10.dp, top = 10.dp)) {
+        Icon(icon, text.lowercase().replace(" ", "_"))
+        Spacer(Modifier.width(5.dp))
+        ClickableText(
+            text = annotatedLinkString, modifier = Modifier.align(Alignment.CenterVertically)
+        ) {
+            annotatedLinkString.getStringAnnotations("URL", it, it).firstOrNull()?.let { stringAnnotation ->
+                Desktop.getDesktop().browse(URI(stringAnnotation.item))
             }
         }
     }
