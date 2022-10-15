@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
+import compose.icons.feathericons.DownloadCloud
 import compose.icons.feathericons.Heart
 import compose.icons.feathericons.X
 import dev.nyon.headquarters.app.connector
@@ -29,6 +30,7 @@ import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
 import io.ktor.http.*
 import kotlinx.coroutines.*
+import java.text.NumberFormat
 
 context(BoxScope)
         @OptIn(ExperimentalMaterial3Api::class)
@@ -150,7 +152,7 @@ fun SearchScreen(theme: ColorScheme) {
                 }
 
 
-                if (showPopup) {
+                if (showPopup && selectedProject != null) {
                     ElevatedCard(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp)) {
                         Column {
                             Box(Modifier.fillMaxWidth()) {
@@ -159,6 +161,58 @@ fun SearchScreen(theme: ColorScheme) {
                                     selectedProject = null
                                 }, Modifier.align(Alignment.CenterEnd).padding(5.dp)) {
                                     Icon(FeatherIcons.X, "exit screen")
+                                }
+
+                                Button({}, Modifier.align(Alignment.CenterStart).padding(5.dp)) {
+                                    Icon(FeatherIcons.DownloadCloud, "install")
+                                    Text("Install", Modifier.padding(5.dp), fontWeight = FontWeight.Bold)
+                                }
+
+                                Divider(Modifier.align(Alignment.BottomCenter).padding(start = 5.dp, end = 5.dp))
+
+                                Text(
+                                    selectedProject!!.title,
+                                    Modifier.align(Alignment.Center),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 20.sp
+                                )
+                            }
+
+                            Row {
+                                Column(Modifier.width(220.dp)) {
+                                    KamelImage(
+                                        lazyPainterResource(
+                                            data = Url(
+                                                selectedProject!!.iconUrl
+                                                    ?: "https://cdn-raw.modrinth.com//placeholder.svg"
+                                            )
+                                        ),
+                                        selectedProject!!.title,
+                                        modifier = Modifier.size(200.dp).padding(top = 20.dp, start = 10.dp)
+                                            .clip(RoundedCornerShape(8.dp)).aspectRatio(1f),
+                                        alignment = Alignment.Center
+                                    )
+
+                                    Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
+                                        Icon(FeatherIcons.Heart, "downloads", Modifier.padding(end = 5.dp))
+                                        Text(NumberFormat.getInstance().format(selectedProject!!.downloads))
+                                    }
+
+                                    Row(Modifier.padding(top = 5.dp, start = 10.dp)) {
+                                        Icon(FeatherIcons.Download, "follows", Modifier.padding(end = 5.dp))
+                                        Text(NumberFormat.getInstance().format(selectedProject!!.follows))
+                                    }
+
+                                    Box {
+                                        if (selectedProject?.categories != null) {
+                                            selectedProject!!.categories?.forEach {
+                                                ElevatedSuggestionChip({}, label = { Text(it) })
+                                            }
+                                        }
+                                    }
+                                }
+                                Column {
+
                                 }
                             }
                         }
