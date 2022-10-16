@@ -16,4 +16,5 @@ dependencies {
     @OptIn(ExperimentalComposeLibrary::class) implementation(compose.material3)
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:${BuildConstants.composeIconVersion}")
     implementation("com.alialbaali.kamel:kamel-image:${BuildConstants.kamelVersion}")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-jvm:${BuildConstants.markdownRendererVersion}")
 }
