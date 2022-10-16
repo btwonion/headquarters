@@ -37,6 +37,7 @@ import dev.nyon.headquarters.connector.modrinth.requests.getProject
 import dev.nyon.headquarters.connector.modrinth.requests.getVersion
 import dev.nyon.headquarters.connector.modrinth.requests.getVersions
 import dev.nyon.headquarters.connector.modrinth.requests.searchProjects
+import dev.nyon.headquarters.gui.util.color
 import dev.nyon.headquarters.gui.util.distance
 import dev.nyon.headquarters.gui.util.toPrettyString
 import io.kamel.image.KamelImage
@@ -502,8 +503,24 @@ context(BoxScope)
                                 verticalArrangement = Arrangement.spacedBy(15.dp)
                             ) {
                                 items(versions) {
-                                    Row {
-                                        Text
+                                    Card(Modifier.padding(5.dp)) {
+                                        Row {
+                                            Text(
+                                                it.versionType.name,
+                                                color = it.versionType.color,
+                                                modifier = Modifier.padding(5.dp)
+                                            )
+                                            Text(
+                                                it.name,
+                                                modifier = Modifier.padding(5.dp),
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Text(
+                                                (it.published - Clock.System.now()).distance(),
+                                                Modifier.align(Alignment.CenterVertically).padding(start = 10.dp)
+                                            )
+                                        }
+                                        Text(it.loaders.joinToString { it.name }, Modifier.padding(5.dp))
                                     }
                                 }
                             }
