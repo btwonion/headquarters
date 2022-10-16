@@ -10,17 +10,17 @@ fun Int.toPrettyString(): String {
 
 fun Duration.distance(): String = if (this.inWholeDays <= -365) "${
     (this.inWholeDays / 365).toInt().toString().removePrefix("-")
-} years ago"
+} year${if ((this.inWholeDays / 365) < -1) "s" else ""} ago"
 else if (this.inWholeDays <= -30) "${
     (this.inWholeDays / 30).toInt().toString().removePrefix("-")
-} months ago"
+} month${if ((this.inWholeDays / 30) < -1) "s" else ""} ago"
 else if (this.inWholeDays <= -1) "${
     this.inWholeDays.toString().removePrefix("-")
-} days ago"
+} day${if (this.inWholeDays < -1) "s" else ""} ago"
 else if (this.inWholeHours <= -1) "${
     this.inWholeHours.toString().removePrefix("-")
-} hours ago"
+} hour${if (this.inWholeHours < -1) "s" else ""} ago"
 else if (this.inWholeMinutes <= -1) "${
     this.inWholeMinutes.toString().removePrefix("-")
-} minutes ago"
-else "${this.inWholeSeconds.toString().removePrefix("-")} seconds ago"
+} minute${if (this.inWholeMinutes < -1) "s" else ""} ago"
+else "${this.inWholeSeconds.toString().removePrefix("-")} second${if (this.inWholeSeconds < -1) "s" else ""} ago"
