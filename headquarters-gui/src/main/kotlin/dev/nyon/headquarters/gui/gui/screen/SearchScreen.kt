@@ -1,7 +1,9 @@
 package dev.nyon.headquarters.gui.gui.screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Text
@@ -22,14 +24,18 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mikepenz.markdown.Markdown
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
 import dev.nyon.headquarters.app.connector
 import dev.nyon.headquarters.connector.modrinth.models.project.Project
+import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import dev.nyon.headquarters.connector.modrinth.models.request.Facet
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
 import dev.nyon.headquarters.connector.modrinth.requests.getProject
+import dev.nyon.headquarters.connector.modrinth.requests.getVersion
+import dev.nyon.headquarters.connector.modrinth.requests.getVersions
 import dev.nyon.headquarters.connector.modrinth.requests.searchProjects
 import dev.nyon.headquarters.gui.util.distance
 import dev.nyon.headquarters.gui.util.toPrettyString
@@ -163,142 +169,9 @@ fun SearchScreen(theme: ColorScheme) {
 
 
                 if (showPopup && selectedProject != null) {
-                    var project by remember { mutableStateOf<Project?>(null) }
-                    searchScope.launch {
-                        project = connector.getProject(selectedProject!!.slug)
-                    }
-
-                    ElevatedCard(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp)) {
-                        if (project == null) Box(Modifier.fillMaxSize()) {
-                            Text("Loading...", Modifier.align(Alignment.Center), fontSize = 20.sp)
-                        } else Column {
-                            Box(Modifier.fillMaxWidth()) {
-                                IconButton({
-                                    showPopup = false
-                                    selectedProject = null
-                                }, Modifier.align(Alignment.CenterEnd).padding(5.dp)) {
-                                    Icon(FeatherIcons.X, "exit screen")
-                                }
-
-                                Button({}, Modifier.align(Alignment.CenterStart).padding(5.dp)) {
-                                    Icon(FeatherIcons.DownloadCloud, "install")
-                                    Text(
-                                        "Install",
-                                        Modifier.padding(5.dp),
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                }
-
-                                Divider(Modifier.align(Alignment.BottomCenter).padding(start = 5.dp, end = 5.dp))
-
-                                Text(
-                                    selectedProject!!.title,
-                                    Modifier.align(Alignment.Center),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp
-                                )
-                            }
-
-                            Row {
-                                Column(Modifier.width(210.dp)) {
-                                    KamelImage(
-                                        lazyPainterResource(
-                                            data = Url(
-                                                selectedProject!!.iconUrl
-                                                    ?: "https://cdn-raw.modrinth.com//placeholder.svg"
-                                            )
-                                        ),
-                                        selectedProject!!.title,
-                                        modifier = Modifier.size(200.dp).padding(top = 20.dp, start = 10.dp)
-                                            .clip(RoundedCornerShape(8.dp)).aspectRatio(1f),
-                                        alignment = Alignment.Center
-                                    )
-
-                                    Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
-                                        Icon(FeatherIcons.Download, "downloads", Modifier.padding(end = 5.dp))
-                                        Text(
-                                            NumberFormat.getInstance().format(selectedProject!!.downloads)
-                                                .replace(",", ".")
-                                        )
-                                    }
-
-                                    Row(Modifier.padding(top = 5.dp, start = 10.dp)) {
-                                        Icon(FeatherIcons.Heart, "follows", Modifier.padding(end = 5.dp))
-                                        Text(
-                                            NumberFormat.getInstance().format(selectedProject!!.follows)
-                                                .replace(",", ".")
-                                        )
-                                    }
-                                    Divider(Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp))
-
-                                    if (project?.sourceUrl != null) ProjectSpec(
-                                        FeatherIcons.Terminal, "Source Code", project!!.sourceUrl!!
-                                    )
-
-                                    if (project?.issuesUrl != null) ProjectSpec(
-                                        FeatherIcons.AlertTriangle, "Issue Tracker", project!!.issuesUrl!!
-                                    )
-
-                                    if (project?.discordUrl != null) ProjectSpec(
-                                        FeatherIcons.Share2, "Discord", project!!.discordUrl!!
-                                    )
-
-                                    if (project?.donationUrl != null) project?.donationUrl?.forEach {
-                                        ProjectSpec(FeatherIcons.Gift, it.platform, it.url)
-                                    }
-
-                                    if (project?.wikiUrl != null) ProjectSpec(
-                                        FeatherIcons.BookOpen, "Wiki", project!!.wikiUrl!!
-                                    )
-                                    Divider(Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp))
-
-                                    Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
-                                        Icon(FeatherIcons.RefreshCw, "updated")
-                                        Spacer(Modifier.width(5.dp))
-                                        Text(
-                                            (project!!.updated - Clock.System.now()).distance(),
-                                            Modifier.align(Alignment.CenterVertically)
-                                        )
-                                    }
-
-                                    Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
-                                        Icon(FeatherIcons.UploadCloud, "created")
-                                        Spacer(Modifier.width(5.dp))
-                                        Text(
-                                            (project!!.published - Clock.System.now()).distance(),
-                                            Modifier.align(Alignment.CenterVertically)
-                                        )
-                                    }
-                                    Divider(Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp))
-
-                                    Text(
-                                        "Project ID: ${project!!.id}",
-                                        Modifier.padding(top = 20.dp, start = 10.dp),
-                                        fontStyle = FontStyle.Italic
-                                    )
-                                    Text(
-                                        "Client Side: ${project!!.clientSide.name}",
-                                        Modifier.padding(top = 5.dp, start = 10.dp),
-                                        fontStyle = FontStyle.Italic
-                                    )
-                                    Text(
-                                        "Server Side: ${project!!.serverSide.name}",
-                                        Modifier.padding(top = 5.dp, start = 10.dp),
-                                        fontStyle = FontStyle.Italic
-                                    )
-                                    Text(
-                                        "License: ${project!!.license.id.uppercase()}",
-                                        Modifier.padding(top = 5.dp, start = 10.dp),
-                                        fontStyle = FontStyle.Italic
-                                    )
-                                }
-
-                                Column {
-
-                                }
-                            }
-                        }
+                    ProjectPage(selectedProject, searchScope) {
+                        showPopup = false
+                        selectedProject = null
                     }
                 }
             }
@@ -400,4 +273,248 @@ private fun LazyGridLayoutInfo.onReachEnd(buffer: Int = 5, onReachEnd: suspend (
     LaunchedEffect(hasReachedEnd) {
         if (hasReachedEnd.first) onReachEnd(totalItemsCount)
     }
+}
+
+
+context(BoxScope)
+        @OptIn(ExperimentalMaterial3Api::class)
+        @Composable
+        private fun ProjectPage(selectedProject: ProjectResult?, searchScope: CoroutineScope, onClose: () -> Unit) {
+    var project by remember { mutableStateOf<Project?>(null) }
+    var latestVersion by remember { mutableStateOf<Version?>(null) }
+    searchScope.launch {
+        project = connector.getProject(selectedProject!!.slug)
+        latestVersion = connector.getVersion(project!!.versions.last())
+    }
+
+    ElevatedCard(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp)) {
+        if (project == null || latestVersion == null) Box(Modifier.fillMaxSize()) {
+            Text("Loading...", Modifier.align(Alignment.Center), fontSize = 20.sp)
+        } else Column {
+            Box(Modifier.fillMaxWidth()) {
+                IconButton({
+                    onClose()
+                }, Modifier.align(Alignment.CenterEnd).padding(5.dp)) {
+                    Icon(FeatherIcons.X, "exit screen")
+                }
+
+                Button({}, Modifier.align(Alignment.CenterStart).padding(5.dp)) {
+                    Icon(FeatherIcons.DownloadCloud, "install")
+                    Text(
+                        "Install", Modifier.padding(5.dp), fontWeight = FontWeight.Bold, color = Color.White
+                    )
+                }
+
+                Divider(Modifier.align(Alignment.BottomCenter).padding(start = 5.dp, end = 5.dp))
+
+                Text(
+                    selectedProject!!.title,
+                    Modifier.align(Alignment.Center),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+            }
+
+            Row {
+                Column(Modifier.width(210.dp)) {
+                    KamelImage(
+                        lazyPainterResource(
+                            data = Url(
+                                selectedProject!!.iconUrl ?: "https://cdn-raw.modrinth.com//placeholder.svg"
+                            )
+                        ),
+                        selectedProject.title,
+                        modifier = Modifier.size(200.dp).padding(top = 20.dp, start = 10.dp)
+                            .clip(RoundedCornerShape(8.dp)).aspectRatio(1f),
+                        alignment = Alignment.Center
+                    )
+
+                    Text(
+                        project!!.description, modifier = Modifier.padding(10.dp).padding(bottom = 0.dp)
+                    )
+                    Divider(Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp))
+
+                    Row {
+                        Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
+                            Icon(FeatherIcons.Download, "downloads", Modifier.padding(end = 5.dp))
+                            Text(
+                                NumberFormat.getInstance().format(selectedProject.downloads).replace(",", ".")
+                            )
+                        }
+
+                        Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
+                            Icon(FeatherIcons.Heart, "follows", Modifier.padding(end = 5.dp))
+                            Text(
+                                NumberFormat.getInstance().format(selectedProject.follows).replace(",", ".")
+                            )
+                        }
+                    }
+                    Divider(Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp))
+
+                    if (project?.sourceUrl != null) ProjectSpec(
+                        FeatherIcons.Terminal, "Source Code", project!!.sourceUrl!!
+                    )
+
+                    if (project?.issuesUrl != null) ProjectSpec(
+                        FeatherIcons.AlertTriangle, "Issue Tracker", project!!.issuesUrl!!
+                    )
+
+                    if (project?.discordUrl != null) ProjectSpec(
+                        FeatherIcons.Share2, "Discord", project!!.discordUrl!!
+                    )
+
+                    if (project?.donationUrl != null) project?.donationUrl?.forEach {
+                        ProjectSpec(FeatherIcons.Gift, it.platform, it.url)
+                    }
+
+                    if (project?.wikiUrl != null) ProjectSpec(
+                        FeatherIcons.BookOpen, "Wiki", project!!.wikiUrl!!
+                    )
+                    Divider(Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp))
+
+                    Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
+                        Icon(FeatherIcons.RefreshCw, "updated")
+                        Spacer(Modifier.width(5.dp))
+                        Text(
+                            (project!!.updated - Clock.System.now()).distance(),
+                            Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+
+                    Row(Modifier.padding(top = 20.dp, start = 10.dp)) {
+                        Icon(FeatherIcons.UploadCloud, "created")
+                        Spacer(Modifier.width(5.dp))
+                        Text(
+                            (project!!.published - Clock.System.now()).distance(),
+                            Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+                    Divider(Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp))
+
+                    Text(
+                        "Project ID: ${project!!.id}",
+                        Modifier.padding(top = 20.dp, start = 10.dp),
+                        fontStyle = FontStyle.Italic
+                    )
+                    Text(
+                        "Client Side: ${project!!.clientSide.name}",
+                        Modifier.padding(top = 5.dp, start = 10.dp),
+                        fontStyle = FontStyle.Italic
+                    )
+                    Text(
+                        "Server Side: ${project!!.serverSide.name}",
+                        Modifier.padding(top = 5.dp, start = 10.dp),
+                        fontStyle = FontStyle.Italic
+                    )
+                    Text(
+                        "License: ${project!!.license.id.uppercase()}",
+                        Modifier.padding(top = 5.dp, start = 10.dp),
+                        fontStyle = FontStyle.Italic
+                    )
+                    Text(
+                        "Loaders: ${latestVersion!!.loaders.joinToString { it.name }}",
+                        Modifier.padding(top = 5.dp, start = 10.dp),
+                        fontStyle = FontStyle.Italic
+                    )
+                }
+
+                Column(Modifier.fillMaxSize()) {
+                    var currentPage by remember { mutableStateOf(ProjectViewScreen.Overview) }
+
+                    Row(Modifier.fillMaxWidth().padding(end = 210.dp), horizontalArrangement = Arrangement.Center) {
+                        ProjectViewScreen.values().forEach {
+                            if (it == ProjectViewScreen.Gallery && project!!.gallery.isEmpty()) return@forEach
+                            FilledTonalButton(
+                                { currentPage = it },
+                                enabled = currentPage != it,
+                                modifier = Modifier.padding(end = 5.dp)
+                            ) {
+                                Text(it.name)
+                            }
+                        }
+                    }
+                    Divider(Modifier.fillMaxWidth().padding(end = 80.dp, start = 70.dp))
+
+                    when (currentPage) {
+                        ProjectViewScreen.Overview -> {
+                            LazyColumn(Modifier.fillMaxSize()) {
+                                item {
+                                    Text(
+                                        project!!.title,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(top = 5.dp)
+                                    )
+                                    Text(
+                                        "by ${selectedProject!!.author}",
+                                        fontSize = 16.sp,
+                                        modifier = Modifier.padding(top = 5.dp)
+                                    )
+                                }
+
+                                item {
+                                    Spacer(Modifier.height(50.dp))
+                                    Markdown(project!!.body)
+                                }
+                            }
+                        }
+
+                        ProjectViewScreen.Gallery -> {
+                            LazyColumn(Modifier.fillMaxSize()) {
+                                items(project!!.gallery) {
+                                    Column(Modifier.padding(top = 10.dp, bottom = 10.dp)) {
+                                        KamelImage(
+                                            lazyPainterResource(Url(it.url)),
+                                            it.title,
+                                            Modifier.align(Alignment.Start).width(800.dp)
+                                        )
+                                        if (it.title != null) Text(
+                                            it.title!!, fontSize = 16.sp, textDecoration = TextDecoration.Underline
+                                        )
+                                        if (it.description != null) Text(it.description!!, fontSize = 14.sp)
+                                    }
+                                }
+                            }
+                        }
+
+                        ProjectViewScreen.Versions -> {
+                            val gridState = rememberLazyGridState()
+                            val versions = remember { mutableStateListOf<Version>() }
+
+                            gridState.onReachEnd(3) {
+                                if (project!!.versions.size == versions.size) return@onReachEnd
+                                searchScope.launch {
+                                    val result =
+                                        connector.getVersions((project!!.versions.takeLast(versions.size + 5) as ArrayList).also { list ->
+                                            list.removeIf { s ->
+                                                versions.map { it.id }.contains(s)
+                                            }
+                                        })
+                                    versions.addAll(result!!)
+                                }
+                            }
+
+                            LazyVerticalGrid(
+                                state = gridState,
+                                columns = GridCells.Adaptive(800.dp),
+                                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                                verticalArrangement = Arrangement.spacedBy(15.dp)
+                            ) {
+                                items(versions) {
+                                    Row {
+                                        Text
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private enum class ProjectViewScreen {
+    Overview, Gallery, Versions
 }
