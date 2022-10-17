@@ -481,18 +481,8 @@ context(BoxScope)
                         ProjectViewScreen.Versions -> {
                             val gridState = rememberLazyGridState()
                             val versions = remember { mutableStateListOf<Version>() }
-
-                            gridState.onReachEnd(3) {
-                                if (project!!.versions.size == versions.size) return@onReachEnd
-                                searchScope.launch {
-                                    val result =
-                                        connector.getVersions((project!!.versions.takeLast(versions.size + 5) as ArrayList).also { list ->
-                                            list.removeIf { s ->
-                                                versions.map { it.id }.contains(s)
-                                            }
-                                        })
-                                    versions.addAll(result!!)
-                                }
+                            searchScope.launch {
+                                versions.addAll(connector.getVersions(project!!.versions)!!.reversed())
                             }
 
                             LazyVerticalGrid(
@@ -511,7 +501,7 @@ context(BoxScope)
                                                 modifier = Modifier.padding(5.dp)
                                             )
                                             Text(
-                                                it.name,
+                                                "${it.name}  - ${it.id}",
                                                 modifier = Modifier.padding(5.dp),
                                                 fontWeight = FontWeight.Bold
                                             )
@@ -520,7 +510,13 @@ context(BoxScope)
                                                 Modifier.align(Alignment.CenterVertically).padding(start = 10.dp)
                                             )
                                         }
-                                        Text(it.loaders.joinToString { it.name }, Modifier.padding(5.dp))
+                                        Text(
+                                            "${it.loaders.joinToString { it.name }} - ${it.gameVersions.joinToString()}",
+                                            Modifier.padding(5.dp)
+                                        )
+                                        if (it.changelog != null) Markdown(
+                                            it.changelog!!, modifier = Modifier.padding(5.dp).padding(top = 10.dp)
+                                        )
                                     }
                                 }
                             }
