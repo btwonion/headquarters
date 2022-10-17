@@ -494,28 +494,46 @@ context(BoxScope)
                             ) {
                                 items(versions) {
                                     Card(Modifier.padding(5.dp)) {
-                                        Row {
+                                        Row(Modifier.fillMaxWidth()) {
                                             Text(
                                                 it.versionType.name,
                                                 color = it.versionType.color,
-                                                modifier = Modifier.padding(5.dp)
+                                                modifier = Modifier.padding(start = 5.dp).align(Alignment.CenterVertically),
+                                                fontSize = 18.sp
                                             )
                                             Text(
-                                                "${it.name}  - ${it.id}",
-                                                modifier = Modifier.padding(5.dp),
-                                                fontWeight = FontWeight.Bold
+                                                it.name,
+                                                modifier = Modifier.padding(start = 10.dp).align(Alignment.CenterVertically),
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 18.sp
                                             )
                                             Text(
                                                 (it.published - Clock.System.now()).distance(),
-                                                Modifier.align(Alignment.CenterVertically).padding(start = 10.dp)
+                                                Modifier.align(Alignment.CenterVertically).padding(start = 10.dp),
+                                                fontSize = 18.sp
                                             )
+                                            Text(
+                                                it.id,
+                                                Modifier.padding(start = 15.dp).align(Alignment.CenterVertically),
+                                                fontSize = 18.sp,
+                                                fontStyle = FontStyle.Italic
+                                            )
+                                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                                                Button({}, Modifier.padding(5.dp)) {
+                                                    Icon(FeatherIcons.DownloadCloud, "install")
+                                                    Text(
+                                                        "Install", Modifier.padding(5.dp), fontWeight = FontWeight.Bold, color = Color.White
+                                                    )
+                                                }
+                                            }
                                         }
                                         Text(
                                             "${it.loaders.joinToString { it.name }} - ${it.gameVersions.joinToString()}",
-                                            Modifier.padding(5.dp)
+                                            Modifier.padding(start = 5.dp),
+                                            fontSize = 16.sp
                                         )
                                         if (it.changelog != null) Markdown(
-                                            it.changelog!!, modifier = Modifier.padding(5.dp).padding(top = 10.dp)
+                                            it.changelog!!, modifier = Modifier.padding(5.dp).padding(top = 20.dp)
                                         )
                                     }
                                 }
