@@ -19,7 +19,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.writeBytes
 
 val testModProfile = Profile.ModProfile(
-    "1.19.2", Loader.Fabric, listOf(), listOf(), listOf(ProjectEntry("lg17V3i3", "qak00xay")), "sadawa"
+    "1.19.2", Loader.Fabric, listOf(), listOf(), listOf(ProjectEntry("lg17V3i3", "qak00xay", true)), "sadawa"
 )
 
 suspend fun createProfile(profile: LocalProfile) {
