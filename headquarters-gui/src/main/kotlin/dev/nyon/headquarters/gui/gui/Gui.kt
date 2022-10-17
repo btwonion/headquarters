@@ -136,7 +136,11 @@ fun initGui() {
                         Modifier.fillMaxHeight().background(theme.surfaceVariant),
                         verticalArrangement = Arrangement.Bottom
                     ) {
-                        IconButton({}, Modifier.padding(5.dp)) {
+                        IconButton({ screen = Screen.Launch }, Modifier.padding(5.dp)) {
+                            Icon(FeatherIcons.Play, "launch")
+                        }
+
+                        IconButton({ screen = Screen.Discover }, Modifier.padding(5.dp)) {
                             Icon(FeatherIcons.Compass, "discover")
                         }
 
@@ -144,7 +148,7 @@ fun initGui() {
                             Icon(FeatherIcons.Search, "search")
                         }
 
-                        IconButton({}, Modifier.padding(5.dp)) {
+                        IconButton({ screen = Screen.Mods }, Modifier.padding(5.dp)) {
                             Icon(FeatherIcons.Archive, "mods")
                         }
 
