@@ -7,13 +7,13 @@ object BuildConstants {
     const val coroutinesVersion = "1.6.4"
     const val ktorVersion = "2.1.2"
 
-    const val mordantVersion = "2.0.0-beta7"
-    const val cliktVersion = "3.5.0"
+    const val mordantVersion = "2.0.0-beta8"
+    const val cliktVersion = "4.0.0.198-SNAPSHOT"
 
     const val kmongoVersion = "4.7.1"
-    const val realmVersion = "1.3.0"
+    const val realmVersion = "1.4.0"
 
-    const val connectorVersion = "1.2.1"
+    const val connectorVersion = "1.4.0"
 
     const val composeIconVersion = "1.0.0"
     const val kamelVersion = "0.4.1"
