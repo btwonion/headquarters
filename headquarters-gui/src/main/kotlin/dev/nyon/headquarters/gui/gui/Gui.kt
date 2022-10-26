@@ -20,6 +20,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
+import dev.nyon.headquarters.app.profile.local.createProfile
 import dev.nyon.headquarters.app.profile.local.realm
 import dev.nyon.headquarters.app.profile.models.LocalProfile
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
@@ -37,9 +38,7 @@ fun initGui() {
             mutableStateOf(realm.query<LocalProfile>().find().getOrNull(0) ?: kotlin.run {
                 val newProfile = LocalProfile("default", "abcedf", "")
                 CoroutineScope(Dispatchers.Default).launch {
-                    realm.write {
-                        copyToRealm(newProfile)
-                    }
+                    createProfile(newProfile)
                 }
                 newProfile
             })
