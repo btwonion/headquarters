@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.mikepenz.markdown.Markdown
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
-import dev.nyon.headquarters.app.connector
+import dev.nyon.headquarters.app.modrinthConnector
 import dev.nyon.headquarters.connector.modrinth.models.project.Project
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import dev.nyon.headquarters.connector.modrinth.models.request.Facet
@@ -43,6 +43,7 @@ import dev.nyon.headquarters.gui.util.toPrettyString
 import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
 import io.ktor.http.*
+import io.ktor.http.content.*
 import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 import java.awt.Desktop
@@ -76,7 +77,7 @@ fun SearchScreen(theme: ColorScheme) {
                 if (currentInput != term) return@launch
             }
 
-            val result = connector.searchProjects(term, limit = 25, facets = listOf(Facet.Categories(listOf("fabric"))))
+            val result = modrinthConnector.searchProjects(term, limit = 25, facets = listOf(Facet.Categories(listOf("fabric"))))
             searchResponse = result
             if (result is SearchResult.SearchResultSuccess) {
                 currentItems.clear()
@@ -87,7 +88,7 @@ fun SearchScreen(theme: ColorScheme) {
     }
 
     gridState.onReachEnd {
-        val result = connector.searchProjects(currentInput, offset = it, limit = 20)
+        val result = modrinthConnector.searchProjects(currentInput, offset = it, limit = 20)
         if (result is SearchResult.SearchResultSuccess) currentItems.addAll(result.hits)
         searchResponse = result
     }
@@ -284,8 +285,8 @@ context(BoxScope)
     var project by remember { mutableStateOf<Project?>(null) }
     var latestVersion by remember { mutableStateOf<Version?>(null) }
     searchScope.launch {
-        project = connector.getProject(selectedProject!!.slug)
-        latestVersion = connector.getVersion(project!!.versions.last())
+        project = modrinthConnector.getProject(selectedProject!!.slug)
+        latestVersion = modrinthConnector.getVersion(project!!.versions.last())
     }
 
     ElevatedCard(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp)) {
@@ -482,7 +483,7 @@ context(BoxScope)
                             val gridState = rememberLazyGridState()
                             val versions = remember { mutableStateListOf<Version>() }
                             searchScope.launch {
-                                versions.addAll(connector.getVersions(project!!.versions)!!.reversed())
+                                versions.addAll(modrinthConnector.getVersions(project!!.versions)!!.reversed())
                             }
 
                             LazyVerticalGrid(
