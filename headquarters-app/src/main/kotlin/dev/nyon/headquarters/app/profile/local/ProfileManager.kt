@@ -25,7 +25,7 @@ val testModProfile = Profile.ModProfile(
     MinecraftVersion(
         "1.19.2",
         MinecraftVersionType.Release,
-        "https://piston-meta.moja…ded3a321e22a/1.19.2.json",
+        "https://piston-meta.mojang.com/v1/packages/678862600e99991a2bf1d434af69ded3a321e22a/1.19.2.json",
         Instant.parse("2022-09-13T14:29:56+00:00"),
         Instant.parse("2022-09-13T14:29:56+00:00"),
         "678862600e99991a2bf1d434af69ded3a321e22a",
