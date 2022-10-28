@@ -18,14 +18,14 @@ dependencies {
 tasks {
     withType<JavaCompile> {
         options.apply {
-            release.set(18)
+            release.set(17)
             encoding = "UTF-8"
         }
     }
 
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "18"
+            jvmTarget = "1.8"
             freeCompilerArgs += "-Xcontext-receivers"
         }
     }

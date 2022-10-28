@@ -1,5 +1,6 @@
 object BuildConstants {
     const val projectName = "headquarters"
+    const val version = "1.0.0"
     val authors = listOf("btwonion", "fuer_den_flex")
     const val githubRepo = "btwonion/headquarters"
     const val serializationVersion = "1.4.1"
