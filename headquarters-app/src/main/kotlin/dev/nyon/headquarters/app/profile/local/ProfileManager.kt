@@ -10,16 +10,27 @@ import dev.nyon.headquarters.connector.fabric.requests.getLoaderVersions
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import dev.nyon.headquarters.connector.modrinth.requests.getVersions
+import dev.nyon.headquarters.connector.mojang.models.MinecraftVersion
+import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.mojang.models.`package`.Os
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.writeBytes
 
 val testModProfile = Profile.ModProfile(
-    "1.19.2", Loader.Fabric, listOf(), listOf(), listOf(ProjectEntry("lg17V3i3", "qak00xay", true)), "sadawa"
+    MinecraftVersion(
+        "1.19.2",
+        MinecraftVersionType.Release,
+        "https://piston-meta.moja…ded3a321e22a/1.19.2.json",
+        Instant.parse("2022-09-13T14:29:56+00:00"),
+        Instant.parse("2022-09-13T14:29:56+00:00"),
+        "678862600e99991a2bf1d434af69ded3a321e22a",
+        1
+    ), Loader.Fabric, listOf(), listOf(), listOf(ProjectEntry("lg17V3i3", "qak00xay", true)), "sadawa"
 )
 val testResourcePackProfile =
     Profile.ResourcePackProfile("1.19.2", listOf(ProjectEntry("w0TnApzs", "flpvzFNA", true)), "asdaw")
@@ -34,6 +45,7 @@ suspend fun createProfile(profile: LocalProfile) {
     val configDir = profileDir.resolve("config/").createDirectories()
     val modsDir = profileDir.resolve("mods/").createDirectories()
     val resourcePackDir = profileDir.resolve("resourcepacks/").createDirectories()
+    profileDir.resolve("assets/").createDirectories()
 
     profile.downloadLauncherLibraries(librariesDir)
     profile.downloadMojangLibraries(librariesDir)
@@ -52,8 +64,8 @@ private suspend fun Path.downloadProjects(projects: List<Version>) {
 }
 
 private suspend fun LocalProfile.downloadMojangLibraries(libariesPath: Path) {
-    val meta = mojangConnector.getVersionPackage(testModProfile.gameVersion)
-        ?: error("cannot find version package of ${testModProfile.gameVersion}")
+    val meta = mojangConnector.getVersionPackage(testModProfile.id)
+        ?: error("cannot find version package of ${testModProfile.id}")
     val libraries =
         meta.libraries.filter { it.rules == null || it.rules!!.all { rule -> rule.os == null } || it.rules!!.any { rule -> rule.os!!.name == Os.Linux } }
     libraries.forEach {
@@ -66,7 +78,7 @@ private suspend fun LocalProfile.downloadMojangLibraries(libariesPath: Path) {
 private suspend fun LocalProfile.downloadLauncherLibraries(librariesPath: Path) {
     if (testModProfile.loader == Loader.Fabric) {
         val loaderVersion = fabricConnector.getLoaderOfGameAndLoaderVersion(
-            testModProfile.gameVersion, fabricConnector.getLoaderVersions()!![0].version
+            testModProfile.id, fabricConnector.getLoaderVersions()!![0].version
         ) ?: error("loader cannot be found")
         (loaderVersion.launcherMeta as LauncherMeta).libraries.common.forEach { artifact ->
             val split = artifact.name.split(":")
@@ -85,10 +97,11 @@ private suspend fun LocalProfile.downloadProjects(modsPath: Path, resourcePackPa
         modsPath.downloadProjects(it)
     }
 
-    modrinthConnector.getVersions(testResourcePackProfile.resourcePacks.filter { it.enabled }.map { it.versionID }).let {
-        if (it == null) return@let
-        resourcePackPath.downloadProjects(it)
-    }
+    modrinthConnector.getVersions(testResourcePackProfile.resourcePacks.filter { it.enabled }.map { it.versionID })
+        .let {
+            if (it == null) return@let
+            resourcePackPath.downloadProjects(it)
+        }
 }
 
 private suspend fun LocalProfile.writeConfigs(configPath: Path) {

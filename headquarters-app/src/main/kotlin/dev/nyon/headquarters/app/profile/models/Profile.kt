@@ -1,6 +1,7 @@
 package dev.nyon.headquarters.app.profile.models
 
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
+import dev.nyon.headquarters.connector.mojang.models.MinecraftVersion
 import io.realm.kotlin.types.RealmObject
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,7 @@ import kotlinx.serialization.Serializable
 sealed interface Profile {
     @Serializable
     data class ModProfile(
-        val gameVersion: String,
+        val version: MinecraftVersion,
         val loader: Loader,
         val jvmArgs: List<String>,
         val configs: List<Config>,
