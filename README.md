@@ -12,9 +12,7 @@ Currently under heavy development
 - [x] search page
 - [ ] GitHub OAuth
 
-## 💸 Support
+### Other
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I3I8F1WX4)
 
-<a href="https://www.buymeacoffee.com/btwonion" target="_blank">
-<img src="https://cdn.discordapp.com/attachments/1004824126973808763/1006253418303721575/Screenshot_2022-08-08_at_19-30-39_Dashboard_Buy_Me_a_Coffee.png" alt="Buy Me A Pizza" height="50px" width="207px">
-</a>
-
+If you need help with any of my mods just join my [discord server](https://nyon.dev/discord)
