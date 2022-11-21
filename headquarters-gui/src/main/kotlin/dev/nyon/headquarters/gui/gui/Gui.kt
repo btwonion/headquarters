@@ -3,9 +3,9 @@ package dev.nyon.headquarters.gui.gui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,11 +78,10 @@ fun initGui() {
                             var opened by remember { mutableStateOf(false) }
                             ExtendedFloatingActionButton(
                                 { Text(profile.name) },
+                                { Icon(FeatherIcons.Package, "game profile") },
                                 { opened = true },
                                 Modifier.padding(5.dp),
-                                icon = { Icon(FeatherIcons.Package, "game profile") },
-                                contentColor = theme.primaryContainer,
-                                backgroundColor = theme.onPrimaryContainer
+                                contentColor = theme.primaryContainer
                             )
 
                             DropdownMenu(
