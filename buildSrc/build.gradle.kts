@@ -19,7 +19,7 @@ dependencies {
     compileOnly(pluginDep("org.jetbrains.kotlin.plugin.serialization", embeddedKotlinVersion))
     runtimeOnly(pluginDep("org.jetbrains.kotlin.plugin.serialization", kotlinVersion))
 
-    implementation(pluginDep("org.jetbrains.compose", "1.3.0-alpha01-dev831"))
+    implementation(pluginDep("org.jetbrains.compose", "1.3.0-beta03"))
 
-    implementation(pluginDep("io.realm.kotlin", "1.4.0"))
+    implementation(pluginDep("io.realm.kotlin", "1.5.0"))
 }
