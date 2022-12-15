@@ -25,8 +25,8 @@ tasks {
 
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "1.8"
-            freeCompilerArgs += "-Xcontext-receivers"
+            jvmTarget = "17"
+            freeCompilerArgs += listOf("-Xcontext-receivers", "-opt-in=kotlin.RequiresOptIn")
         }
     }
 }
