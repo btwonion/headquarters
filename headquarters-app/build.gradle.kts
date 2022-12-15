@@ -10,6 +10,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":headquarters-api"))
+
     val kotestVersion = "5.5.4"
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")

@@ -1,9 +1,11 @@
-package dev.nyon.headquarters.app.profile.local
+package dev.nyon.headquarters.app.profile
 
+import dev.nyon.headquarters.api.Profile
+import dev.nyon.headquarters.api.ProjectEntry
+import dev.nyon.headquarters.api.Visibility
+import dev.nyon.headquarters.api.mods
 import dev.nyon.headquarters.app.*
-import dev.nyon.headquarters.app.profile.models.LocalProfile
-import dev.nyon.headquarters.app.profile.models.Profile
-import dev.nyon.headquarters.app.profile.models.ProjectEntry
+import dev.nyon.headquarters.app.util.downloadFile
 import dev.nyon.headquarters.connector.fabric.models.LauncherMeta
 import dev.nyon.headquarters.connector.fabric.requests.getLoaderOfGameAndLoaderVersion
 import dev.nyon.headquarters.connector.fabric.requests.getLoaderVersions
@@ -22,16 +24,29 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.writeBytes
 
 val testModProfile = Profile.ModProfile(
+    "sadawa",
+    "btwonion",
     MinecraftVersion(
-        "1.19.2",
+        "1.19.3",
         MinecraftVersionType.Release,
-        "https://piston-meta.mojang.com/v1/packages/678862600e99991a2bf1d434af69ded3a321e22a/1.19.2.json",
+        "https://piston-meta.mojang.com/v1/packages/6607feafdb2f96baad9314f207277730421a8e76/1.19.3.json",
         Instant.parse("2022-09-13T14:29:56+00:00"),
         Instant.parse("2022-09-13T14:29:56+00:00"),
-        "678862600e99991a2bf1d434af69ded3a321e22a",
+        "6607feafdb2f96baad9314f207277730421a8e76",
         1
-    ), Loader.Fabric, listOf(), listOf(), listOf(ProjectEntry("lg17V3i3", "qak00xay", true)), "sadawa"
+    ),
+    Loader.Fabric,
+    listOf(),
+    listOf(),
+    listOf(ProjectEntry("lg17V3i3", "7dVSeEw5", true)),
+    listOf(),
+    0,
+    0,
+    listOf(),
+    Visibility.Discoverable,
+    "test"
 )
+
 val testResourcePackProfile =
     Profile.ResourcePackProfile("1.19.2", listOf(ProjectEntry("w0TnApzs", "flpvzFNA", true)), "asdaw")
 

@@ -1,13 +1,13 @@
-package dev.nyon.headquarters.app.profile.local
+package dev.nyon.headquarters.app.launcher
 
 import dev.nyon.headquarters.app.mojangConnector
-import dev.nyon.headquarters.app.profile.models.LocalProfile
+import dev.nyon.headquarters.app.profile.LocalProfile
+import dev.nyon.headquarters.app.profile.realm
+import dev.nyon.headquarters.app.profile.testModProfile
 import dev.nyon.headquarters.app.runningDir
-import dev.nyon.headquarters.connector.modrinth.models.request.getEnumFieldAnnotation
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerialName
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.listDirectoryEntries
 
@@ -17,7 +17,8 @@ suspend fun main() {
 
 suspend fun LocalProfile.launch() {
     val profileDir = runningDir.resolve("profiles/${this.name}/")
-    val pkg = mojangConnector.getVersionPackage(testModProfile.version.id) ?: error("cannot find needed version package")
+    val pkg = mojangConnector.getVersionPackage(testModProfile.minecraftVersion.id)
+        ?: error("cannot find needed version package")
     val startArgs = buildList<String> {
         add("java")
         add("-Xss1M")
@@ -42,7 +43,6 @@ suspend fun LocalProfile.launch() {
         add("--userType")
         add("msa")
         add("--versionType")
-        add(pkg.type.getEnumFieldAnnotation<SerialName>()!!.value)
     }
 
     withContext(Dispatchers.IO) {

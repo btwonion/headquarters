@@ -20,8 +20,8 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
-import dev.nyon.headquarters.app.profile.local.createProfile
-import dev.nyon.headquarters.app.profile.local.realm
+import dev.nyon.headquarters.app.profile.createProfile
+import dev.nyon.headquarters.app.profile.realm
 import dev.nyon.headquarters.app.profile.models.LocalProfile
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
