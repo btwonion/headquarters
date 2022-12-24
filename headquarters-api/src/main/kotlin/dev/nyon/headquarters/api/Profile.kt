@@ -7,28 +7,43 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface Profile {
+    var id: String
+    var visibility: Visibility
+    var name: String
+    var followers: Int
+    var downloads: Int
+    var owner: String
+
+    @SerialName("minecraft_version")
+    var minecraftVersion: MinecraftVersion
+
     @Serializable
     data class ModProfile(
-        var id: String,
-        var owner: String,
-        @SerialName("minecraft_version") var minecraftVersion: MinecraftVersion,
+        override var id: String,
+        override var owner: String,
+        override var minecraftVersion: MinecraftVersion,
+        override var followers: Int,
+        override var downloads: Int,
+        override var visibility: Visibility,
+        override var name: String,
+        var categories: List<Category>,
         var loader: Loader,
         @SerialName("jvm_args") var jvmArgs: List<String>,
         var configs: List<Config>,
         @SerialName("extra_mods") var extraMods: List<ProjectEntry>,
-        var templates: List<ModProfile>,
-        var followers: Int,
-        var downloads: Int,
-        var categories: List<Category>,
-        var visibility: Visibility,
-        var name: String
+        var templates: List<ModProfile>
     ) : Profile
 
     @Serializable
     data class ResourcePackProfile(
-        @SerialName("game_version") var gameVersion: String,
-        @SerialName("resource_packs") var resourcePacks: List<ProjectEntry>,
-        var id: String
+        override var minecraftVersion: MinecraftVersion,
+        override var id: String,
+        override var visibility: Visibility,
+        override var name: String,
+        override var downloads: Int,
+        override var followers: Int,
+        override var owner: String,
+        @SerialName("resource_packs") var resourcePacks: List<ProjectEntry>
     ) : Profile
 }
 
