@@ -20,9 +20,9 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
+import dev.nyon.headquarters.app.profile.LocalProfile
 import dev.nyon.headquarters.app.profile.createProfile
 import dev.nyon.headquarters.app.profile.realm
-import dev.nyon.headquarters.app.profile.models.LocalProfile
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
 import io.realm.kotlin.ext.query
@@ -36,7 +36,7 @@ fun initGui() {
         var theme by remember { mutableStateOf(darkTheme) }
         var profile by remember {
             mutableStateOf(realm.query<LocalProfile>().find().getOrNull(0) ?: kotlin.run {
-                val newProfile = LocalProfile("default", "abcedf", "")
+                val newProfile = LocalProfile("Profile 1", "sadawdwad")
                 CoroutineScope(Dispatchers.Default).launch {
                     createProfile(newProfile)
                 }
@@ -61,7 +61,7 @@ fun initGui() {
                      * Home Button
                      */
                     Box(modifier = Modifier.background(theme.surfaceVariant)) {
-                        IconButton({ screen = Screen.Home }, Modifier.padding(5.dp)) { Icon(FeatherIcons.Home, "home") }
+                        IconButton({ screen = Screen.Home }, Modifier.padding(10.dp)) { Icon(FeatherIcons.Home, "home") }
                     }
 
                     /**
@@ -110,7 +110,7 @@ fun initGui() {
                          */
                         Box {
                             var opened by remember { mutableStateOf(false) }
-                            IconButton({ opened = true }, Modifier.padding(5.dp)) {
+                            IconButton({ opened = true }, Modifier.padding(10.dp)) {
                                 Icon(FeatherIcons.User, "account")
                             }
 
@@ -134,26 +134,26 @@ fun initGui() {
                         Modifier.fillMaxHeight().background(theme.surfaceVariant),
                         verticalArrangement = Arrangement.Bottom
                     ) {
-                        IconButton({ screen = Screen.Launch }, Modifier.padding(5.dp)) {
+                        IconButton({ screen = Screen.Launch }, Modifier.padding(10.dp)) {
                             Icon(FeatherIcons.Play, "launch")
                         }
 
-                        IconButton({ screen = Screen.Discover }, Modifier.padding(5.dp)) {
+                        IconButton({ screen = Screen.Discover }, Modifier.padding(10.dp)) {
                             Icon(FeatherIcons.Compass, "discover")
                         }
 
-                        IconButton({ screen = Screen.Search }, Modifier.padding(5.dp)) {
+                        IconButton({ screen = Screen.Search }, Modifier.padding(10.dp)) {
                             Icon(FeatherIcons.Search, "search")
                         }
 
-                        IconButton({ screen = Screen.Mods }, Modifier.padding(5.dp)) {
+                        IconButton({ screen = Screen.Mods }, Modifier.padding(10.dp)) {
                             Icon(FeatherIcons.Archive, "mods")
                         }
 
                         Spacer(Modifier.size(20.dp))
                         IconButton({
                             theme = if (theme == darkTheme) lightTheme else darkTheme
-                        }, Modifier.padding(5.dp)) {
+                        }, Modifier.padding(10.dp)) {
                             Icon(
                                 if (theme == darkTheme) FeatherIcons.Sun else FeatherIcons.Moon, "toggle theme"
                             )

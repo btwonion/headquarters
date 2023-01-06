@@ -35,20 +35,28 @@ val testModProfile = Profile.ModProfile(
         "6607feafdb2f96baad9314f207277730421a8e76",
         1
     ),
+    0,
+    0,
+    Visibility.Public,
+    "asdawd",
+    listOf(),
     Loader.Fabric,
     listOf(),
     listOf(),
-    listOf(ProjectEntry("lg17V3i3", "7dVSeEw5", true)),
     listOf(),
-    0,
-    0,
-    listOf(),
-    Visibility.Discoverable,
-    "test"
+    listOf()
 )
 
 val testResourcePackProfile =
-    Profile.ResourcePackProfile("1.19.2", listOf(ProjectEntry("w0TnApzs", "flpvzFNA", true)), "asdaw")
+    Profile.ResourcePackProfile(MinecraftVersion(
+        "1.19.3",
+        MinecraftVersionType.Release,
+        "https://piston-meta.mojang.com/v1/packages/6607feafdb2f96baad9314f207277730421a8e76/1.19.3.json",
+        Instant.parse("2022-09-13T14:29:56+00:00"),
+        Instant.parse("2022-09-13T14:29:56+00:00"),
+        "6607feafdb2f96baad9314f207277730421a8e76",
+        1
+    ), "awdawd", Visibility.Public, "", 0, 0, "asdawd", listOf())
 
 suspend fun createProfile(profile: LocalProfile) {
     realm.write {
