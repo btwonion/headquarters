@@ -11,4 +11,6 @@ application {
 
 dependencies {
     implementation(project(":headquarters-api"))
+
+    testImplementation("io.ktor:ktor-client-core:${BuildConstants.ktorVersion}")
 }
