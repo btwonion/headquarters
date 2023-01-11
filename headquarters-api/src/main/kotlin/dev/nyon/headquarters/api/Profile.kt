@@ -6,8 +6,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Profile {
-    var id: String
+sealed interface Profile : IdHolder {
+    override var id: String
     var visibility: Visibility
     var name: String
     var followers: Int
