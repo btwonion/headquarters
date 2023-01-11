@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  server:
+    image: ghcr.io/btwonion/headquarters:master
+    env_file:
+      - ./credentials.env
+    restart: unless-stopped
+    container_name: headquarters-server
+    networks:
+      - nginx
+
+networks:
+  nginx:
+    external: true
