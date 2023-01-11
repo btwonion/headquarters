@@ -4,6 +4,7 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.model.Filters
 import dev.nyon.headquarters.api.Profile
+import dev.nyon.headquarters.api.user.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,10 +30,8 @@ val mongoClient =
 
 val db = mongoClient.getDatabase(System.getenv("MONGO_DATABASE"))
 
+var users: CoroutineCollection<User> = db.getCollection("users")
 var profiles: CoroutineCollection<Profile> = db.getCollection("profiles")
-suspend fun initMongo() {
-    profiles = db.getAndCreateCollection("profiles")
-}
 
 suspend fun <T : @Serializable Any> CoroutineCollection<T>.retrieveOne(key: String, value: String): T? =
     this.find(Filters.eq(key, value)).first()
