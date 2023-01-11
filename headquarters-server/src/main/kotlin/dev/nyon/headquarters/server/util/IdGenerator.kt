@@ -1,23 +1,24 @@
 package dev.nyon.headquarters.server.util
 
-import dev.nyon.headquarters.api.Profile
-import dev.nyon.headquarters.server.database.profiles
+import dev.nyon.headquarters.api.IdHolder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.eq
 import kotlin.random.Random
 
-suspend fun generateProfileID(length: Int): String = withContext(Dispatchers.IO) {
-    var id = generateID(length)
-    var found = false
+suspend inline fun <reified T : IdHolder> generateAndCheckID(length: Int, collection: CoroutineCollection<T>): String =
+    withContext(Dispatchers.IO) {
+        var id = generateID(length)
+        var found = false
 
-    while (!found) {
-        if (profiles.findOne(Profile::id eq id) != null) id = generateID(length)
-        else found = true
+        while (!found) {
+            if (collection.findOne(IdHolder::id eq id) != null) id = generateID(length)
+            else found = true
+        }
+
+        id
     }
-
-    id
-}
 
 fun generateID(length: Int): String {
     val random = Random
