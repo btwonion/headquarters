@@ -33,8 +33,8 @@ fun Routing.configureUserLoginRoot() {
             call.sessions.set(UserSession(principal!!.state!!, principal.accessToken))
             val githubUser: JsonObject = json.encodeToJsonElement(httpClient.get {
                 url(Url("https://api.github.com/user"))
-                header("Accept", "application/vnd.github+json")
-                header("Authorization", "Bearer ${principal.accessToken}")
+                header(HttpHeaders.Accept, "application/vnd.github+json")
+                header(HttpHeaders.Authorization, "Bearer ${principal.accessToken}")
                 header("X-GitHub-Api-Version", "2022-11-28")
             }.bodyAsText()).jsonObject
 
