@@ -6,8 +6,7 @@ ARG BUILD_DIR
 
 WORKDIR $BUILD_DIR
 COPY . .
-RUN chmod +x ./gradlew
-RUN ./gradlew installDist --no-daemon
+RUN gradle installDist --no-daemon
 
 FROM openjdk:17-slim
 
