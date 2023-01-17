@@ -15,4 +15,5 @@ dependencies {
     implementation("io.ktor:ktor-client-apache-jvm:2.2.1")
 
     testImplementation("io.ktor:ktor-client-core:${BuildConstants.ktorVersion}")
+    testImplementation("io.ktor:ktor-client-cio:${BuildConstants.ktorVersion}")
 }
