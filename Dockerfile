@@ -6,7 +6,7 @@ ARG BUILD_DIR
 
 WORKDIR $BUILD_DIR
 COPY . .
-RUN gradle :headqarters-server:installDist --no-daemon
+RUN gradle :headquarters-server:installDist --no-daemon
 
 FROM openjdk:17-slim
 
