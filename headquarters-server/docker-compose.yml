@@ -1,12 +1,12 @@
-version: "3"
+version: "3.9"
 
 services:
   server:
-    image: ghcr.io/btwonion/headquarters:master
+    image: hq
     env_file:
       - ./credentials.env
     restart: unless-stopped
-    container_name: headquarters-server
+    container_name: hq-server
     networks:
       - nginx
 
