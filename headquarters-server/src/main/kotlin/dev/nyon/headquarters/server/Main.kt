@@ -14,8 +14,7 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
 
-val redirects = mutableMapOf<String, String>()
-val httpClient = HttpClient()
+val httpClient = HttpClient(io.ktor.client.engine.cio.CIO)
 val json = Json
 
 fun main() {
@@ -30,15 +29,14 @@ fun Application.myApplicationModule() {
             client = httpClient
             urlProvider = { "https://api.nyon.dev/headquarters/oauth" }
             providerLookup = {
-                OAuthServerSettings.OAuth2ServerSettings(name = "github",
+                OAuthServerSettings.OAuth2ServerSettings(
+                    name = "github",
                     authorizeUrl = "https://github.com/login/device/code",
                     accessTokenUrl = "https://github.com/login/oauth/access_token",
                     requestMethod = HttpMethod.Post,
                     clientId = System.getenv("GITHUB_CLIENT_ID"),
-                    clientSecret = System.getenv("GITHUB_CLIENT_SECRET"),
-                    onStateCreated = { call, state ->
-                        redirects[state] = call.request.queryParameters["redirectUrl"]!!
-                    })
+                    clientSecret = System.getenv("GITHUB_CLIENT_SECRET")
+                )
             }
         }
     }

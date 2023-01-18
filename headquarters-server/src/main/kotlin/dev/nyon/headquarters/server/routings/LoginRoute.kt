@@ -4,14 +4,12 @@ import dev.nyon.headquarters.api.user.User
 import dev.nyon.headquarters.server.database.users
 import dev.nyon.headquarters.server.httpClient
 import dev.nyon.headquarters.server.json
-import dev.nyon.headquarters.server.redirects
 import dev.nyon.headquarters.server.util.generateAndCheckID
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import kotlinx.serialization.Serializable
@@ -44,8 +42,7 @@ fun Route.configureUserLoginRoot() {
                 users.insertOne(user)
             }
 
-            val redirect = redirects[principal.state!!]
-            call.respondRedirect(redirect!!)
+            print("asdawd")
         }
     }
 }
