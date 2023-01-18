@@ -26,7 +26,7 @@ fun Application.myApplicationModule() {
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
                     name = "github",
-                    authorizeUrl = "https://github.com/login/oauth/authorize",
+                    authorizeUrl = "https://github.com/login/device/code",
                     accessTokenUrl = "https://github.com/login/oauth/access_token",
                     requestMethod = HttpMethod.Post,
                     clientId = System.getenv("GITHUB_CLIENT_ID"),
