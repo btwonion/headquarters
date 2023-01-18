@@ -7,6 +7,7 @@ object BuildConstants {
     const val datetimeVersion = "0.4.0"
     const val coroutinesVersion = "1.6.4"
     const val ktorVersion = "2.2.1"
+    const val logbackVersion  ="1.4.5"
 
     const val mordantVersion = "2.0.0-beta8"
     const val cliktVersion = "4.0.0.198-SNAPSHOT"
