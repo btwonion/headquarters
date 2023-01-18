@@ -15,7 +15,7 @@ import org.litote.kmongo.eq
 
 fun Route.configureProfileRoute() {
     route("/profile") {
-        get("{id}") {
+        get("/{id}") {
             val id = call.parameters["id"]!!
             val profile = profiles.findOne(Profile::id eq id)
 
@@ -25,7 +25,7 @@ fun Route.configureProfileRoute() {
         }
 
         authenticate("auth-oauth-github") {
-            delete("{id}") {
+            delete("/{id}") {
                 val id = call.parameters["id"]!!
 
                 profiles.deleteOne(Profile::id eq id)
