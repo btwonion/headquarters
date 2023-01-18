@@ -49,7 +49,9 @@ fun Application.myApplicationModule() {
     }
 
     routing {
-        configureProfileRoute()
-        configureUserLoginRoot()
+        route("/headquarters") {
+            configureProfileRoute()
+            configureUserLoginRoot()
+        }
     }
 }

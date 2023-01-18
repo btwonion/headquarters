@@ -24,7 +24,7 @@ import org.litote.kmongo.eq
 @Serializable
 data class UserSession(val state: String, val token: String)
 
-fun Routing.configureUserLoginRoot() {
+fun Route.configureUserLoginRoot() {
     authenticate("auth-oauth-github") {
         get("/login") {}
 

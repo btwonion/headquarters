@@ -13,7 +13,7 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.launch
 import org.litote.kmongo.eq
 
-fun Routing.configureProfileRoute() {
+fun Route.configureProfileRoute() {
     route("/profile") {
         get("{id}") {
             val id = call.parameters["id"]!!
