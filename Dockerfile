@@ -13,6 +13,6 @@ FROM openjdk:17-slim
 ARG BUILD_DIR
 
 WORKDIR /app/
-COPY --from=builder $BUILD_DIR/build/install/headquarters-server/ .
+COPY --from=builder $BUILD_DIR/headquarters-server/build/install/headquarters-server/ .
 
 CMD ["./bin/headquarters-server"]
