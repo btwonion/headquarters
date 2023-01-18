@@ -1,4 +1,4 @@
-ARG BUILD_DIR="/usr/src/headquarters-server/"
+ARG BUILD_DIR="/usr/src/headquarters-server"
 
 FROM gradle:7.6-jdk AS builder
 
