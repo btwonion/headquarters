@@ -14,34 +14,32 @@ import kotlinx.coroutines.launch
 import org.litote.kmongo.eq
 
 fun Route.configureProfileRoute() {
-    route("/profile") {
-        get("/{id}") {
-            val id = call.parameters["id"]!!
-            val profile = profiles.findOne(Profile::id eq id)
+    get("/profile/{id}") {
+        val id = call.parameters["id"]!!
+        val profile = profiles.findOne(Profile::id eq id)
 
-            if (profile == null) call.respond(HttpStatusCode.NotFound)
-            else if (profile.visibility == Visibility.Private) call.respond(HttpStatusCode.Unauthorized)
-            else call.respond(profile)
+        if (profile == null) call.respond(HttpStatusCode.NotFound)
+        else if (profile.visibility == Visibility.Private) call.respond(HttpStatusCode.Unauthorized)
+        else call.respond(profile)
+    }
+
+    authenticate("auth-oauth-github") {
+        delete("/profile/{id}") {
+            val id = call.parameters["id"]!!
+
+            profiles.deleteOne(Profile::id eq id)
+            call.respondText("Project removed successfully")
         }
 
-        authenticate("auth-oauth-github") {
-            delete("/{id}") {
-                val id = call.parameters["id"]!!
+        post("/profile") {
+            val profile = call.receive<Profile>()
 
-                profiles.deleteOne(Profile::id eq id)
-                call.respondText("Project removed successfully")
-            }
-
-            post {
-                val profile = call.receive<Profile>()
-
-                if (profiles.findOne(Profile::id eq profile.id) != null) call.respond(HttpStatusCode.Conflict)
-                else {
-                    launch {
-                        profile.id = generateAndCheckID(8, profiles)
-                        profiles.insertOne(profile)
-                        call.respond(profile)
-                    }
+            if (profiles.findOne(Profile::id eq profile.id) != null) call.respond(HttpStatusCode.Conflict)
+            else {
+                launch {
+                    profile.id = generateAndCheckID(8, profiles)
+                    profiles.insertOne(profile)
+                    call.respond(profile)
                 }
             }
         }
