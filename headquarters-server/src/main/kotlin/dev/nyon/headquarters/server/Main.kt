@@ -3,7 +3,9 @@ package dev.nyon.headquarters.server
 import dev.nyon.headquarters.server.routings.configureProfileRoute
 import dev.nyon.headquarters.server.routings.configureUserLoginRoot
 import io.ktor.client.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.cio.*
@@ -14,7 +16,11 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
 
-val httpClient = HttpClient(io.ktor.client.engine.cio.CIO)
+val httpClient = HttpClient(io.ktor.client.engine.cio.CIO) {
+    this.install(ContentNegotiation) {
+        json()
+    }
+}
 val json = Json
 
 fun main() {
@@ -31,7 +37,7 @@ fun Application.myApplicationModule() {
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
                     name = "github",
-                    authorizeUrl = "https://github.com/login/device/code",
+                    authorizeUrl = "https://github.com/login/oauth/authorize",
                     accessTokenUrl = "https://github.com/login/oauth/access_token",
                     requestMethod = HttpMethod.Post,
                     clientId = System.getenv("GITHUB_CLIENT_ID"),
