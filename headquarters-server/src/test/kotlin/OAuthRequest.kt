@@ -7,9 +7,12 @@ import io.ktor.http.*
 suspend fun main() {
     val client = HttpClient(CIO)
 
+    val getRequest = client.get {
+        url(Url("https://api.nyon.dev/headquarters/login"))
+    }
+
     val response = client.post {
-        url(Url("https://github.com/login/device/code"))
-        header("Accept", "application/json")
+        url(getRequest.request.url)
 
         parameter("client_id", System.getenv("CLIENT_ID"))
     }
