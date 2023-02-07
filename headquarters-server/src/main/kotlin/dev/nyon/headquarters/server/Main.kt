@@ -48,7 +48,7 @@ fun Application.myApplicationModule() {
     }
 
     install(CallLogging) {
-        level = Level.INFO
+        level = Level.DEBUG
         filter { call -> call.request.path().startsWith("/") }
     }
 
