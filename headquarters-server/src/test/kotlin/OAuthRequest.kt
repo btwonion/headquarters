@@ -14,6 +14,8 @@ suspend fun main() {
     val response = client.post {
         url(getRequest.request.url)
 
+        accept(ContentType.Application.Json)
+
         parameter("client_id", System.getenv("CLIENT_ID"))
     }
 
