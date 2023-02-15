@@ -25,24 +25,22 @@ data class UserSession(val state: String, val token: String)
 fun Route.configureUserLoginRoot() {
     authenticate("auth-oauth-github") {
         get("/login") {}
+    }
 
-        get("/oauth") {
-            val principal: OAuthAccessTokenResponse.OAuth2? = call.principal()
-            call.sessions.set(UserSession(principal!!.state!!, principal.accessToken))
-            val githubUser: JsonObject = json.encodeToJsonElement(httpClient.get {
-                url(Url("https://api.github.com/user"))
-                header(HttpHeaders.Accept, "application/vnd.github+json")
-                header(HttpHeaders.Authorization, "Bearer ${principal.accessToken}")
-                header("X-GitHub-Api-Version", "2022-11-28")
-            }.bodyAsText()).jsonObject
+    get("/oauth") {
+        val principal: OAuthAccessTokenResponse.OAuth2? = call.principal()
+        call.sessions.set(UserSession(principal!!.state!!, principal.accessToken))
+        val githubUser: JsonObject = json.encodeToJsonElement(httpClient.get {
+            url(Url("https://api.github.com/user"))
+            header(HttpHeaders.Accept, "application/vnd.github+json")
+            header(HttpHeaders.Authorization, "Bearer ${principal.accessToken}")
+            header("X-GitHub-Api-Version", "2022-11-28")
+        }.bodyAsText()).jsonObject
 
-            val id = githubUser["id"]!!.jsonPrimitive.content
-            if (users.findOne(User::githubID eq id) != null) {
-                val user = User(generateAndCheckID(8, users), id, listOf())
-                users.insertOne(user)
-            }
-
-            print("asdawd")
+        val id = githubUser["id"]!!.jsonPrimitive.content
+        if (users.findOne(User::githubID eq id) != null) {
+            val user = User(generateAndCheckID(8, users), id, listOf())
+            users.insertOne(user)
         }
     }
 }
