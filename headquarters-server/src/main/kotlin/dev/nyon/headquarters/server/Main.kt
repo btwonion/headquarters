@@ -33,7 +33,7 @@ fun Application.myApplicationModule() {
     install(Authentication) {
         oauth("auth-oauth-github") {
             client = httpClient
-            urlProvider = { "https://api.nyon.dev/headquarters/oauth" }
+            urlProvider = { "https://api.nyon.dev/headquarters/callback" }
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
                     name = "github",
