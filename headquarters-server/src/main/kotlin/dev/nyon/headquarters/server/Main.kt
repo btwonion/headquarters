@@ -1,7 +1,9 @@
 package dev.nyon.headquarters.server
 
+import dev.nyon.headquarters.api.user.User
 import dev.nyon.headquarters.server.routings.configureProfileRoute
 import dev.nyon.headquarters.server.routings.configureUserLoginRoot
+import dev.nyon.headquarters.server.session.UserSession
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
@@ -13,8 +15,10 @@ import io.ktor.server.engine.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
+import kotlin.time.Duration.Companion.days
 
 val httpClient = HttpClient(io.ktor.client.engine.cio.CIO) {
     this.install(ContentNegotiation) {
@@ -47,9 +51,20 @@ fun Application.myApplicationModule() {
         }
     }
 
+    install(Sessions) {
+        cookie<UserSession>("user_session") {
+            cookie.path = "/headquarters/"
+            cookie.maxAge = 30.days
+        }
+        cookie<User>("user") {
+            cookie.path = "/headquarters/"
+            cookie.maxAge = 30.days
+        }
+    }
+
     install(CallLogging) {
         level = Level.DEBUG
-        filter { call -> call.request.path().startsWith("/") }
+        filter { call -> call.request.path().startsWith("/headquarters") }
     }
 
     routing {
