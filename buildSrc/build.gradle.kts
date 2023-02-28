@@ -19,9 +19,9 @@ dependencies {
     compileOnly(pluginDep("org.jetbrains.kotlin.plugin.serialization", embeddedKotlinVersion))
     runtimeOnly(pluginDep("org.jetbrains.kotlin.plugin.serialization", kotlinVersion))
 
-    implementation(pluginDep("io.ktor.plugin", "2.2.1"))
+    implementation(pluginDep("io.ktor.plugin", "2.2.4"))
 
-    implementation(pluginDep("org.jetbrains.compose", "1.3.0-rc01"))
+    implementation(pluginDep("org.jetbrains.compose", "1.3.1-rc01"))
 
-    implementation(pluginDep("io.realm.kotlin", "1.5.1"))
+    implementation(pluginDep("io.realm.kotlin", "1.6.1"))
 }
