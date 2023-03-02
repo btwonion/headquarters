@@ -8,8 +8,10 @@ suspend fun main() {
     val client = HttpClient(CIO)
 
     val getRequest = client.get {
-        url(Url("https://api.nyon.dev/headquarters/login"))
+        url("http://0.0.0.0:8080/headquarters/login")
     }
+
+    println(getRequest)
 
     val response = client.post {
         url(getRequest.request.url)
