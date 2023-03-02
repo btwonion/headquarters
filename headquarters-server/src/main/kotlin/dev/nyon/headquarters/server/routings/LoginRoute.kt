@@ -27,7 +27,7 @@ fun Route.configureUserLoginRoot() {
             val principal: OAuthAccessTokenResponse.OAuth2 = call.principal() ?: error("No principal")
             call.sessions.set(UserSession(principal.accessToken))
             val githubUser: JsonObject = json.encodeToJsonElement(httpClient.get {
-                url(Url("https://api.github.com/user"))
+                url("https://api.github.com/user")
                 header(HttpHeaders.Accept, "application/vnd.github+json")
                 header(HttpHeaders.Authorization, "Bearer ${principal.accessToken}")
                 header("X-GitHub-Api-Version", "2022-11-28")

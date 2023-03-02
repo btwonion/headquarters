@@ -54,10 +54,10 @@ enum class Visibility {
     Private,
 
     @SerialName("public")
-    Public,
+    Unlisted,
 
     @SerialName("discoverable")
-    Discoverable
+    Public
 }
 
 val Profile.ModProfile.mods: List<ProjectEntry>

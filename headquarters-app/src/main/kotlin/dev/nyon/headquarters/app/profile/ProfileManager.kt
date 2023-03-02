@@ -1,7 +1,6 @@
 package dev.nyon.headquarters.app.profile
 
 import dev.nyon.headquarters.api.Profile
-import dev.nyon.headquarters.api.ProjectEntry
 import dev.nyon.headquarters.api.Visibility
 import dev.nyon.headquarters.api.mods
 import dev.nyon.headquarters.app.*
@@ -37,7 +36,7 @@ val testModProfile = Profile.ModProfile(
     ),
     0,
     0,
-    Visibility.Public,
+    Visibility.Unlisted,
     "asdawd",
     listOf(),
     Loader.Fabric,
@@ -56,7 +55,7 @@ val testResourcePackProfile =
         Instant.parse("2022-09-13T14:29:56+00:00"),
         "6607feafdb2f96baad9314f207277730421a8e76",
         1
-    ), "awdawd", Visibility.Public, "", 0, 0, "asdawd", listOf())
+    ), "awdawd", Visibility.Unlisted, "", 0, 0, "asdawd", listOf())
 
 suspend fun createProfile(profile: LocalProfile) {
     realm.write {
