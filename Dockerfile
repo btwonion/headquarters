@@ -1,6 +1,6 @@
 ARG BUILD_DIR="/usr/src/headquarters-server"
 
-FROM gradle:7.6-jdk AS builder
+FROM gradle:8.0.2-jdk AS builder
 
 ARG BUILD_DIR
 
