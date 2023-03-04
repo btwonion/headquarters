@@ -5,6 +5,6 @@ import java.net.URI
 
 suspend fun main() {
     withContext(Dispatchers.IO) {
-        Desktop.getDesktop().browse(URI("http://0.0.0.0:8080/headquarters/login"))
+        Desktop.getDesktop().browse(URI("https://api.nyon.dev/headquarters/login"))
     }
 }
