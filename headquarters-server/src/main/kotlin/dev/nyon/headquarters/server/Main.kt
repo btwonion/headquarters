@@ -5,7 +5,7 @@ import dev.nyon.headquarters.server.routings.configureProfileRoute
 import dev.nyon.headquarters.server.routings.configureUserLoginRoot
 import dev.nyon.headquarters.server.session.UserSession
 import io.ktor.client.*
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -14,6 +14,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.callloging.*
+import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import kotlinx.serialization.json.Json
@@ -37,11 +38,11 @@ fun Application.myApplicationModule() {
     install(Authentication) {
         oauth("auth-oauth-github") {
             client = httpClient
-            urlProvider = { "http://127.0.0.1:8080/headquarters/callback" }
+            urlProvider = { "https://nyon.dev/headquarters/callback" }
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
                     name = "github",
-                    authorizeUrl = "https://github.com/login/device/code",
+                    authorizeUrl = "https://github.com/login/oauth/authorize",
                     accessTokenUrl = "https://github.com/login/oauth/access_token",
                     requestMethod = HttpMethod.Post,
                     clientId = System.getenv("GITHUB_CLIENT_ID"),
@@ -64,7 +65,7 @@ fun Application.myApplicationModule() {
 
     install(CallLogging) {
         level = Level.DEBUG
-        //filter { call -> call.request.path().startsWith("/headquarters/") }
+        filter { call -> call.request.path().startsWith("/headquarters/") }
     }
 
     routing {

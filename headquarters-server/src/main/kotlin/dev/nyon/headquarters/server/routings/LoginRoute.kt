@@ -11,10 +11,13 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.html.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.html.body
+import kotlinx.html.h1
+import kotlinx.html.head
+import kotlinx.html.title
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.litote.kmongo.eq
@@ -26,12 +29,14 @@ fun Route.configureUserLoginRoot() {
         get("/callback") {
             val principal: OAuthAccessTokenResponse.OAuth2 = call.principal() ?: error("No principal")
             call.sessions.set(UserSession(principal.accessToken))
-            val githubUser: JsonObject = json.encodeToJsonElement(httpClient.get {
+            val githubUserResponse = httpClient.get {
                 url("https://api.github.com/user")
                 header(HttpHeaders.Accept, "application/vnd.github+json")
                 header(HttpHeaders.Authorization, "Bearer ${principal.accessToken}")
                 header("X-GitHub-Api-Version", "2022-11-28")
-            }.bodyAsText()).jsonObject
+            }.bodyAsText()
+
+            val githubUser = json.parseToJsonElement(githubUserResponse).jsonObject
 
             val id = githubUser["id"]!!.jsonPrimitive.content
             var user = users.findOne(User::githubID eq id)
@@ -40,6 +45,20 @@ fun Route.configureUserLoginRoot() {
                 users.insertOne(user)
             }
             call.sessions.set(user)
+
+            call.respondHtml {
+                head {
+                    title {
+                        +"GitHub OAuth Success"
+                    }
+                }
+
+                body {
+                    h1 {
+                        +"Success!"
+                    }
+                }
+            }
         }
 
         get("/logout") {

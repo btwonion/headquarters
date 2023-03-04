@@ -18,5 +18,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-sessions-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:${BuildConstants.logbackVersion}")
 }
