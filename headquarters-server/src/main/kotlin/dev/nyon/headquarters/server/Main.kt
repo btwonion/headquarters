@@ -12,7 +12,6 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
@@ -30,7 +29,9 @@ val json = Json
 
 fun main() {
     embeddedServer(
-        Netty, port = System.getenv("HTTP_SERVER_PORT").toInt(), module = Application::myApplicationModule
+        io.ktor.server.cio.CIO,
+        port = System.getenv("HTTP_SERVER_PORT").toInt(),
+        module = Application::myApplicationModule
     ).start(wait = true)
 }
 
