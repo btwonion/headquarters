@@ -40,7 +40,7 @@ fun Route.configureUserLoginRoot() {
 
             val id = githubUser["id"]!!.jsonPrimitive.content
             var user = users.findOne(User::githubID eq id)
-            if (user != null) {
+            if (user == null) {
                 user = User(generateAndCheckID(8, users), id, listOf())
                 users.insertOne(user)
             }
