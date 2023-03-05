@@ -20,6 +20,7 @@ import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
 import kotlin.time.Duration.Companion.days
 
+val debug = System.getenv("debug").toBoolean()
 val httpClient = HttpClient(CIO) {
     this.install(ContentNegotiation) {
         json()
@@ -39,7 +40,8 @@ fun Application.myApplicationModule() {
     install(Authentication) {
         oauth("auth-oauth-github") {
             client = httpClient
-            urlProvider = { "https://api.nyon.dev/headquarters/callback" }
+            urlProvider =
+                { if (debug) "http://127.0.0.1:8080/headquarters/callback" else "https://api.nyon.dev/headquarters/callback" }
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
                     name = "github",
@@ -65,7 +67,7 @@ fun Application.myApplicationModule() {
     }
 
     install(CallLogging) {
-        level = Level.DEBUG
+        level = Level.INFO
         filter { call -> call.request.path().startsWith("/headquarters/") }
     }
 
