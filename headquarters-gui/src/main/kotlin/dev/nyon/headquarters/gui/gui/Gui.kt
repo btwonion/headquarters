@@ -20,19 +20,18 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
-import dev.nyon.headquarters.app.mojangConnector
 import dev.nyon.headquarters.app.profile.Profile
-import dev.nyon.headquarters.app.profile.createProfile
+import dev.nyon.headquarters.app.profile.init
 import dev.nyon.headquarters.app.profile.realm
 import dev.nyon.headquarters.app.runningDir
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
+import dev.nyon.headquarters.connector.mojang.models.MinecraftVersion
+import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
 import io.realm.kotlin.ext.query
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 fun initGui() {
     application {
@@ -40,20 +39,24 @@ fun initGui() {
         var theme by remember { mutableStateOf(darkTheme) }
         var profile by remember {
             mutableStateOf(realm.query<Profile>().find().getOrNull(0) ?: kotlin.run {
-                runBlocking {
-                    val newProfile =
-                        Profile(
-                            "Profile 1",
-                            "sadawdwad",
-                            runningDir.resolve("profiles/${"SDAWDSAD"}/"),
-                            Loader.Fabric,
-                            mojangConnector.getVersionManifest()!!.versions.last()
+                val newProfile =
+                    Profile(
+                        "Profile 1",
+                        "sadawdwad",
+                        runningDir.resolve("profiles/${"SDAWDSAD"}/"),
+                        Loader.Fabric,
+                        MinecraftVersion(
+                            "1.19.3",
+                            MinecraftVersionType.Release,
+                            "https://piston-meta.mojang.com/v1/packages/7c7a49009bf7d62324226b3536e046e0dbbc8141/1.19.3.json",
+                            Clock.System.now(),
+                            Clock.System.now(),
+                            "7c7a49009bf7d62324226b3536e046e0dbbc8141",
+                            1
                         )
-                    CoroutineScope(Dispatchers.Default).launch {
-                        createProfile(newProfile)
-                    }
-                    newProfile
-                }
+                    )
+                newProfile.init()
+                newProfile
             })
         }
 

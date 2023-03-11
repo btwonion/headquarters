@@ -8,10 +8,13 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 
+val appScope = CoroutineScope(Dispatchers.Default)
 val runningDir = Path("${System.getProperty("user.home")}/headquarters/").createDirectories()
 private val ktorClientJson = Json {
     ignoreUnknownKeys = true
