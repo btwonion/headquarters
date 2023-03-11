@@ -11,9 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.deleteIfExists
-import kotlin.io.path.moveTo
-import kotlin.io.path.name
+import kotlin.io.path.*
 
 suspend inline fun HttpClient.downloadFile(
     url: Url,
@@ -35,13 +33,13 @@ suspend inline fun HttpClient.downloadFile(
     withContext(Dispatchers.IO) {
         val channel = response.bodyAsChannel()
 
-        val partPath = path.parent!!.resolve(path.name + ".part")
+        val partPath = path.parent!!.resolve(path.name + ".part").createFile()
 
         try {
             while (!channel.isClosedForRead) {
                 val packet = channel.readRemaining(DEFAULT_HTTP_BUFFER_SIZE.toLong())
                 while (!packet.isEmpty) {
-                    Files.write(partPath, packet.readBytes())
+                    partPath.writeBytes(packet.readBytes())
                 }
             }
             partPath.moveTo(path, overwrite = true)

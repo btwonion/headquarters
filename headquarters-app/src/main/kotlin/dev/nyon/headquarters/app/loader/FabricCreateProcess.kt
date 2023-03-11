@@ -9,6 +9,7 @@ import dev.nyon.headquarters.connector.fabric.requests.getLoaderVersions
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersion
 import io.ktor.http.*
 import java.nio.file.Path
+import kotlin.io.path.createDirectories
 
 class FabricCreateProcess(override val profileDir: Path, override val minecraftVersion: MinecraftVersion) :
     LoaderCreateProcess {
@@ -19,14 +20,18 @@ class FabricCreateProcess(override val profileDir: Path, override val minecraftV
             fabricConnector.getLoaderVersions()!!.first().version
         ) ?: error("Cannot find compatible fabric loader for version '$minecraftVersion.id'")
 
+        val librariesDir = profileDir.resolve("libraries/")
         val meta = loaderVersion.launcherMeta as LauncherMeta
         listOf(meta.libraries.common, meta.libraries.client).flatten().forEach { artifact ->
             val split = artifact.name.split(":")
             val fileName = "${split[1]}-${split[2]}.jar"
             val url = "${artifact.url}${split[0].replace(".", "/")}${
-                split.toMutableList().also { it.removeFirst() }.joinToString("/", prefix = "/", postfix = "/")
+                split.drop(1).joinToString("/", prefix = "/", postfix = "/")
             }$fileName"
-            ktorClient.downloadFile(Url(url), profileDir.resolve("libraries/").resolve(fileName))
+
+            val artifactPath =
+                librariesDir.resolve("${split[0].replace(".", "/")}/${split[1]}/${split[2]}").createDirectories()
+            ktorClient.downloadFile(Url(url), artifactPath.resolve(fileName))
         }
     }
 }
