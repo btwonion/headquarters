@@ -4,4 +4,3 @@ rootProject.name = projectName
 include("$projectName-gui")
 include("$projectName-app")
 include("$projectName-api")
-include("$projectName-server")
