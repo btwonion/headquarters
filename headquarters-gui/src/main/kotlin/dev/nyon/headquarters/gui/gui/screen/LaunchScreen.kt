@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 
 context(BoxScope)
-        @Composable
+@Composable
 fun LaunchScreen() {
 
 }

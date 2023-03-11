@@ -1,136 +1,64 @@
 package dev.nyon.headquarters.app.profile
 
-import dev.nyon.headquarters.api.Profile
-import dev.nyon.headquarters.api.Visibility
-import dev.nyon.headquarters.api.mods
-import dev.nyon.headquarters.app.*
+import dev.nyon.headquarters.app.ktorClient
+import dev.nyon.headquarters.app.loader.FabricCreateProcess
+import dev.nyon.headquarters.app.loader.VanillaCreateProcess
+import dev.nyon.headquarters.app.modrinthConnector
+import dev.nyon.headquarters.app.mojangConnector
+import dev.nyon.headquarters.app.runningDir
 import dev.nyon.headquarters.app.util.downloadFile
-import dev.nyon.headquarters.connector.fabric.models.LauncherMeta
-import dev.nyon.headquarters.connector.fabric.requests.getLoaderOfGameAndLoaderVersion
-import dev.nyon.headquarters.connector.fabric.requests.getLoaderVersions
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
-import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import dev.nyon.headquarters.connector.modrinth.requests.getVersions
-import dev.nyon.headquarters.connector.mojang.models.MinecraftVersion
-import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.mojang.models.`package`.Os
 import io.ktor.http.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.datetime.Instant
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
-import kotlin.io.path.writeBytes
 
-val testModProfile = Profile.ModProfile(
-    "sadawa",
-    "btwonion",
-    MinecraftVersion(
-        "1.19.3",
-        MinecraftVersionType.Release,
-        "https://piston-meta.mojang.com/v1/packages/6607feafdb2f96baad9314f207277730421a8e76/1.19.3.json",
-        Instant.parse("2022-09-13T14:29:56+00:00"),
-        Instant.parse("2022-09-13T14:29:56+00:00"),
-        "6607feafdb2f96baad9314f207277730421a8e76",
-        1
-    ),
-    0,
-    0,
-    Visibility.Unlisted,
-    "asdawd",
-    listOf(),
-    Loader.Fabric,
-    listOf(),
-    listOf(),
-    listOf(),
-    listOf()
-)
 
-val testResourcePackProfile =
-    Profile.ResourcePackProfile(MinecraftVersion(
-        "1.19.3",
-        MinecraftVersionType.Release,
-        "https://piston-meta.mojang.com/v1/packages/6607feafdb2f96baad9314f207277730421a8e76/1.19.3.json",
-        Instant.parse("2022-09-13T14:29:56+00:00"),
-        Instant.parse("2022-09-13T14:29:56+00:00"),
-        "6607feafdb2f96baad9314f207277730421a8e76",
-        1
-    ), "awdawd", Visibility.Unlisted, "", 0, 0, "asdawd", listOf())
-
-suspend fun createProfile(profile: LocalProfile) {
+suspend fun createProfile(profile: Profile) {
     realm.write {
         copyToRealm(profile)
     }
 
     val profileDir = runningDir.resolve("profiles/${profile.name}/").createDirectories()
     val librariesDir = profileDir.resolve("libraries/").createDirectories()
-    val configDir = profileDir.resolve("config/").createDirectories()
     val modsDir = profileDir.resolve("mods/").createDirectories()
     val resourcePackDir = profileDir.resolve("resourcepacks/").createDirectories()
     profileDir.resolve("assets/").createDirectories()
 
-    profile.downloadLauncherLibraries(librariesDir)
+    profile.downloadLauncherLibraries()
     profile.downloadMojangLibraries(librariesDir)
 
-    profile.downloadProjects(modsDir, resourcePackDir)
-
-    profile.writeConfigs(configDir)
+    modsDir.downloadProjects(profile.mods)
+    resourcePackDir.downloadProjects(profile.resourcePacks)
 }
 
-private suspend fun Path.downloadProjects(projects: List<Version>) {
-    projects.forEach {
+private suspend fun Path.downloadProjects(projects: List<Project>) {
+    val versions = modrinthConnector.getVersions(projects.map { it.versionID })
+        ?: error("Couldn't request versions for artifacts: '${projects.joinToString { it.versionID }}'")
+
+    versions.map { it.files }.flatten().forEach {
         ktorClient.downloadFile(
-            Url(it.files[0].url), this@downloadProjects.resolve(it.files[0].fileName)
+            Url(it.url), this@downloadProjects.resolve(it.fileName)
         )
     }
 }
 
-private suspend fun LocalProfile.downloadMojangLibraries(libariesPath: Path) {
-    val meta = mojangConnector.getVersionPackage(testModProfile.id)
-        ?: error("cannot find version package of ${testModProfile.id}")
+private suspend fun Profile.downloadMojangLibraries(librariesPath: Path) {
+    val meta = mojangConnector.getVersionPackage(minecraftVersion.id)
+        ?: error("Couldn't find minecraft version '$minecraftVersion.id'")
     val libraries =
         meta.libraries.filter { it.rules == null || it.rules!!.all { rule -> rule.os == null } || it.rules!!.any { rule -> rule.os!!.name == Os.Linux } }
     libraries.forEach {
         ktorClient.downloadFile(
-            Url(it.downloads.artifact.url), libariesPath.resolve(it.downloads.artifact.url.split("/").last())
+            Url(it.downloads.artifact.url), librariesPath.resolve(it.downloads.artifact.url.split("/").last())
         )
     }
 }
 
-private suspend fun LocalProfile.downloadLauncherLibraries(librariesPath: Path) {
-    if (testModProfile.loader == Loader.Fabric) {
-        val loaderVersion = fabricConnector.getLoaderOfGameAndLoaderVersion(
-            testModProfile.id, fabricConnector.getLoaderVersions()!![0].version
-        ) ?: error("loader cannot be found")
-        (loaderVersion.launcherMeta as LauncherMeta).libraries.common.forEach { artifact ->
-            val split = artifact.name.split(":")
-            val fileName = "${split[1]}-${split[2]}.jar"
-            val url = "${artifact.url}${split[0].replace(".", "/")}${
-                split.toMutableList().also { it.removeFirst() }.joinToString("/", prefix = "/", postfix = "/")
-            }$fileName"
-            ktorClient.downloadFile(Url(url), librariesPath.resolve(fileName))
-        }
-    }
-}
-
-private suspend fun LocalProfile.downloadProjects(modsPath: Path, resourcePackPath: Path) {
-    modrinthConnector.getVersions(testModProfile.mods.filter { it.enabled }.map { it.versionID }).let {
-        if (it == null) return@let
-        modsPath.downloadProjects(it)
-    }
-
-    modrinthConnector.getVersions(testResourcePackProfile.resourcePacks.filter { it.enabled }.map { it.versionID })
-        .let {
-            if (it == null) return@let
-            resourcePackPath.downloadProjects(it)
-        }
-}
-
-private suspend fun LocalProfile.writeConfigs(configPath: Path) {
-    testModProfile.configs.forEach {
-        withContext(Dispatchers.IO) {
-            configPath.resolve(if (it.directory != "") "${it.directory}/${it.name}" else it.name).createDirectories()
-                .writeBytes(it.content)
-        }
+private suspend fun Profile.downloadLauncherLibraries() {
+    when (loader) {
+        Loader.Fabric -> FabricCreateProcess(profileDir, this.minecraftVersion).installLibraries()
+        else -> VanillaCreateProcess(profileDir, this.minecraftVersion).installLibraries()
     }
 }

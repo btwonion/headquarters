@@ -20,27 +20,40 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
-import dev.nyon.headquarters.app.profile.LocalProfile
+import dev.nyon.headquarters.app.mojangConnector
+import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.createProfile
 import dev.nyon.headquarters.app.profile.realm
+import dev.nyon.headquarters.app.runningDir
+import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 fun initGui() {
     application {
         var screen by remember { mutableStateOf(Screen.Home) }
         var theme by remember { mutableStateOf(darkTheme) }
         var profile by remember {
-            mutableStateOf(realm.query<LocalProfile>().find().getOrNull(0) ?: kotlin.run {
-                val newProfile = LocalProfile("Profile 1", "sadawdwad")
-                CoroutineScope(Dispatchers.Default).launch {
-                    createProfile(newProfile)
+            mutableStateOf(realm.query<Profile>().find().getOrNull(0) ?: kotlin.run {
+                runBlocking {
+                    val newProfile =
+                        Profile(
+                            "Profile 1",
+                            "sadawdwad",
+                            runningDir.resolve("profiles/${"SDAWDSAD"}/"),
+                            Loader.Fabric,
+                            mojangConnector.getVersionManifest()!!.versions.last()
+                        )
+                    CoroutineScope(Dispatchers.Default).launch {
+                        createProfile(newProfile)
+                    }
+                    newProfile
                 }
-                newProfile
             })
         }
 
@@ -61,7 +74,12 @@ fun initGui() {
                      * Home Button
                      */
                     Box(modifier = Modifier.background(theme.surfaceVariant)) {
-                        IconButton({ screen = Screen.Home }, Modifier.padding(10.dp)) { Icon(FeatherIcons.Home, "home") }
+                        IconButton({ screen = Screen.Home }, Modifier.padding(10.dp)) {
+                            Icon(
+                                FeatherIcons.Home,
+                                "home"
+                            )
+                        }
                     }
 
                     /**
@@ -89,7 +107,7 @@ fun initGui() {
                                     RoundedCornerShape(8.dp)
                                 )
                             ) {
-                                val profiles = realm.query<LocalProfile>().find()
+                                val profiles = realm.query<Profile>().find()
                                 profiles.forEachIndexed { index, localProfile ->
                                     DropdownMenuItem({
                                         profile = localProfile

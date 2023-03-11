@@ -51,8 +51,8 @@ import java.net.URI
 import java.text.NumberFormat
 
 context(BoxScope)
-        @OptIn(ExperimentalMaterial3Api::class)
-        @Composable
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun SearchScreen(theme: ColorScheme) {
     var searchResponse by remember {
         mutableStateOf<SearchResult>(
@@ -77,7 +77,8 @@ fun SearchScreen(theme: ColorScheme) {
                 if (currentInput != term) return@launch
             }
 
-            val result = modrinthConnector.searchProjects(term, limit = 25, facets = listOf(Facet.Categories(listOf("fabric"))))
+            val result =
+                modrinthConnector.searchProjects(term, limit = 25, facets = listOf(Facet.Categories(listOf("fabric"))))
             searchResponse = result
             if (result is SearchResult.SearchResultSuccess) {
                 currentItems.clear()
@@ -182,8 +183,8 @@ fun SearchScreen(theme: ColorScheme) {
 }
 
 context(ColumnScope)
-        @Composable
-        private fun ProjectSpec(icon: ImageVector, text: String, link: String) {
+@Composable
+private fun ProjectSpec(icon: ImageVector, text: String, link: String) {
     val annotatedLinkString = buildAnnotatedString {
         append(text)
 
@@ -212,8 +213,8 @@ context(ColumnScope)
 }
 
 context(LazyGridItemScope)
-        @OptIn(ExperimentalMaterial3Api::class)
-        @Composable
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun ProjectItem(project: ProjectResult, onClick: () -> Unit) {
     ElevatedCard(onClick, modifier = Modifier.height(135.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -279,9 +280,9 @@ private fun LazyGridLayoutInfo.onReachEnd(buffer: Int = 5, onReachEnd: suspend (
 
 
 context(BoxScope)
-        @OptIn(ExperimentalMaterial3Api::class)
-        @Composable
-        private fun ProjectPage(selectedProject: ProjectResult?, searchScope: CoroutineScope, onClose: () -> Unit) {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProjectPage(selectedProject: ProjectResult?, searchScope: CoroutineScope, onClose: () -> Unit) {
     var project by remember { mutableStateOf<Project?>(null) }
     var latestVersion by remember { mutableStateOf<Version?>(null) }
     searchScope.launch {
@@ -499,12 +500,14 @@ context(BoxScope)
                                             Text(
                                                 it.versionType.name,
                                                 color = it.versionType.color,
-                                                modifier = Modifier.padding(start = 5.dp).align(Alignment.CenterVertically),
+                                                modifier = Modifier.padding(start = 5.dp)
+                                                    .align(Alignment.CenterVertically),
                                                 fontSize = 18.sp
                                             )
                                             Text(
                                                 it.name,
-                                                modifier = Modifier.padding(start = 10.dp).align(Alignment.CenterVertically),
+                                                modifier = Modifier.padding(start = 10.dp)
+                                                    .align(Alignment.CenterVertically),
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 18.sp
                                             )
@@ -523,7 +526,10 @@ context(BoxScope)
                                                 Button({}, Modifier.padding(5.dp)) {
                                                     Icon(FeatherIcons.DownloadCloud, "install")
                                                     Text(
-                                                        "Install", Modifier.padding(5.dp), fontWeight = FontWeight.Bold, color = Color.White
+                                                        "Install",
+                                                        Modifier.padding(5.dp),
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = Color.White
                                                     )
                                                 }
                                             }
