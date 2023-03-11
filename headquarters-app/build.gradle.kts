@@ -10,5 +10,8 @@ repositories {
 }
 
 dependencies {
-    implementation("me.obsilabor:piston-meta-kt:1.0.6")
+    val ktorVersion = "2.2.4"
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("me.nullicorn:ms-to-mca:0.0.1")
 }

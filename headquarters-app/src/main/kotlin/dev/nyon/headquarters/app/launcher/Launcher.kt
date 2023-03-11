@@ -1,9 +1,11 @@
 package dev.nyon.headquarters.app.launcher
 
+import dev.nyon.headquarters.app.appScope
+import dev.nyon.headquarters.app.launcher.auth.MicrosoftAuth
 import dev.nyon.headquarters.app.profile.Profile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.obsilabor.pistonmetakt.MicrosoftAuth
 
 
 suspend fun Profile.launch(credentials: MicrosoftAuth.MicrosoftAccountInfo) {
@@ -17,7 +19,12 @@ suspend fun Profile.launch(credentials: MicrosoftAuth.MicrosoftAccountInfo) {
     }
 
     withContext(Dispatchers.IO) {
-        ProcessBuilder().command(startArgs).start()
+        val process = ProcessBuilder().command(startArgs).start()
+        appScope.launch {
+            while (process.isAlive) {
+                println(process.inputReader().readLines())
+            }
+        }
     }
 }
 

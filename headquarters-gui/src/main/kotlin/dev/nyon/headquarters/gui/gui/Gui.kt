@@ -21,6 +21,7 @@ import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
 import dev.nyon.headquarters.app.appScope
+import dev.nyon.headquarters.app.launcher.auth.MicrosoftAuth
 import dev.nyon.headquarters.app.launcher.launch
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.init
@@ -34,7 +35,6 @@ import io.realm.kotlin.ext.query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.obsilabor.pistonmetakt.MicrosoftAuth
 import java.awt.Desktop
 import java.net.URI
 
@@ -154,11 +154,9 @@ fun initGui() {
                     ) {
                         IconButton({
                             //screen = Screen.Launch
-                            MicrosoftAuth(
-                                "localhost:5548",
+                            /*MicrosoftAuth(
                                 "5ee9c77a-aa7d-40fd-90d0-e82a1aced295",
-                                "Ldp8Q~ase31GArIU65gXb5Sb2T8~bOJusDM.Ra_5",
-                                ssl = false
+                                "Ldp8Q~ase31GArIU65gXb5Sb2T8~bOJusDM.Ra_5"
                             ) {
                                 appScope.launch {
                                     profile.launch(it)
@@ -166,7 +164,25 @@ fun initGui() {
                             }.also {
                                 appScope.launch {
                                     withContext(Dispatchers.IO) {
-                                        Desktop.getDesktop().browse(URI(it.generateURI("")))
+                                        Desktop.getDesktop().browse(URI(it.generateURI()))
+                                    }
+                                    it.setup(5548)
+                                }
+                            }
+                             */
+                            MicrosoftAuth(
+                                "e16699bb-2aa8-46da-b5e3-45cbcce29091",
+                                "",
+                                redirectUrl = "http://localhost:5548/callback",
+                                redirectRoute = "/callback"
+                            ) {
+                                appScope.launch {
+                                    profile.launch(it)
+                                }
+                            }.also {
+                                appScope.launch {
+                                    withContext(Dispatchers.IO) {
+                                        Desktop.getDesktop().browse(URI(it.generateURI()))
                                     }
                                     it.setup(5548)
                                 }
