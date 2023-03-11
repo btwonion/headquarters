@@ -8,3 +8,7 @@ plugins {
 repositories {
     mavenCentral()
 }
+
+dependencies {
+    implementation("me.obsilabor:piston-meta-kt:1.0.6")
+}

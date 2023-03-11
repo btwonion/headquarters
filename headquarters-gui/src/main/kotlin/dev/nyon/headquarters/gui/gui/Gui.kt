@@ -20,17 +20,23 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
+import dev.nyon.headquarters.app.appScope
+import dev.nyon.headquarters.app.launcher.launch
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.init
 import dev.nyon.headquarters.app.profile.realm
+import dev.nyon.headquarters.app.profile.testMinecraftVersion
 import dev.nyon.headquarters.app.runningDir
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
-import dev.nyon.headquarters.connector.mojang.models.MinecraftVersion
-import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
 import io.realm.kotlin.ext.query
-import kotlinx.datetime.Clock
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.obsilabor.pistonmetakt.MicrosoftAuth
+import java.awt.Desktop
+import java.net.URI
 
 fun initGui() {
     application {
@@ -39,21 +45,13 @@ fun initGui() {
         var profile by remember {
             mutableStateOf(realm.query<Profile>().find().getOrNull(0) ?: kotlin.run {
                 val newProfile =
-                    Profile(
-                        "Profile 1",
-                        "sadawdwad",
-                        runningDir.resolve("profiles/${"SDAWDSAD"}/"),
-                        Loader.Fabric,
-                        MinecraftVersion(
-                            "1.19.3",
-                            MinecraftVersionType.Release,
-                            "https://piston-meta.mojang.com/v1/packages/7c7a49009bf7d62324226b3536e046e0dbbc8141/1.19.3.json",
-                            Clock.System.now(),
-                            Clock.System.now(),
-                            "7c7a49009bf7d62324226b3536e046e0dbbc8141",
-                            1
-                        )
-                    )
+                    Profile().apply {
+                        name = "Profile 1"
+                        profileID = "sadawdwad"
+                        loader = Loader.Fabric
+                        profileDir = runningDir.resolve("profiles/${"SDAWDSAD"}/")
+                        minecraftVersion = testMinecraftVersion
+                    }
                 newProfile.init()
                 newProfile
             })
@@ -154,7 +152,26 @@ fun initGui() {
                         Modifier.fillMaxHeight().background(theme.surfaceVariant),
                         verticalArrangement = Arrangement.Bottom
                     ) {
-                        IconButton({ screen = Screen.Launch }, Modifier.padding(10.dp)) {
+                        IconButton({
+                            //screen = Screen.Launch
+                            MicrosoftAuth(
+                                "localhost:5548",
+                                "5ee9c77a-aa7d-40fd-90d0-e82a1aced295",
+                                "Ldp8Q~ase31GArIU65gXb5Sb2T8~bOJusDM.Ra_5",
+                                ssl = false
+                            ) {
+                                appScope.launch {
+                                    profile.launch(it)
+                                }
+                            }.also {
+                                appScope.launch {
+                                    withContext(Dispatchers.IO) {
+                                        Desktop.getDesktop().browse(URI(it.generateURI("")))
+                                    }
+                                    it.setup(5548)
+                                }
+                            }
+                        }, Modifier.padding(10.dp)) {
                             Icon(FeatherIcons.Play, "launch")
                         }
 

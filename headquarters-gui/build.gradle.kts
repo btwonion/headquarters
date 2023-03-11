@@ -7,8 +7,13 @@ plugins {
     `realm-script`
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation(rootProject.project(":headquarters-app"))
+    implementation("me.obsilabor:piston-meta-kt:1.0.6")
 }
 
 application {
