@@ -4,6 +4,7 @@ import dev.nyon.headquarters.app.profile.realm
 import dev.nyon.headquarters.connector.fabric.FabricConnector
 import dev.nyon.headquarters.connector.modrinth.ModrinthConnector
 import dev.nyon.headquarters.connector.mojang.MojangConnector
+import dev.nyon.headquarters.connector.mojang.models.`package`.Os
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -16,6 +17,7 @@ import kotlin.io.path.createDirectories
 
 val appScope = CoroutineScope(Dispatchers.Default)
 val runningDir = Path("${System.getProperty("user.home")}/headquarters/").createDirectories()
+val os = Os.values().find { System.getProperty("os.name").lowercase().startsWith(it.name.lowercase()) }
 private val ktorClientJson = Json {
     ignoreUnknownKeys = true
 }

@@ -1,17 +1,12 @@
 package dev.nyon.headquarters.app.profile
 
-import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.ktorClient
+import dev.nyon.headquarters.app.*
 import dev.nyon.headquarters.app.loader.FabricCreateProcess
 import dev.nyon.headquarters.app.loader.VanillaCreateProcess
-import dev.nyon.headquarters.app.modrinthConnector
-import dev.nyon.headquarters.app.mojangConnector
 import dev.nyon.headquarters.app.util.downloadFile
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.modrinth.requests.getVersions
-import dev.nyon.headquarters.connector.mojang.models.`package`.Os
 import io.ktor.http.*
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
@@ -51,7 +46,7 @@ private suspend fun Profile.downloadMojangLibraries(librariesPath: Path) {
     val meta = mojangConnector.getVersionPackage(minecraftVersion.id)
         ?: error("Couldn't find minecraft version '$minecraftVersion.id'")
     val libraries =
-        meta.libraries.filter { it.rules == null || it.rules!!.all { rule -> rule.os == null } || it.rules!!.any { rule -> rule.os!!.name == Os.Linux } }
+        meta.libraries.filter { it.rules == null || it.rules!!.all { rule -> rule.os == null } || it.rules!!.any { rule -> rule.os!!.name == os } }
     libraries.forEach { library ->
         librariesPath.resolve(library.downloads.artifact.path!!.dropLastWhile { it != '/' }).createDirectories()
         ktorClient.downloadFile(

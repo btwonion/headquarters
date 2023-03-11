@@ -31,7 +31,6 @@ import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
 import io.realm.kotlin.ext.query
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 
 fun initGui() {
     application {
