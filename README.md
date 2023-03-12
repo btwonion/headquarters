@@ -1,16 +1,15 @@
 # Headquarters
 
-> A modern Minecraft launcher with integrated mod manager and (in future) shared game profiles
+> A modern Minecraft launcher with integrated mod and modpack manager
 
 Currently under heavy development
 
 ## Features
 
-- [ ] discover page
+- [ ] discover page (modpacks)
 - [ ] news page
-- [ ] shared profiles
+- [ ] modrinth modpacks (creator and installer)
 - [x] search page
-- [ ] GitHub OAuth
 
 ### Other
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I3I8F1WX4)
