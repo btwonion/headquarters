@@ -7,6 +7,7 @@ import dev.nyon.headquarters.connector.mojang.MojangConnector
 import dev.nyon.headquarters.connector.mojang.models.`package`.Os
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +23,12 @@ private val ktorClientJson = Json {
     ignoreUnknownKeys = true
 }
 val ktorClient = HttpClient(CIO) {
-    install(ContentNegotiation) {
+    install(HttpTimeout) {
+        requestTimeoutMillis = 1000
+        connectTimeoutMillis = 1000
+        socketTimeoutMillis = 1000
+    }
+    install (ContentNegotiation) {
         json(ktorClientJson)
     }
 }

@@ -1,14 +1,14 @@
 package dev.nyon.headquarters.app.launcher
 
 import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.launcher.auth.MicrosoftAuth
+import dev.nyon.headquarters.app.launcher.auth.MinecraftCredentials
+import dev.nyon.headquarters.app.launcher.auth.XBoxAuthResponse
 import dev.nyon.headquarters.app.profile.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
-suspend fun Profile.launch(credentials: MicrosoftAuth.MicrosoftAccountInfo) {
+suspend fun Profile.launch(minecraftCredentials: MinecraftCredentials, xSTSCredentials: XBoxAuthResponse) {
     val startArgs = buildList {
         add("java")
         addVanillaArguments(this@launch)

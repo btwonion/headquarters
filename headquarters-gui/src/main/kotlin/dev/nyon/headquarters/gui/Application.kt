@@ -6,9 +6,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
-lateinit var appScope: CoroutineScope
+lateinit var guiScope: CoroutineScope
 suspend fun main() = coroutineScope {
-    appScope = this
+    guiScope = this
     initApp()
     launch {
         initGui()
