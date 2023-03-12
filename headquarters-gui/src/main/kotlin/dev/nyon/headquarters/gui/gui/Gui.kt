@@ -151,8 +151,8 @@ fun initGui() {
                         IconButton(onClick = {
                             //screen = Screen.Launch
                             appScope.launch {
-                                MinecraftAuth { minecraftCredentials, xSTSCredentials ->
-                                    profile.launch(minecraftCredentials, xSTSCredentials)
+                                MinecraftAuth { minecraftCredentials, xSTSCredentials, minecraftProfile ->
+                                    profile.launch(minecraftCredentials, xSTSCredentials, minecraftProfile)
                                 }.prepareLogIn()
                             }
                         }, Modifier.padding(10.dp)) {

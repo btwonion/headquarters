@@ -1,6 +1,7 @@
 package dev.nyon.headquarters.app.launcher
 
 import dev.nyon.headquarters.app.appScope
+import dev.nyon.headquarters.app.launcher.auth.MinecraftProfile
 import dev.nyon.headquarters.app.launcher.auth.MinecraftCredentials
 import dev.nyon.headquarters.app.launcher.auth.XBoxAuthResponse
 import dev.nyon.headquarters.app.profile.Profile
@@ -8,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-suspend fun Profile.launch(minecraftCredentials: MinecraftCredentials, xSTSCredentials: XBoxAuthResponse) {
+suspend fun Profile.launch(minecraftCredentials: MinecraftCredentials, xSTSCredentials: XBoxAuthResponse, accountInfo: MinecraftProfile) {
     val startArgs = buildList {
         add("java")
         addVanillaArguments(this@launch)
@@ -28,9 +29,10 @@ suspend fun Profile.launch(minecraftCredentials: MinecraftCredentials, xSTSCrede
     }
 }
 
-private fun MutableList<String>.replaceVariables() {
+private fun MutableList<String>.replaceVariables(credentials: MinecraftCredentials, xSTSCredentials: XBoxAuthResponse, accountInfo: MinecraftProfile) {
     val replacements = mapOf<String, String>(
-        "\${auth_player_name}" to ""
+        "\${auth_player_name}" to "acc.username",
+        "" to ""
     )
     forEach {
 

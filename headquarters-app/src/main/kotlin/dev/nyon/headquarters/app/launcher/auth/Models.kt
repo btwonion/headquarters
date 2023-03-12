@@ -1,6 +1,7 @@
 @file:Suppress("SpellCheckingInspection")
 package dev.nyon.headquarters.app.launcher.auth
 
+import dev.nyon.headquarters.app.util.OldUUIDSerializer
 import dev.nyon.headquarters.app.util.UUIDSerializer
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
@@ -77,3 +78,18 @@ data class MinecraftCredentials(
     @SerialName("expires_in") val expiresIn: Int,
     @SerialName("token_type") val tokenType: String
 )
+
+@Serializable
+data class MinecraftProfile(
+    val id: @Serializable(with = OldUUIDSerializer::class) UUID,
+    val name: String,
+    val skins: List<Skin>,
+    val capes: List<Cape>,
+    val profileActions: JsonObject
+) {
+    @Serializable
+    data class Skin(val id: @Serializable(with = UUIDSerializer::class) UUID, val state: String, val url: String, val variant: String)
+
+    @Serializable
+    data class Cape(val id: @Serializable(with = UUIDSerializer::class) UUID, val state: String, val url: String, val alias: String)
+}

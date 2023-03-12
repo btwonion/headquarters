@@ -26,7 +26,7 @@ import java.awt.Desktop
 import java.util.*
 
 
-class MinecraftAuth(private val callback: suspend (minecraftCredentials: MinecraftCredentials, xSTSCredentials: XBoxAuthResponse) -> Unit) {
+class MinecraftAuth(private val callback: suspend (minecraftCredentials: MinecraftCredentials, xSTSCredentials: XBoxAuthResponse, minecraftProfile: MinecraftProfile) -> Unit) {
 
     companion object {
         private const val clientID = "e16699bb-2aa8-46da-b5e3-45cbcce29091"
@@ -35,6 +35,7 @@ class MinecraftAuth(private val callback: suspend (minecraftCredentials: Minecra
         private const val xBoxAuthUrl = "https://user.auth.xboxlive.com/user/authenticate"
         private const val xSTSTokenUrl = "https://xsts.auth.xboxlive.com/xsts/authorize"
         private const val minecraftAccountRequestUrl = "https://api.minecraftservices.com/authentication/login_with_xbox"
+        private const val minecraftProfileRequestUrl = "https://api.minecraftservices.com/minecraft/profile"
         const val xSTSRelyingPartyUrl = "rp://api.minecraftservices.com/"
         const val relyingPartyUrl = "http://auth.xboxlive.com"
     }
@@ -127,7 +128,11 @@ class MinecraftAuth(private val callback: suspend (minecraftCredentials: Minecra
             setBody(MinecraftAccountCredentialsRequest("XBL3.0 x=${xSTSTokenResponse.displayClaims.xui.first().uhs};${xSTSTokenResponse.token}"))
         }.body<MinecraftCredentials>()
 
-        callback.invoke(minecraftAccountResponse, xSTSTokenResponse)
+        val minecraftProfileResponse = ktorClient.get(Url(minecraftProfileRequestUrl)) {
+            header("Authorization", "Bearer ${minecraftAccountResponse.accessToken}")
+        }.body<MinecraftProfile>()
+
+        println(minecraftProfileResponse)
     }
 }
 
