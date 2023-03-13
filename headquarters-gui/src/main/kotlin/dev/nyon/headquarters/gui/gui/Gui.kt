@@ -21,17 +21,21 @@ import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
 import dev.nyon.headquarters.app.appScope
+import dev.nyon.headquarters.app.fabricConnector
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
 import dev.nyon.headquarters.app.launcher.launch
+import dev.nyon.headquarters.app.mojangConnector
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.init
 import dev.nyon.headquarters.app.profile.realm
-import dev.nyon.headquarters.app.profile.testMinecraftVersion
 import dev.nyon.headquarters.app.runningDir
+import dev.nyon.headquarters.connector.fabric.requests.getLoaderProfile
+import dev.nyon.headquarters.connector.fabric.requests.getLoadersOfGameVersion
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 fun initGui() {
@@ -39,18 +43,33 @@ fun initGui() {
         var screen by remember { mutableStateOf(Screen.Home) }
         var theme by remember { mutableStateOf(darkTheme) }
         var profile by remember {
-            mutableStateOf(realm.query<Profile>().find().getOrNull(0) ?: kotlin.run {
-                val newProfile =
-                    Profile().apply {
-                        name = "Profile 1"
-                        profileID = "sadawdwad"
-                        loader = Loader.Fabric
-                        profileDir = runningDir.resolve("profiles/${"SDAWDSAD"}/")
-                        minecraftVersion = testMinecraftVersion
-                    }
-                newProfile.init()
-                newProfile
-            })
+            mutableStateOf(
+                realm.query<Profile>().find().firstOrNull()
+            )
+        }
+
+        if (profile == null) appScope.launch {
+            profile =
+                Profile().apply {
+                    name = "Profile 1"
+                    profileID = "sadawdwad"
+                    loader = Loader.Fabric
+                    minecraftVersion =
+                        mojangConnector.getVersionPackage(mojangConnector.getVersionManifest()!!.latest.release)!!
+
+                    val loaderVersion = (fabricConnector.getLoadersOfGameVersion(
+                        minecraftVersion.id
+                    )?.first()
+                        ?: error("Cannot find compatible fabric loader for version '${minecraftVersion.id}'")).loader.version
+                    loaderProfile = fabricConnector.getLoaderProfile(
+                        loaderVersion,
+                        minecraftVersion.id
+                    ) ?: error("Cannot find compatible fabric loader for version '$minecraftVersion.id'")
+                    profileDir = runningDir.resolve("profiles/${"SDAWDSAD"}/")
+                }.also { it.init() }
+            realm.write {
+                copyToRealm(profile!!)
+            }
         }
 
         Window(
@@ -91,7 +110,7 @@ fun initGui() {
                         Box {
                             var opened by remember { mutableStateOf(false) }
                             ExtendedFloatingActionButton(
-                                { Text(profile.name) },
+                                { Text(profile?.name ?: "Loading...") },
                                 { Icon(FeatherIcons.Package, "game profile") },
                                 { opened = true },
                                 Modifier.padding(5.dp),
@@ -152,7 +171,7 @@ fun initGui() {
                             //screen = Screen.Launch
                             appScope.launch {
                                 MinecraftAuth { minecraftCredentials, xSTSCredentials, minecraftProfile ->
-                                    profile.launch(minecraftCredentials, xSTSCredentials, minecraftProfile)
+                                    profile?.launch(minecraftCredentials, xSTSCredentials, minecraftProfile)
                                 }.prepareLogIn()
                             }
                         }, Modifier.padding(10.dp)) {
