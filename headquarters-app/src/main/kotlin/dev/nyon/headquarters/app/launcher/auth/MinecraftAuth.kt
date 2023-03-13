@@ -29,7 +29,7 @@ import java.util.*
 class MinecraftAuth(private val callback: suspend (minecraftCredentials: MinecraftCredentials, xSTSCredentials: XBoxAuthResponse, minecraftProfile: MinecraftProfile) -> Unit) {
 
     companion object {
-        private const val clientID = "e16699bb-2aa8-46da-b5e3-45cbcce29091"
+        const val clientID = "e16699bb-2aa8-46da-b5e3-45cbcce29091"
         private const val authorizeUrl = "https://login.live.com/oauth20_authorize.srf"
         private const val tokenUrl = "https://login.live.com/oauth20_token.srf"
         private const val xBoxAuthUrl = "https://user.auth.xboxlive.com/user/authenticate"
@@ -132,7 +132,7 @@ class MinecraftAuth(private val callback: suspend (minecraftCredentials: Minecra
             header("Authorization", "Bearer ${minecraftAccountResponse.accessToken}")
         }.body<MinecraftProfile>()
 
-        println(minecraftProfileResponse)
+        callback(minecraftAccountResponse, xSTSTokenResponse, minecraftProfileResponse)
     }
 }
 

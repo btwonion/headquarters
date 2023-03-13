@@ -21,6 +21,7 @@ fun Profile.init() {
         val librariesDir = profileDir.resolve("libraries/").createDirectories()
         val modsDir = profileDir.resolve("mods/").createDirectories()
         val resourcePackDir = profileDir.resolve("resourcepacks/").createDirectories()
+        profileDir.resolve("versions/").createDirectories()
         profileDir.resolve("assets/").createDirectories()
 
         downloadMojangLibraries(librariesDir)
@@ -57,7 +58,7 @@ private suspend fun Profile.downloadMojangLibraries(librariesPath: Path) {
 
 private suspend fun Profile.downloadLauncherLibraries() {
     when (loader) {
-        Loader.Fabric -> FabricCreateProcess(profileDir, this.minecraftVersion).installLibraries()
+        Loader.Fabric -> FabricCreateProcess(profileDir, this.minecraftVersion, loaderProfile).installLibraries()
         else -> VanillaCreateProcess(profileDir, this.minecraftVersion).installLibraries()
     }
 }
