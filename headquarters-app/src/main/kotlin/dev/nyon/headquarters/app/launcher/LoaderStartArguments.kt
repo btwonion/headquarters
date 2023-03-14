@@ -1,35 +1,37 @@
 package dev.nyon.headquarters.app.launcher
 
-import dev.nyon.headquarters.app.mojangConnector
+import dev.nyon.headquarters.app.arch
+import dev.nyon.headquarters.app.os
 import dev.nyon.headquarters.app.profile.Profile
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.listDirectoryEntries
+import dev.nyon.headquarters.connector.mojang.models.`package`.Argument
+import dev.nyon.headquarters.connector.mojang.models.`package`.RuleAction
 
 fun MutableList<String>.addFabricArguments(profile: Profile) {
-    add("-DFabricMcEmu=net.minecraft.client.main.Main")
-    add("-Dlog4j.configurationFile=net.fabricmc.loader.impl.launch.knot.KnotClient") // must be changed for vanilla
+    addAll(profile.loaderProfile.arguments.jvm ?: listOf())
 }
 
-suspend fun MutableList<String>.addVanillaArguments(profile: Profile) {
-    val pkg = mojangConnector.getVersionPackage(profile.minecraftVersion.id)
-        ?: error("Cannot find VersionPackage for minecraft version '${profile.minecraftVersion.id}'")
+fun MutableList<String>.addVanillaArguments(profile: Profile) {
+    profile.minecraftVersion.arguments.game.forEach { argument ->
+        when (argument) {
+            is Argument.SimpleArgument -> {
+                add(argument.value)
+            }
 
-    add("-Xss1M")
-    add("-Djava.library.path=.")
-    add("-cp")
-    add(profile.profileDir.resolve("libraries/").listDirectoryEntries().joinToString(":") {
-        it.absolutePathString()
-    })
+            is Argument.ExtendedArgument -> {
+                if (argument.rules.all { rule ->
+                        (rule.action == RuleAction.Allow && rule.os?.all {
+                            it.key == "arch" && it.value == arch || it.key == "name" && os?.name?.startsWith(
+                                it.value,
+                                ignoreCase = true
+                            ) == true
+                        } == true)
+                    })
+                    addAll(argument.value)
+            }
+        }
+    }
+
     add("-Xmx${profile.memory}G")
     add("-XX:+UnlockExperimentalVMOptions")
     add("-XX:+UseG1GC")
-    add("--gameDir")
-    add(profile.profileDir.absolutePathString())
-    add("--assetsDir")
-    add(profile.profileDir.resolve("assets/").absolutePathString())
-    add("--assetIndex")
-    add(pkg.assetIndex.id)
-    add("--userType")
-    add("msa")
-    add("--versionType")
 }

@@ -6,6 +6,7 @@ import dev.nyon.headquarters.app.launcher.auth.MinecraftCredentials
 import dev.nyon.headquarters.app.launcher.auth.MinecraftProfile
 import dev.nyon.headquarters.app.launcher.auth.XBoxAuthResponse
 import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.version
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.mojang.models.`package`.VersionPackage
 import kotlinx.coroutines.Dispatchers
@@ -27,8 +28,6 @@ suspend fun Profile.launch(
 
         replaceVariables(this@launch, minecraftCredentials, xSTSCredentials, mcProfile, minecraftVersion)
     }
-
-    println(startArgs)
 
     withContext(Dispatchers.IO) {
         val process = ProcessBuilder().command(startArgs).start()
@@ -62,12 +61,16 @@ private fun MutableList<String>.replaceVariables(
             .getAnnotation(SerialName::class.java).value,
         "\${natives_directory}" to System.getProperty("java.home"),
         "\${launcher_name}" to "headquarters",
-        "\${launcher_version}" to "1.0.0",
+        "\${launcher_version}" to version,
         "\${classpath}" to profile.profileDir.resolve("libraries/").listDirectoryEntries().joinToString(":") {
             it.absolutePathString()
         }
     )
-    forEach {
-        if (replacements.contains(it)) it.replace(it, replacements[it]!!)
+
+    forEachIndexed { index, original ->
+        if (replacements.contains(original)) {
+            this.removeAt(index)
+            this.add(index, replacements[original]!!)
+        }
     }
 }

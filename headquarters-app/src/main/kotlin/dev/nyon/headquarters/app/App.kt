@@ -18,6 +18,8 @@ import kotlin.io.path.createDirectories
 val appScope = CoroutineScope(Dispatchers.Default)
 val runningDir = Path("${System.getProperty("user.home")}/headquarters/").createDirectories()
 val os = Os.values().find { System.getProperty("os.name").lowercase().startsWith(it.name.lowercase()) }
+val arch = System.getProperty("os.arch")
+val version = "1.0.0"
 private val ktorClientJson = Json {
     ignoreUnknownKeys = true
 }
