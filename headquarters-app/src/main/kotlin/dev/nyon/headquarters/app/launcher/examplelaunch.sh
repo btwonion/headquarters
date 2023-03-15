@@ -24,3 +24,20 @@
   --xuid 2535445814935619 \
   --userType msa \
   --versionType release
+
+
+java
+--username btwonion
+--version fabric-loader-0.14.17-1.19.3
+--gameDir /home/onion/headquarters/profiles/SDAWDSAD
+--assetsDir /home/onion/headquarters/profiles/SDAWDSAD/assets
+--assetIndex 2 --uuid 84c7eef5-ae2c-4ebb-a006-c3ee07643d79
+--accessToken eyJraWQiOiJhYzg0YSIsImFsZyI6IkhTMjU2In0.eyJ4dWlkIjoiMjUzNTQ0NTgxNDkzNTYxOSIsImFnZyI6IkFkdWx0Iiwic3ViIjoiNjk0MmRiNDAtMTNhZS00Yzk1LThhODAtOTc5NzBiNGI2MDFmIiwiYXV0aCI6IlhCT1giLCJucyI6ImRlZmF1bHQiLCJyb2xlcyI6W10sImlzcyI6ImF1dGhlbnRpY2F0aW9uIiwicGxhdGZvcm0iOiJVTktOT1dOIiwieXVpZCI6ImYyZDkxOTk5MWIwOThiYzQ4OGQ3MzY3ZTA1ZGUxMzY1IiwibmJmIjoxNjc4NzQxNDY3LCJleHAiOjE2Nzg4Mjc4NjcsImlhdCI6MTY3ODc0MTQ2N30.JnAnQvVlMPLfzKgrkFoWG565mQ7Obu5sXRPvTQEr-Lg
+--clientId e16699bb-2aa8-46da-b5e3-45cbcce29091
+--xuid 11084590056773528384
+--userType msa
+--versionType release
+-Xmx4G
+-XX:+UnlockExperimentalVMOptions
+-XX:+UseG1GC
+-DFabricMcEmu= net.minecraft.client.main.Main

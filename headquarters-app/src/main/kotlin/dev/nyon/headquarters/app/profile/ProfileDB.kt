@@ -6,7 +6,7 @@ import io.realm.kotlin.RealmConfiguration
 
 val realm = run {
     val config =
-        RealmConfiguration.Builder(setOf(Profile::class)).directory("${runningDir.toAbsolutePath()}/data/db/")
+        RealmConfiguration.Builder(setOf(Profile::class, Project::class)).directory("${runningDir.toAbsolutePath()}/data/db/")
             .name("headquarters_db").build()
     Realm.open(config)
 }

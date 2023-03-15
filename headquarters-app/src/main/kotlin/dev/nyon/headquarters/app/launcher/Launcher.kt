@@ -29,9 +29,11 @@ suspend fun Profile.launch(
         replaceVariables(this@launch, minecraftCredentials, xSTSCredentials, mcProfile, minecraftVersion)
     }
 
+    println(startArgs)
+
     withContext(Dispatchers.IO) {
         val process = ProcessBuilder().command(startArgs).start()
-        appScope.launch {
+        appScope.launch(context = Dispatchers.IO) {
             while (process.isAlive) {
                 println(process.inputReader().readLines())
             }

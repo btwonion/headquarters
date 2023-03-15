@@ -16,3 +16,11 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
     implementation("net.lingala.zip4j:zip4j:2.11.5")
 }
+
+kotlin {
+    sourceSets.all {
+        languageSettings {
+            optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+        }
+    }
+}

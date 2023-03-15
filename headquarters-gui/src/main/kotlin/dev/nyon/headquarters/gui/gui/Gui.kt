@@ -35,7 +35,6 @@ import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
 import io.realm.kotlin.ext.query
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 fun initGui() {
@@ -44,7 +43,12 @@ fun initGui() {
         var theme by remember { mutableStateOf(darkTheme) }
         var profile by remember {
             mutableStateOf(
-                realm.query<Profile>().find().firstOrNull()
+                realm.query<Profile>().find().firstOrNull()?.also {
+                    appScope.launch {
+                        it.initLoaderProfile()
+                        it.initMinecraftVersionPackage()
+                    }
+                }
             )
         }
 
@@ -57,16 +61,18 @@ fun initGui() {
                     minecraftVersion =
                         mojangConnector.getVersionPackage(mojangConnector.getVersionManifest()!!.latest.release)!!
 
-                    val loaderVersion = (fabricConnector.getLoadersOfGameVersion(
+                    val latestLoaderVersion = (fabricConnector.getLoadersOfGameVersion(
                         minecraftVersion.id
                     )?.first()
                         ?: error("Cannot find compatible fabric loader for version '${minecraftVersion.id}'")).loader.version
+                    loaderVersion = latestLoaderVersion
                     loaderProfile = fabricConnector.getLoaderProfile(
-                        loaderVersion,
+                        latestLoaderVersion,
                         minecraftVersion.id
                     ) ?: error("Cannot find compatible fabric loader for version '$minecraftVersion.id'")
                     profileDir = runningDir.resolve("profiles/${"SDAWDSAD"}/")
-                }.also { it.init() }
+                }
+            profile?.init()
             realm.write {
                 copyToRealm(profile!!)
             }

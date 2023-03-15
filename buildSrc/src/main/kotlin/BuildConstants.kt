@@ -13,7 +13,7 @@ object BuildConstants {
     const val cliktVersion = "3.5.2"
 
     const val kmongoVersion = "4.8.0"
-    const val realmVersion = "1.6.1"
+    const val realmVersion = "1.7.0-SNAPSHOT"
 
     const val connectorVersion = "1.4.1"
 
