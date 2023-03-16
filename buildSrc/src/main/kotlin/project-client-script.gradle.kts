@@ -4,6 +4,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven("https://repo.nyon.dev/releases/")
 }
 
 dependencies {
