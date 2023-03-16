@@ -1,10 +1,12 @@
 package dev.nyon.headquarters.app.launcher
 
 import dev.nyon.headquarters.app.appScope
+import dev.nyon.headquarters.app.assetsDir
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
 import dev.nyon.headquarters.app.launcher.auth.MinecraftCredentials
 import dev.nyon.headquarters.app.launcher.auth.MinecraftProfile
 import dev.nyon.headquarters.app.launcher.auth.XBoxAuthResponse
+import dev.nyon.headquarters.app.librariesDir
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.version
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
@@ -13,7 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
+import java.nio.file.Path
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 
 suspend fun Profile.launch(
@@ -23,8 +27,9 @@ suspend fun Profile.launch(
 ) {
     val startArgs = buildList {
         add("java")
-        addVanillaArguments(this@launch)
-        addFabricArguments(this@launch)
+        addVanillaArguments(this@launch) {
+            addFabricArguments(this@launch)
+        }
 
         replaceVariables(this@launch, minecraftCredentials, xSTSCredentials, mcProfile, minecraftVersion)
     }
@@ -52,7 +57,7 @@ private fun MutableList<String>.replaceVariables(
         "\${auth_player_name}" to mcProfile.name,
         "\${version_name}" to profile.loaderProfile.id,
         "\${game_directory}" to profile.profileDir.absolutePathString(),
-        "\${assets_root}" to profile.profileDir.resolve("assets").absolutePathString(),
+        "\${assets_root}" to assetsDir.absolutePathString(),
         "\${assets_index_name}" to minecraftVersionPackage.assetIndex.id,
         "\${auth_uuid}" to mcProfile.id.toString(),
         "\${auth_access_token}" to credentials.accessToken,
@@ -64,15 +69,32 @@ private fun MutableList<String>.replaceVariables(
         "\${natives_directory}" to System.getProperty("java.home"),
         "\${launcher_name}" to "headquarters",
         "\${launcher_version}" to version,
-        "\${classpath}" to profile.profileDir.resolve("libraries/").listDirectoryEntries().joinToString(":") {
-            it.absolutePathString()
+        "\${classpath}" to kotlin.run {
+            val entries = mutableListOf<Path>()
+            val filesToLook = librariesDir.listDirectoryEntries().toMutableList()
+
+            do {
+                listOf(filesToLook).flatten().forEach {
+                    filesToLook.remove(it)
+                    if (it.isRegularFile()) entries.add(it)
+                    else filesToLook.addAll(it.listDirectoryEntries())
+                }
+            } while (filesToLook.isNotEmpty())
+
+            entries.add(profile.profileDir.resolve("client.jar"))
+
+            entries.joinToString(":") {
+                it.absolutePathString()
+            }
         }
     )
 
     forEachIndexed { index, original ->
-        if (replacements.contains(original)) {
-            this.removeAt(index)
-            this.add(index, replacements[original]!!)
+        for ((key, value) in replacements) {
+            if (original.contains(key)) {
+                this@replaceVariables[index] = original.replace(key, value)
+                break
+            }
         }
     }
 }

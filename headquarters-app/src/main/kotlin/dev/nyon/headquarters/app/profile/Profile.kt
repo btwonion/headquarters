@@ -60,7 +60,7 @@ class Profile() : RealmObject {
 }
 
 private val emptyVersionPackage = VersionPackage(
-    PackageArguments(listOf()),
+    PackageArguments(listOf(), listOf()),
     AssetIndex("", "", 1, 1, ""),
     "",
     1,

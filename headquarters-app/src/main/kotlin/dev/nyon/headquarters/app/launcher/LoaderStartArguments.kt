@@ -10,23 +10,25 @@ fun MutableList<String>.addFabricArguments(profile: Profile) {
     addAll(profile.loaderProfile.arguments.jvm ?: listOf())
 }
 
-fun MutableList<String>.addVanillaArguments(profile: Profile) {
-    profile.minecraftVersion.arguments.game.forEach { argument ->
-        when (argument) {
-            is Argument.SimpleArgument -> {
-                add(argument.value)
-            }
+fun MutableList<String>.addVanillaArguments(profile: Profile, jvmLibsCompletedCallback: () -> Unit) {
+    fun download(list: List<Argument>) {
+        list.forEach {argument ->
+            when (argument) {
+                is Argument.SimpleArgument -> {
+                    add(argument.value)
+                }
 
-            is Argument.ExtendedArgument -> {
-                if (argument.rules.all { rule ->
-                        (rule.action == RuleAction.Allow && rule.os?.all {
-                            it.key == "arch" && it.value == arch || it.key == "name" && os?.name?.startsWith(
-                                it.value,
-                                ignoreCase = true
-                            ) == true
-                        } == true)
-                    })
-                    addAll(argument.value)
+                is Argument.ExtendedArgument -> {
+                    if (argument.rules.all { rule ->
+                            (rule.action == RuleAction.Allow && rule.os?.all {
+                                it.key == "arch" && it.value == arch || it.key == "name" && os?.name?.startsWith(
+                                    it.value,
+                                    ignoreCase = true
+                                ) == true
+                            } == true)
+                        })
+                        addAll(argument.value)
+                }
             }
         }
     }
@@ -34,4 +36,7 @@ fun MutableList<String>.addVanillaArguments(profile: Profile) {
     add("-Xmx${profile.memory}G")
     add("-XX:+UnlockExperimentalVMOptions")
     add("-XX:+UseG1GC")
+    download(profile.minecraftVersion.arguments.jvm)
+    jvmLibsCompletedCallback()
+    download(profile.minecraftVersion.arguments.game)
 }
