@@ -1,31 +1,44 @@
 package dev.nyon.headquarters.app.profile
 
-import dev.nyon.headquarters.app.ktorClient
+import dev.nyon.headquarters.app.*
 import dev.nyon.headquarters.app.loader.FabricCreateProcess
 import dev.nyon.headquarters.app.loader.VanillaCreateProcess
-import dev.nyon.headquarters.app.modrinthConnector
-import dev.nyon.headquarters.app.mojangConnector
-import dev.nyon.headquarters.app.os
 import dev.nyon.headquarters.app.util.downloadFile
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.modrinth.requests.getVersions
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
+import kotlin.io.path.exists
+import kotlin.io.path.notExists
 
 
 suspend fun Profile.init() {
-    val librariesDir = profileDir.resolve("libraries/").createDirectories()
     val modsDir = profileDir.resolve("mods/").createDirectories()
     val resourcePackDir = profileDir.resolve("resourcepacks/").createDirectories()
     profileDir.resolve("versions/").createDirectories()
-    profileDir.resolve("assets/").createDirectories()
 
-    downloadMojangLibraries(librariesDir)
+    downloadMojangLibraries()
     downloadLauncherLibraries()
 
     modsDir.downloadProjects(mods)
     resourcePackDir.downloadProjects(resourcePacks)
+
+    val assetIndex = assetsDir.resolve("indexes/${minecraftVersion.assetIndex.id}.json")
+    if (assetIndex.notExists()) {
+        ktorClient.downloadFile(
+            Url(
+                minecraftVersion.assetIndex.url
+            ), assetIndex
+        )
+        downloadAssets()
+    }
 }
 
 private suspend fun Path.downloadProjects(projects: List<Project>) {
@@ -39,22 +52,42 @@ private suspend fun Path.downloadProjects(projects: List<Project>) {
     }
 }
 
-private suspend fun Profile.downloadMojangLibraries(librariesPath: Path) {
-    val meta = mojangConnector.getVersionPackage(minecraftVersion.id)
-        ?: error("Couldn't find minecraft version '${minecraftVersion.id}'")
+private suspend fun Profile.downloadMojangLibraries() {
     val libraries =
-        meta.libraries.filter { it.rules == null || it.rules!!.all { rule -> rule.os == null } || it.rules!!.any { rule -> rule.os!!.name == os } }
+        minecraftVersion.libraries.filter {
+            if (it.rules == null) return@filter true
+            if (it.rules!!.any { rule -> rule.os?.name == os }) return@filter true
+            false
+        }
     libraries.forEach { library ->
-        librariesPath.resolve(library.downloads.artifact.path!!.dropLastWhile { it != '/' }).createDirectories()
-        ktorClient.downloadFile(
-            Url(library.downloads.artifact.url), librariesPath.resolve(library.downloads.artifact.path!!)
-        )
+        val dirPath = librariesDir.resolve(library.downloads.artifact.path!!.dropLastWhile { it != '/' })
+        val path = librariesDir.resolve(library.downloads.artifact.path!!)
+        if (path.exists()) return@forEach
+        dirPath.createDirectories()
+        ktorClient.downloadFile(Url(library.downloads.artifact.url), path)
     }
+
+    ktorClient.downloadFile(Url(minecraftVersion.downloads.client.url), profileDir.resolve("client.jar"))
 }
 
 private suspend fun Profile.downloadLauncherLibraries() {
     when (loader) {
         Loader.Fabric -> FabricCreateProcess(profileDir, this.minecraftVersion, loaderProfile).installLibraries()
         else -> VanillaCreateProcess(profileDir, this.minecraftVersion).installLibraries()
+    }
+}
+
+private suspend fun Profile.downloadAssets() {
+    val objectDir = assetsDir.resolve("objects/")
+    val assetString = ktorClient.get(minecraftVersion.assetIndex.url).bodyAsText()
+    val assetObject = Json.parseToJsonElement(assetString).jsonObject["objects"]
+    assetObject?.jsonObject?.values?.map { it.jsonObject }?.forEach {
+        val hash = it["hash"]?.jsonPrimitive?.content
+        val filePath = objectDir.resolve("${hash?.take(2)}/$hash")
+        if (filePath.exists()) return@forEach
+        filePath.parent.createDirectories()
+        ktorClient.downloadFile(
+            Url("https://dl.hglabor.de/mirror/assets/1.19.4/objects/${hash?.take(2)}/$hash"), filePath
+        )
     }
 }
