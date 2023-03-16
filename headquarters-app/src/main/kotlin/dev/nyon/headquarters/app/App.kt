@@ -17,6 +17,13 @@ import kotlin.io.path.createDirectories
 
 val appScope = CoroutineScope(Dispatchers.Default)
 val runningDir = Path("${System.getProperty("user.home")}/headquarters/").createDirectories()
+val librariesDir = runningDir.resolve("libraries/").createDirectories()
+val assetsDir = runningDir.resolve("assets/").createDirectories().also {
+    it.resolve("indexes/").createDirectories()
+    it.resolve("log_configs/").createDirectories()
+    it.resolve("objects/").createDirectories()
+    it.resolve("skins/").createDirectories()
+}
 val os = Os.values().find { System.getProperty("os.name").lowercase().startsWith(it.name.lowercase()) }
 val arch = System.getProperty("os.arch") ?: error("Could not find system property for core architecture 'os.arch'!")
 const val version = "1.0.0"

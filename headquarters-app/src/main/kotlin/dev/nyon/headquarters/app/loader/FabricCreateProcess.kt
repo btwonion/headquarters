@@ -2,6 +2,7 @@ package dev.nyon.headquarters.app.loader
 
 import dev.nyon.headquarters.app.fabricConnector
 import dev.nyon.headquarters.app.ktorClient
+import dev.nyon.headquarters.app.librariesDir
 import dev.nyon.headquarters.app.util.downloadFile
 import dev.nyon.headquarters.connector.fabric.models.LoaderProfile
 import dev.nyon.headquarters.connector.fabric.requests.getLoadersOfGameVersion
@@ -14,6 +15,7 @@ import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteIfExists
+import kotlin.io.path.exists
 
 class FabricCreateProcess(
     override val profileDir: Path,
@@ -43,7 +45,6 @@ class FabricCreateProcess(
 
         zipPath.deleteIfExists()
 
-        val librariesDir = profileDir.resolve("libraries/")
         loaderProfile.libraries.forEach { artifact ->
             val split = artifact.name.split(":")
             val fileName = "${split[1]}-${split[2]}.jar"
@@ -52,7 +53,9 @@ class FabricCreateProcess(
             }$fileName"
 
             val artifactPath =
-                librariesDir.resolve("${split[0].replace(".", "/")}/${split[1]}/${split[2]}").createDirectories()
+                librariesDir.resolve("${split[0].replace(".", "/")}/${split[1]}/${split[2]}")
+            if (artifactPath.exists()) return@forEach
+            artifactPath.createDirectories()
             ktorClient.downloadFile(Url(url), artifactPath.resolve(fileName))
         }
     }
