@@ -3,14 +3,15 @@ package dev.nyon.headquarters.app.profile
 import dev.nyon.headquarters.app.*
 import dev.nyon.headquarters.app.loader.FabricCreateProcess
 import dev.nyon.headquarters.app.loader.VanillaCreateProcess
+import dev.nyon.headquarters.app.util.commonFileEnding
 import dev.nyon.headquarters.app.util.downloadFile
+import dev.nyon.headquarters.app.util.requestReleases
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.modrinth.requests.getVersions
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.nio.file.Path
@@ -29,6 +30,16 @@ suspend fun Profile.init() {
 
     modsDir.downloadProjects(mods)
     resourcePackDir.downloadProjects(resourcePacks)
+
+    val release =
+        requestReleases("adoptium/temurin17-binaries").first { it.name.startsWith("jdk-${minecraftVersion.javaVersion.majorVersion}") }
+    val asset = release.assets.find { asset ->
+        val name = asset.name.dropWhile { it != '-' }.drop(1)
+        name.startsWith("jdk_${arch}_${os.name.lowercase()}_hotspot_") && name.endsWith(os.commonFileEnding)
+    } ?: error("cannot find java package matching your system")
+    val fileName = "${minecraftVersion.javaVersion.majorVersion}${os.commonFileEnding}"
+    // TODO unpack package
+    ktorClient.downloadFile(Url(asset.url), javaVersionsDir.resolve(fileName))
 
     val assetIndex = assetsDir.resolve("indexes/${minecraftVersion.assetIndex.id}.json")
     if (assetIndex.notExists()) {

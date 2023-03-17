@@ -24,7 +24,8 @@ val assetsDir = runningDir.resolve("assets/").createDirectories().also {
     it.resolve("objects/").createDirectories()
     it.resolve("skins/").createDirectories()
 }
-val os = Os.values().find { System.getProperty("os.name").lowercase().startsWith(it.name.lowercase()) }
+val javaVersionsDir = runningDir.resolve("java-versions/").createDirectories()
+val os = Os.values().find { System.getProperty("os.name").lowercase().startsWith(it.name.lowercase()) } ?: error("cannot determine os!")
 val arch = System.getProperty("os.arch") ?: error("Could not find system property for core architecture 'os.arch'!")
 const val version = "1.0.0"
 private val ktorClientJson = Json {
