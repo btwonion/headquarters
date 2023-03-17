@@ -1,6 +1,5 @@
 package dev.nyon.headquarters.app.launcher
 
-import dev.nyon.headquarters.app.appScope
 import dev.nyon.headquarters.app.assetsDir
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
 import dev.nyon.headquarters.app.launcher.auth.MinecraftCredentials
@@ -12,7 +11,6 @@ import dev.nyon.headquarters.app.version
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.mojang.models.`package`.VersionPackage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import java.nio.file.Path
@@ -37,12 +35,9 @@ suspend fun Profile.launch(
     println(startArgs)
 
     withContext(Dispatchers.IO) {
-        val process = ProcessBuilder().command(startArgs).start()
-        appScope.launch(context = Dispatchers.IO) {
-            while (process.isAlive) {
-                println(process.inputReader().readLines())
-            }
-        }
+        val process = ProcessBuilder().command(startArgs)
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT).start()
     }
 }
 
@@ -66,7 +61,7 @@ private fun MutableList<String>.replaceVariables(
         "\${user_type}" to "msa",
         "\${version_type}" to MinecraftVersionType::class.java.getDeclaredField(minecraftVersionPackage.type.name)
             .getAnnotation(SerialName::class.java).value,
-        "\${natives_directory}" to System.getProperty("java.home"),
+        "\${natives_directory}" to librariesDir.absolutePathString(),
         "\${launcher_name}" to "headquarters",
         "\${launcher_version}" to version,
         "\${classpath}" to kotlin.run {
