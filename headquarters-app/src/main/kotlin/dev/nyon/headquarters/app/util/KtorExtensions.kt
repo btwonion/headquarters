@@ -25,7 +25,7 @@ suspend inline fun HttpClient.downloadFile(
 
         try {
             while (!channel.isClosedForRead) {
-                val packet = channel.readRemaining(25000000.toLong())
+                val packet = channel.readRemaining(200000000.toLong())
                 while (!packet.isEmpty) {
                     partPath.writeBytes(packet.readBytes())
                 }
