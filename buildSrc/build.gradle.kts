@@ -7,7 +7,6 @@ repositories {
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     maven("https://androidx.dev/storage/compose-compiler/repository")
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
@@ -24,5 +23,5 @@ dependencies {
 
     implementation(pluginDep("org.jetbrains.compose", "1.3.1-rc01"))
 
-    implementation("io.realm.kotlin:gradle-plugin:1.7.0-SNAPSHOT")
+    implementation("io.realm.kotlin:gradle-plugin:1.7.0")
 }
