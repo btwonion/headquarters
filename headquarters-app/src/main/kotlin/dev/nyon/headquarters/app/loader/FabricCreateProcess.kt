@@ -10,9 +10,9 @@ import dev.nyon.headquarters.connector.mojang.models.`package`.VersionPackage
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.lingala.zip4j.ZipFile
+import org.rauschig.jarchivelib.ArchiveFormat
+import org.rauschig.jarchivelib.ArchiverFactory
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.exists
@@ -36,13 +36,10 @@ class FabricCreateProcess(
             Url("https://meta.fabricmc.net/v2/versions/loader/${minecraftVersion.id}/$loaderVersion/profile/zip"),
             zipPath
         )
-
         withContext(Dispatchers.IO) {
-            ZipFile(zipPath.absolutePathString()).extractAll(
-                versionsDir.absolutePathString()
-            )
+            val zipArchiver = ArchiverFactory.createArchiver(ArchiveFormat.ZIP)
+            zipArchiver.extract(zipPath.toFile(), versionsDir.toFile())
         }
-
         zipPath.deleteIfExists()
 
         loaderProfile.libraries.forEach { artifact ->
