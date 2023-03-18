@@ -42,6 +42,7 @@ fun MutableList<String>.addVanillaArguments(profile: Profile, jvmLibsCompletedCa
     add("-XX:+UnlockExperimentalVMOptions")
     add("-XX:+UseG1GC")
     download(profile.minecraftVersion.arguments.jvm)
+    add(profile.minecraftVersion.logging.client!!.argument)
     jvmLibsCompletedCallback()
     download(profile.minecraftVersion.arguments.game)
 }

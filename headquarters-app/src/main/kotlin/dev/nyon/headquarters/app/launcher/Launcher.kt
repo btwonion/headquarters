@@ -1,25 +1,24 @@
 package dev.nyon.headquarters.app.launcher
 
-import dev.nyon.headquarters.app.assetsDir
-import dev.nyon.headquarters.app.javaVersionsDir
+import dev.nyon.headquarters.app.*
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAccountInfo
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
-import dev.nyon.headquarters.app.librariesDir
-import dev.nyon.headquarters.app.profile.Profile
-import dev.nyon.headquarters.app.version
+import dev.nyon.headquarters.app.profile.*
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
-import java.nio.file.Path
 import kotlin.io.path.absolutePathString
-import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 
 suspend fun Profile.launch(
     accountInfo: MinecraftAccountInfo
 ) {
+    println("Running fileCheck")
+    fileCheck()
+    println("FileCheck complete")
+
     val startArgs = buildList {
         add(
             javaVersionsDir.resolve("java_${minecraftVersion.javaVersion.majorVersion}/").listDirectoryEntries().first()

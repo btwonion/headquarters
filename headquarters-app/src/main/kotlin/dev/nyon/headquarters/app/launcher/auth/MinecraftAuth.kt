@@ -154,7 +154,6 @@ val mcAccounts: MutableList<MinecraftAccountInfo> = run {
     val decrypted = decryptBlowfish(encryptionKey, raw)
     val accounts: MutableList<MinecraftAccountInfo> = json.decodeFromString(decrypted)
     accounts.removeIf { it.expireDate < Clock.System.now() }
-    println(accounts)
     return@run accounts
 }
 

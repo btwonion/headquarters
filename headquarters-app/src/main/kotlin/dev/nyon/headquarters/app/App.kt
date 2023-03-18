@@ -7,6 +7,7 @@ import dev.nyon.headquarters.connector.fabric.FabricConnector
 import dev.nyon.headquarters.connector.modrinth.ModrinthConnector
 import dev.nyon.headquarters.connector.mojang.MojangConnector
 import dev.nyon.headquarters.connector.mojang.models.`package`.Os
+import dev.nyon.headquarters.connector.quilt.QuiltConnector
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -27,10 +28,12 @@ val assetsDir = runningDir.resolve("assets/").createDirectories().also {
     it.resolve("skins/").createDirectories()
 }
 val javaVersionsDir = runningDir.resolve("java-versions/").createDirectories()
-val accountsFile: Path = runningDir.resolve("minecraft-accounts").also { if (it.notExists()) {
-    it.createFile()
-    it.writeText(encryptBlowfish(encryptionKey, "[]"))
-} }
+val accountsFile: Path = runningDir.resolve("minecraft-accounts").also {
+    if (it.notExists()) {
+        it.createFile()
+        it.writeText(encryptBlowfish(encryptionKey, "[]"))
+    }
+}
 val os = Os.values().find { System.getProperty("os.name").lowercase().startsWith(it.name.lowercase()) }
     ?: error("Cannot determine os!")
 val arch = run {
