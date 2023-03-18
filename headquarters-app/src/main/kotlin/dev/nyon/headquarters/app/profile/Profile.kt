@@ -2,13 +2,16 @@ package dev.nyon.headquarters.app.profile
 
 import dev.nyon.headquarters.app.fabricConnector
 import dev.nyon.headquarters.app.mojangConnector
+import dev.nyon.headquarters.app.quiltConnector
 import dev.nyon.headquarters.app.runningDir
+import dev.nyon.headquarters.app.util.fabricProfile
 import dev.nyon.headquarters.connector.fabric.models.Arguments
 import dev.nyon.headquarters.connector.fabric.models.LoaderProfile
 import dev.nyon.headquarters.connector.fabric.requests.getLoaderProfile
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.mojang.models.`package`.*
+import dev.nyon.headquarters.connector.quilt.requests.getLoaderProfile
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
@@ -55,9 +58,11 @@ class Profile() : RealmObject {
     }
 
     suspend fun initLoaderProfile() {
-        // TODO implement quilt loader loading
-        loaderProfile = fabricConnector.getLoaderProfile(loaderVersion, minecraftVersionID)
+        loaderProfile = if (loader == Loader.Quilt) quiltConnector.getLoaderProfile(loaderVersion, minecraftVersionID)?.fabricProfile()
+            ?: error("LoaderProfile for quilt loader version '$loaderVersion' and minecraft version '$minecraftVersionID' cannot be found!")
+        else fabricConnector.getLoaderProfile(loaderVersion, minecraftVersionID)
             ?: error("LoaderProfile for fabric loader version '$loaderVersion' and minecraft version '$minecraftVersionID' cannot be found!")
+
     }
 }
 

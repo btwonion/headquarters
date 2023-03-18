@@ -27,18 +27,22 @@ suspend fun Profile.launch(
         )
         addVanillaArguments(this@launch) {
             if (loader == Loader.Fabric) addFabricArguments(this@launch)
+            if (loader == Loader.Quilt) addQuiltArguments(this@launch)
         }
 
         replaceVariables(this@launch, accountInfo)
     }
 
-    println(startArgs)
-
     withContext(Dispatchers.IO) {
-        val process = ProcessBuilder().command(startArgs)
-            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-            .redirectError(ProcessBuilder.Redirect.INHERIT).start()
+        ProcessBuilder().command(startArgs).start()
     }
+}
+
+suspend fun Profile.fileCheck() {
+    assureJavaVersion()
+    assureAssets()
+    assureLauncherLibraries()
+    assureMojangLibraries()
 }
 
 private fun MutableList<String>.replaceVariables(
@@ -62,23 +66,28 @@ private fun MutableList<String>.replaceVariables(
         "\${launcher_name}" to "headquarters",
         "\${launcher_version}" to version,
         "\${classpath}" to kotlin.run {
-            val entries = mutableListOf<Path>()
-            val filesToLook = librariesDir.listDirectoryEntries().toMutableList()
-
-            do {
-                listOf(filesToLook).flatten().forEach {
-                    filesToLook.remove(it)
-                    if (it.isRegularFile()) entries.add(it)
-                    else filesToLook.addAll(it.listDirectoryEntries())
+            buildList {
+                profile.loaderProfile.libraries.forEach {
+                    val split = it.name.split(":")
+                    val fileName = "${split[1]}-${split[2]}.jar"
+                    val artifactPath =
+                        librariesDir.resolve("${split[0].replace(".", "/")}/${split[1]}/${split[2]}/$fileName")
+                    add(artifactPath.absolutePathString())
                 }
-            } while (filesToLook.isNotEmpty())
 
-            entries.add(profile.profileDir.resolve("client.jar"))
+                profile.minecraftVersion.libraries.filter {
+                    if (it.rules == null) return@filter true
+                    if (it.rules!!.any { rule -> rule.os?.name == os }) return@filter true
+                    false
+                }.map { it.downloads.artifact }.forEach {
+                    if (it.path != null) add(librariesDir.resolve(it.path!!).absolutePathString())
+                }
 
-            entries.joinToString(":") {
-                it.absolutePathString()
-            }
-        }
+                add(profile.profileDir.resolve("client.jar").absolutePathString())
+            }.joinToString((":"))
+        },
+        "\${path}" to profile.profileDir.resolve(profile.minecraftVersion.logging.client!!.file.url.takeLastWhile { it != '/' })
+            .absolutePathString()
     )
 
     forEachIndexed { index, original ->

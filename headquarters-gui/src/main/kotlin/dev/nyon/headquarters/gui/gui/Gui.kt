@@ -21,7 +21,6 @@ import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
 import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.fabricConnector
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
 import dev.nyon.headquarters.app.launcher.auth.mcAccounts
 import dev.nyon.headquarters.app.launcher.auth.saveAccountsFile
@@ -30,10 +29,12 @@ import dev.nyon.headquarters.app.mojangConnector
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.init
 import dev.nyon.headquarters.app.profile.realm
+import dev.nyon.headquarters.app.quiltConnector
 import dev.nyon.headquarters.app.runningDir
-import dev.nyon.headquarters.connector.fabric.requests.getLoaderProfile
-import dev.nyon.headquarters.connector.fabric.requests.getLoadersOfGameVersion
+import dev.nyon.headquarters.app.util.fabricProfile
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
+import dev.nyon.headquarters.connector.quilt.requests.getLoaderProfile
+import dev.nyon.headquarters.connector.quilt.requests.getLoadersOfGameVersion
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
 import io.realm.kotlin.ext.query
@@ -60,19 +61,20 @@ fun initGui() {
                 Profile().apply {
                     name = "Profile 1"
                     profileID = "abc"
-                    loader = Loader.Fabric
+                    loader = Loader.Quilt
                     minecraftVersion =
                         mojangConnector.getVersionPackage(mojangConnector.getVersionManifest()!!.latest.release)!!
 
-                    val latestLoaderVersion = (fabricConnector.getLoadersOfGameVersion(
+                    val latestLoaderVersion = (quiltConnector.getLoadersOfGameVersion(
                         minecraftVersion.id
                     )?.first()
                         ?: error("Cannot find compatible fabric loader for version '${minecraftVersion.id}'")).loader.version
                     loaderVersion = latestLoaderVersion
-                    loaderProfile = fabricConnector.getLoaderProfile(
+                    loaderProfile = quiltConnector.getLoaderProfile(
                         latestLoaderVersion,
                         minecraftVersion.id
-                    ) ?: error("Cannot find compatible fabric loader for version '$minecraftVersion.id'")
+                    )?.fabricProfile()
+                        ?: error("Cannot find compatible fabric loader for version '${minecraftVersion.id}'")
                     profileDir = runningDir.resolve("profiles/Profile-1/")
                 }
             profile?.init()

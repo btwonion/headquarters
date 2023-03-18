@@ -11,6 +11,10 @@ fun MutableList<String>.addFabricArguments(profile: Profile) {
     add(profile.loaderProfile.mainClass)
 }
 
+fun MutableList<String>.addQuiltArguments(profile: Profile) {
+    add(profile.loaderProfile.mainClass)
+}
+
 fun MutableList<String>.addVanillaArguments(profile: Profile, jvmLibsCompletedCallback: () -> Unit) {
     fun download(list: List<Argument>) {
         list.forEach { argument ->

@@ -12,6 +12,7 @@ dependencies {
     implementation("dev.nyon:headquarters-connector-core:${BuildConstants.connectorVersion}")
     implementation("dev.nyon:headquarters-connector-fabric:${BuildConstants.connectorVersion}")
     implementation("dev.nyon:headquarters-connector-mojang:${BuildConstants.connectorVersion}")
+    implementation("dev.nyon:headquarters-connector-quilt:${BuildConstants.connectorVersion}")
 
     implementation("io.ktor:ktor-client-core:${BuildConstants.ktorVersion}")
     implementation("io.ktor:ktor-client-cio:${BuildConstants.ktorVersion}")

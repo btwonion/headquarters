@@ -52,6 +52,7 @@ val ktorClient = HttpClient(CIO) {
 val modrinthConnector: ModrinthConnector = ModrinthConnector(ktorClient, json)
 val fabricConnector: FabricConnector = FabricConnector(ktorClient, json)
 val mojangConnector: MojangConnector = MojangConnector(ktorClient, json)
+val quiltConnector: QuiltConnector = QuiltConnector(ktorClient, json)
 
 fun initApp() {
     realm
