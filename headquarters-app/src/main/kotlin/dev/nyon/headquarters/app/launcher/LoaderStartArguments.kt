@@ -8,11 +8,12 @@ import dev.nyon.headquarters.connector.mojang.models.`package`.RuleAction
 
 fun MutableList<String>.addFabricArguments(profile: Profile) {
     addAll(profile.loaderProfile.arguments.jvm ?: listOf())
+    add(profile.loaderProfile.mainClass)
 }
 
 fun MutableList<String>.addVanillaArguments(profile: Profile, jvmLibsCompletedCallback: () -> Unit) {
     fun download(list: List<Argument>) {
-        list.forEach {argument ->
+        list.forEach { argument ->
             when (argument) {
                 is Argument.SimpleArgument -> {
                     add(argument.value)
@@ -21,10 +22,10 @@ fun MutableList<String>.addVanillaArguments(profile: Profile, jvmLibsCompletedCa
                 is Argument.ExtendedArgument -> {
                     if (argument.rules.all { rule ->
                             (rule.action == RuleAction.Allow && rule.os?.all {
-                                it.key == "arch" && it.value == arch || it.key == "name" && os?.name?.startsWith(
+                                it.key == "arch" && it.value == arch || it.key == "name" && os.name.startsWith(
                                     it.value,
                                     ignoreCase = true
-                                ) == true
+                                )
                             } == true)
                         })
                         addAll(argument.value)
