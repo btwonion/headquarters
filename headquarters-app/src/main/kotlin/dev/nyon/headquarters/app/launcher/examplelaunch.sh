@@ -24,20 +24,71 @@
   --xuid 2535445814935619 \
   --userType msa \
   --versionType release
-
-
-java
---username btwonion
---version fabric-loader-0.14.17-1.19.3
---gameDir /home/onion/headquarters/profiles/SDAWDSAD
---assetsDir /home/onion/headquarters/profiles/SDAWDSAD/assets
---assetIndex 2 --uuid 84c7eef5-ae2c-4ebb-a006-c3ee07643d79
---accessToken eyJraWQiOiJhYzg0YSIsImFsZyI6IkhTMjU2In0.eyJ4dWlkIjoiMjUzNTQ0NTgxNDkzNTYxOSIsImFnZyI6IkFkdWx0Iiwic3ViIjoiNjk0MmRiNDAtMTNhZS00Yzk1LThhODAtOTc5NzBiNGI2MDFmIiwiYXV0aCI6IlhCT1giLCJucyI6ImRlZmF1bHQiLCJyb2xlcyI6W10sImlzcyI6ImF1dGhlbnRpY2F0aW9uIiwicGxhdGZvcm0iOiJVTktOT1dOIiwieXVpZCI6ImYyZDkxOTk5MWIwOThiYzQ4OGQ3MzY3ZTA1ZGUxMzY1IiwibmJmIjoxNjc4NzQxNDY3LCJleHAiOjE2Nzg4Mjc4NjcsImlhdCI6MTY3ODc0MTQ2N30.JnAnQvVlMPLfzKgrkFoWG565mQ7Obu5sXRPvTQEr-Lg
---clientId e16699bb-2aa8-46da-b5e3-45cbcce29091
---xuid 11084590056773528384
---userType msa
---versionType release
--Xmx4G
--XX:+UnlockExperimentalVMOptions
--XX:+UseG1GC
--DFabricMcEmu= net.minecraft.client.main.Main
+ 
+java \
+ -Xmx4G \
+ -XX:+UnlockExperimentalVMOptions \
+ -XX:+UseG1GC \
+ -Djava.library.path=/home/onion/headquarters/libraries \
+ -Dminecraft.launcher.brand=headquarters \
+ -Dminecraft.launcher.version=1.0.0 \
+ -cp \
+ /home/onion/headquarters/libraries/commons-codec/commons-codec/1.15/commons-codec-1.15.jar:/home/onion/headquarters/libraries/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar:/home/onion/headquarters/libraries/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/onion/headquarters/libraries/com/mojang/authlib/3.18.38/authlib-3.18.38.jar:/home/onion/headquarters/libraries/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar:/home/onion/headquarters/libraries/com/mojang/brigadier/1.0.18/brigadier-1.0.18.jar:/home/onion/headquarters/libraries/com/mojang/datafixerupper/6.0.6/datafixerupper-6.0.6.jar:/home/onion/headquarters/libraries/com/mojang/logging/1.1.1/logging-1.1.1.jar:/home/onion/headquarters/libraries/com/mojang/patchy/2.2.10/patchy-2.2.10.jar:/home/onion/headquarters/libraries/com/mojang/text2speech/1.13.9/text2speech-1.13.9.jar:/home/onion/headquarters/libraries/com/mojang/text2speech/1.13.9/text2speech-1.13.9-natives-linux.jar:/home/onion/headquarters/libraries/io/netty/netty-buffer/4.1.82.Final/netty-buffer-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-codec/4.1.82.Final/netty-codec-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-common/4.1.82.Final/netty-common-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-handler/4.1.82.Final/netty-handler-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-resolver/4.1.82.Final/netty-resolver-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-transport-classes-epoll/4.1.82.Final/netty-transport-classes-epoll-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-transport-native-epoll/4.1.82.Final/netty-transport-native-epoll-4.1.82.Final-linux-aarch_64.jar:/home/onion/headquarters/libraries/io/netty/netty-transport-native-epoll/4.1.82.Final/netty-transport-native-epoll-4.1.82.Final-linux-x86_64.jar:/home/onion/headquarters/libraries/io/netty/netty-transport-native-unix-common/4.1.82.Final/netty-transport-native-unix-common-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-transport/4.1.82.Final/netty-transport-4.1.82.Final.jar:/home/onion/headquarters/libraries/net/fabricmc/tiny-mappings-parser/0.3.0+build.17/tiny-mappings-parser-0.3.0+build.17.jar:/home/onion/headquarters/libraries/net/fabricmc/sponge-mixin/0.12.4+mixin.0.8.5/sponge-mixin-0.12.4+mixin.0.8.5.jar:/home/onion/headquarters/libraries/net/fabricmc/tiny-remapper/0.8.2/tiny-remapper-0.8.2.jar:/home/onion/headquarters/libraries/net/fabricmc/access-widener/2.1.0/access-widener-2.1.0.jar:/home/onion/headquarters/libraries/net/fabricmc/intermediary/1.19.4/intermediary-1.19.4.jar:/home/onion/headquarters/libraries/net/fabricmc/fabric-loader/0.14.17/fabric-loader-0.14.17.jar:/home/onion/headquarters/libraries/org/joml/joml/1.10.5/joml-1.10.5.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/slf4j/slf4j-api/2.0.1/slf4j-api-2.0.1.jar:/home/onion/headquarters/libraries/com/github/oshi/oshi-core/6.2.2/oshi-core-6.2.2.jar:/home/onion/headquarters/libraries/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar:/home/onion/headquarters/libraries/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar:/home/onion/headquarters/libraries/com/ibm/icu/icu4j/71.1/icu4j-71.1.jar:/home/onion/headquarters/libraries/it/unimi/dsi/fastutil/8.5.9/fastutil-8.5.9.jar:/home/onion/headquarters/libraries/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/home/onion/headquarters/libraries/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar:/home/onion/headquarters/libraries/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar:/home/onion/headquarters/libraries/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar:/home/onion/headquarters/libraries/org/apache/httpcomponents/httpcore/4.4.15/httpcore-4.4.15.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm/9.4/asm-9.4.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm-analysis/9.4/asm-analysis-9.4.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm-commons/9.4/asm-commons-9.4.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm-tree/9.4/asm-tree-9.4.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm-util/9.4/asm-util-9.4.jar:/home/onion/headquarters/libraries/com/google/code/gson/gson/2.10/gson-2.10.jar:/home/onion/headquarters/libraries/net/java/dev/jna/jna-platform/5.12.1/jna-platform-5.12.1.jar:/home/onion/headquarters/libraries/net/java/dev/jna/jna/5.12.1/jna-5.12.1.jar:/home/onion/headquarters/libraries/org/apache/logging/log4j/log4j-api/2.19.0/log4j-api-2.19.0.jar:/home/onion/headquarters/libraries/org/apache/logging/log4j/log4j-core/2.19.0/log4j-core-2.19.0.jar:/home/onion/headquarters/libraries/org/apache/logging/log4j/log4j-slf4j2-impl/2.19.0/log4j-slf4j2-impl-2.19.0.jar:/home/onion/headquarters/profiles/SDAWDSAD/client.jar \
+ -DFabricMcEmu= net.minecraft.client.main.Main  \
+ -Dlog4j.configurationFile=/home/onion/headquarters/assets/log_configs/client-1.12.xml net.fabricmc.loader.impl.launch.knot.KnotClient \
+ --username \
+ btwonion \
+ --version \
+ fabric-loader-0.14.17-1.19.4 \
+ --gameDir \
+ /home/onion/headquarters/profiles/SDAWDSAD \
+ --assetsDir \
+ /home/onion/headquarters/assets \
+ --assetIndex \
+ 3 \
+ --uuid \
+ 84c7eef5-ae2c-4ebb-a006-c3ee07643d79 \
+ --accessToken \
+ eyJraWQiOiJhYzg0YSIsImFsZyI6IkhTMjU2In0.eyJ4dWlkIjoiMjUzNTQ0NTgxNDkzNTYxOSIsImFnZyI6IkFkdWx0Iiwic3ViIjoiNjk0MmRiNDAtMTNhZS00Yzk1LThhODAtOTc5NzBiNGI2MDFmIiwiYXV0aCI6IlhCT1giLCJucyI6ImRlZmF1bHQiLCJyb2xlcyI6W10sImlzcyI6ImF1dGhlbnRpY2F0aW9uIiwicGxhdGZvcm0iOiJVTktOT1dOIiwieXVpZCI6ImYyZDkxOTk5MWIwOThiYzQ4OGQ3MzY3ZTA1ZGUxMzY1IiwibmJmIjoxNjc5MDYyODYzLCJleHAiOjE2NzkxNDkyNjMsImlhdCI6MTY3OTA2Mjg2M30.nc95QxTlEw9NxXbwI78Rp8LP99TFbtfE00-LcNROvWk \
+ --clientId \
+ e16699bb-2aa8-46da-b5e3-45cbcce29091 \
+ --xuid \
+ 9633271690668984343 \
+ --userType \
+ msa \
+ --versionType \
+ release
+ 
+/home/onion/headquarters/java-versions/java_17/jdk-17.0.6+10/bin/java \
+ -Xmx4G \
+ -XX:+UnlockExperimentalVMOptions \
+ -XX:+UseG1GC \
+ -Djava.library.path=/home/onion/headquarters/libraries \
+ -Dminecraft.launcher.brand=headquarters \
+ -Dminecraft.launcher.version=1.0.0 \
+ -cp \
+ /home/onion/headquarters/libraries/commons-codec/commons-codec/1.15/commons-codec-1.15.jar:/home/onion/headquarters/libraries/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar:/home/onion/headquarters/libraries/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/onion/headquarters/libraries/com/mojang/authlib/3.18.38/authlib-3.18.38.jar:/home/onion/headquarters/libraries/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar:/home/onion/headquarters/libraries/com/mojang/brigadier/1.0.18/brigadier-1.0.18.jar:/home/onion/headquarters/libraries/com/mojang/datafixerupper/6.0.6/datafixerupper-6.0.6.jar:/home/onion/headquarters/libraries/com/mojang/logging/1.1.1/logging-1.1.1.jar:/home/onion/headquarters/libraries/com/mojang/patchy/2.2.10/patchy-2.2.10.jar:/home/onion/headquarters/libraries/com/mojang/text2speech/1.13.9/text2speech-1.13.9.jar:/home/onion/headquarters/libraries/com/mojang/text2speech/1.13.9/text2speech-1.13.9-natives-linux.jar:/home/onion/headquarters/libraries/io/netty/netty-buffer/4.1.82.Final/netty-buffer-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-codec/4.1.82.Final/netty-codec-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-common/4.1.82.Final/netty-common-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-handler/4.1.82.Final/netty-handler-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-resolver/4.1.82.Final/netty-resolver-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-transport-classes-epoll/4.1.82.Final/netty-transport-classes-epoll-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-transport-native-epoll/4.1.82.Final/netty-transport-native-epoll-4.1.82.Final-linux-aarch_64.jar:/home/onion/headquarters/libraries/io/netty/netty-transport-native-epoll/4.1.82.Final/netty-transport-native-epoll-4.1.82.Final-linux-x86_64.jar:/home/onion/headquarters/libraries/io/netty/netty-transport-native-unix-common/4.1.82.Final/netty-transport-native-unix-common-4.1.82.Final.jar:/home/onion/headquarters/libraries/io/netty/netty-transport/4.1.82.Final/netty-transport-4.1.82.Final.jar:/home/onion/headquarters/libraries/net/fabricmc/tiny-mappings-parser/0.3.0+build.17/tiny-mappings-parser-0.3.0+build.17.jar:/home/onion/headquarters/libraries/net/fabricmc/sponge-mixin/0.12.4+mixin.0.8.5/sponge-mixin-0.12.4+mixin.0.8.5.jar:/home/onion/headquarters/libraries/net/fabricmc/tiny-remapper/0.8.2/tiny-remapper-0.8.2.jar:/home/onion/headquarters/libraries/net/fabricmc/access-widener/2.1.0/access-widener-2.1.0.jar:/home/onion/headquarters/libraries/net/fabricmc/intermediary/1.19.4/intermediary-1.19.4.jar:/home/onion/headquarters/libraries/net/fabricmc/fabric-loader/0.14.17/fabric-loader-0.14.17.jar:/home/onion/headquarters/libraries/org/joml/joml/1.10.5/joml-1.10.5.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1.jar:/home/onion/headquarters/libraries/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1-natives-linux.jar:/home/onion/headquarters/libraries/org/slf4j/slf4j-api/2.0.1/slf4j-api-2.0.1.jar:/home/onion/headquarters/libraries/com/github/oshi/oshi-core/6.2.2/oshi-core-6.2.2.jar:/home/onion/headquarters/libraries/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar:/home/onion/headquarters/libraries/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar:/home/onion/headquarters/libraries/com/ibm/icu/icu4j/71.1/icu4j-71.1.jar:/home/onion/headquarters/libraries/it/unimi/dsi/fastutil/8.5.9/fastutil-8.5.9.jar:/home/onion/headquarters/libraries/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/home/onion/headquarters/libraries/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar:/home/onion/headquarters/libraries/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar:/home/onion/headquarters/libraries/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar:/home/onion/headquarters/libraries/org/apache/httpcomponents/httpcore/4.4.15/httpcore-4.4.15.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm/9.4/asm-9.4.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm-analysis/9.4/asm-analysis-9.4.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm-commons/9.4/asm-commons-9.4.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm-tree/9.4/asm-tree-9.4.jar:/home/onion/headquarters/libraries/org/ow2/asm/asm-util/9.4/asm-util-9.4.jar:/home/onion/headquarters/libraries/com/google/code/gson/gson/2.10/gson-2.10.jar:/home/onion/headquarters/libraries/net/java/dev/jna/jna-platform/5.12.1/jna-platform-5.12.1.jar:/home/onion/headquarters/libraries/net/java/dev/jna/jna/5.12.1/jna-5.12.1.jar:/home/onion/headquarters/libraries/org/apache/logging/log4j/log4j-api/2.19.0/log4j-api-2.19.0.jar:/home/onion/headquarters/libraries/org/apache/logging/log4j/log4j-core/2.19.0/log4j-core-2.19.0.jar:/home/onion/headquarters/libraries/org/apache/logging/log4j/log4j-slf4j2-impl/2.19.0/log4j-slf4j2-impl-2.19.0.jar:/home/onion/headquarters/profiles/SDAWDSAD/client.jar \
+ net.fabricmc.loader.impl.launch.knot.KnotClient \
+ -DFabricMcEmu= net.minecraft.client.main.Main  \
+ --username \
+ BlockingBody \
+ --version \
+ fabric-loader-0.14.17-1.19.4 \
+ --gameDir \
+ /home/onion/headquarters/profiles/SDAWDSAD \
+ --assetsDir \
+ /home/onion/headquarters/assets \
+ --assetIndex \
+ 3 \
+ --uuid \
+ ee1149ee-9b8c-4b59-bb71-eb4012ea0af3 \
+ --accessToken \
+ eyJraWQiOiJhYzg0YSIsImFsZyI6IkhTMjU2In0.eyJ4dWlkIjoiMjUzNTQ0NTM0NzEyOTk5NCIsImFnZyI6IkFkdWx0Iiwic3ViIjoiZTJkYTk1NmYtYTk2YS00NmJmLTg3MDQtZDgwYjliYmI2M2M4IiwiYXV0aCI6IlhCT1giLCJucyI6ImRlZmF1bHQiLCJyb2xlcyI6W10sImlzcyI6ImF1dGhlbnRpY2F0aW9uIiwicGxhdGZvcm0iOiJVTktOT1dOIiwieXVpZCI6IjUxMzRlY2U1YWE2MGM4NWYzZjVjNDZmZGRlYTAyZjA2IiwibmJmIjoxNjc5MTQ2NTM1LCJleHAiOjE2NzkyMzI5MzUsImlhdCI6MTY3OTE0NjUzNX0.SUSYxNH01YEdBAsXNTnmFL9312qFu5-TrLDEoH0jkKA \
+ --clientId \
+ e16699bb-2aa8-46da-b5e3-45cbcce29091 \
+ --xuid \
+ 4035854907935962004 \
+ --userType \
+ msa \
+ --versionType \
+ release

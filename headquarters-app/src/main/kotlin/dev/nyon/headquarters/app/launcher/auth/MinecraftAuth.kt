@@ -2,8 +2,9 @@
 
 package dev.nyon.headquarters.app.launcher.auth
 
-import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.ktorClient
+import dev.nyon.headquarters.app.*
+import dev.nyon.headquarters.app.util.decryptBlowfish
+import dev.nyon.headquarters.app.util.encryptBlowfish
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -19,14 +20,18 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
 import java.awt.Desktop
 import java.util.*
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
+import kotlin.time.Duration.Companion.minutes
 
 
-class MinecraftAuth(private val callback: suspend (minecraftCredentials: MinecraftCredentials, xSTSCredentials: XBoxAuthResponse, minecraftProfile: MinecraftProfile) -> Unit) {
+class MinecraftAuth(private val callback: suspend MinecraftAccountInfo.() -> Unit) {
 
     companion object {
         const val clientID = "e16699bb-2aa8-46da-b5e3-45cbcce29091"
@@ -34,7 +39,8 @@ class MinecraftAuth(private val callback: suspend (minecraftCredentials: Minecra
         private const val tokenUrl = "https://login.live.com/oauth20_token.srf"
         private const val xBoxAuthUrl = "https://user.auth.xboxlive.com/user/authenticate"
         private const val xSTSTokenUrl = "https://xsts.auth.xboxlive.com/xsts/authorize"
-        private const val minecraftAccountRequestUrl = "https://api.minecraftservices.com/authentication/login_with_xbox"
+        private const val minecraftAccountRequestUrl =
+            "https://api.minecraftservices.com/authentication/login_with_xbox"
         private const val minecraftProfileRequestUrl = "https://api.minecraftservices.com/minecraft/profile"
         const val xSTSRelyingPartyUrl = "rp://api.minecraftservices.com/"
         const val relyingPartyUrl = "http://auth.xboxlive.com"
@@ -43,10 +49,6 @@ class MinecraftAuth(private val callback: suspend (minecraftCredentials: Minecra
     private val port = 25585
     private val state = UUID.randomUUID().toString()
     private val redirectUri = "http://localhost:$port/callback"
-
-    private val json = Json {
-        encodeDefaults = true
-    }
     private val server = embeddedServer(CIO, port = port) { configure() }
 
     suspend fun prepareLogIn() {
@@ -127,12 +129,34 @@ class MinecraftAuth(private val callback: suspend (minecraftCredentials: Minecra
 
             setBody(MinecraftAccountCredentialsRequest("XBL3.0 x=${xSTSTokenResponse.displayClaims.xui.first().uhs};${xSTSTokenResponse.token}"))
         }.body<MinecraftCredentials>()
+        val expireDate = Clock.System.now() + minecraftAccountResponse.expiresIn.minutes
 
         val minecraftProfileResponse = ktorClient.get(Url(minecraftProfileRequestUrl)) {
             header("Authorization", "Bearer ${minecraftAccountResponse.accessToken}")
         }.body<MinecraftProfile>()
 
-        callback(minecraftAccountResponse, xSTSTokenResponse, minecraftProfileResponse)
+        callback(
+            MinecraftAccountInfo(
+                minecraftProfileResponse.id,
+                minecraftAccountResponse.accessToken,
+                expireDate,
+                minecraftProfileResponse.name,
+                xSTSTokenResponse.displayClaims.xui.first().uhs
+            )
+        )
     }
 }
 
+
+const val encryptionKey = "0123456789AB"
+val mcAccounts: MutableList<MinecraftAccountInfo> = run {
+    val raw = accountsFile.readText()
+    val decrypted = decryptBlowfish(encryptionKey, raw)
+    val accounts: MutableList<MinecraftAccountInfo> = json.decodeFromString(decrypted)
+    accounts.removeIf { it.expireDate < Clock.System.now() }
+    println(accounts)
+    return@run accounts
+}
+
+fun saveAccountsFile() =
+    accountsFile.writeText(encryptBlowfish(encryptionKey, json.encodeToString(mcAccounts)))

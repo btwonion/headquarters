@@ -2,16 +2,13 @@ package dev.nyon.headquarters.app.launcher
 
 import dev.nyon.headquarters.app.assetsDir
 import dev.nyon.headquarters.app.javaVersionsDir
+import dev.nyon.headquarters.app.launcher.auth.MinecraftAccountInfo
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
-import dev.nyon.headquarters.app.launcher.auth.MinecraftCredentials
-import dev.nyon.headquarters.app.launcher.auth.MinecraftProfile
-import dev.nyon.headquarters.app.launcher.auth.XBoxAuthResponse
 import dev.nyon.headquarters.app.librariesDir
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.version
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
-import dev.nyon.headquarters.connector.mojang.models.`package`.VersionPackage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -21,9 +18,7 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 
 suspend fun Profile.launch(
-    minecraftCredentials: MinecraftCredentials,
-    xSTSCredentials: XBoxAuthResponse,
-    mcProfile: MinecraftProfile
+    accountInfo: MinecraftAccountInfo
 ) {
     val startArgs = buildList {
         add(
@@ -34,7 +29,7 @@ suspend fun Profile.launch(
             if (loader == Loader.Fabric) addFabricArguments(this@launch)
         }
 
-        replaceVariables(this@launch, minecraftCredentials, xSTSCredentials, mcProfile, minecraftVersion)
+        replaceVariables(this@launch, accountInfo)
     }
 
     println(startArgs)
@@ -48,23 +43,20 @@ suspend fun Profile.launch(
 
 private fun MutableList<String>.replaceVariables(
     profile: Profile,
-    credentials: MinecraftCredentials,
-    xSTSCredentials: XBoxAuthResponse,
-    mcProfile: MinecraftProfile,
-    minecraftVersionPackage: VersionPackage
+    accountInfo: MinecraftAccountInfo
 ) {
     val replacements = mapOf(
-        "\${auth_player_name}" to mcProfile.name,
+        "\${auth_player_name}" to accountInfo.username,
         "\${version_name}" to profile.loaderProfile.id,
         "\${game_directory}" to profile.profileDir.absolutePathString(),
         "\${assets_root}" to assetsDir.absolutePathString(),
-        "\${assets_index_name}" to minecraftVersionPackage.assetIndex.id,
-        "\${auth_uuid}" to mcProfile.id.toString(),
-        "\${auth_access_token}" to credentials.accessToken,
+        "\${assets_index_name}" to profile.minecraftVersion.assetIndex.id,
+        "\${auth_uuid}" to accountInfo.uuid.toString(),
+        "\${auth_access_token}" to accountInfo.accessToken,
         "\${clientid}" to MinecraftAuth.clientID,
-        "\${auth_xuid}" to xSTSCredentials.displayClaims.xui.first().uhs,
+        "\${auth_xuid}" to accountInfo.uhs,
         "\${user_type}" to "msa",
-        "\${version_type}" to MinecraftVersionType::class.java.getDeclaredField(minecraftVersionPackage.type.name)
+        "\${version_type}" to MinecraftVersionType::class.java.getDeclaredField(profile.minecraftVersion.type.name)
             .getAnnotation(SerialName::class.java).value,
         "\${natives_directory}" to librariesDir.absolutePathString(),
         "\${launcher_name}" to "headquarters",

@@ -23,6 +23,8 @@ import compose.icons.feathericons.*
 import dev.nyon.headquarters.app.appScope
 import dev.nyon.headquarters.app.fabricConnector
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
+import dev.nyon.headquarters.app.launcher.auth.mcAccounts
+import dev.nyon.headquarters.app.launcher.auth.saveAccountsFile
 import dev.nyon.headquarters.app.launcher.launch
 import dev.nyon.headquarters.app.mojangConnector
 import dev.nyon.headquarters.app.profile.Profile
@@ -36,6 +38,7 @@ import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 fun initGui() {
     application {
@@ -56,7 +59,7 @@ fun initGui() {
             profile =
                 Profile().apply {
                     name = "Profile 1"
-                    profileID = "sadawdwad"
+                    profileID = "abc"
                     loader = Loader.Fabric
                     minecraftVersion =
                         mojangConnector.getVersionPackage(mojangConnector.getVersionManifest()!!.latest.release)!!
@@ -70,7 +73,7 @@ fun initGui() {
                         latestLoaderVersion,
                         minecraftVersion.id
                     ) ?: error("Cannot find compatible fabric loader for version '$minecraftVersion.id'")
-                    profileDir = runningDir.resolve("profiles/${"SDAWDSAD"}/")
+                    profileDir = runningDir.resolve("profiles/Profile-1/")
                 }
             profile?.init()
             realm.write {
@@ -176,8 +179,17 @@ fun initGui() {
                         IconButton(onClick = {
                             //screen = Screen.Launch
                             appScope.launch {
-                                MinecraftAuth { minecraftCredentials, xSTSCredentials, minecraftProfile ->
-                                    profile?.launch(minecraftCredentials, xSTSCredentials, minecraftProfile)
+                                val account = mcAccounts.find { it.current } ?: mcAccounts.firstOrNull()
+                                if ((account != null) && (account.expireDate > Clock.System.now())) {
+                                    account.current = true
+                                    profile?.launch(account)
+                                    return@launch
+                                }
+                                MinecraftAuth {
+                                    profile?.launch(this@MinecraftAuth)
+                                    mcAccounts.add(this@MinecraftAuth.also { current = true })
+                                    mcAccounts.forEach { if (it != this@MinecraftAuth) it.current = false }
+                                    saveAccountsFile()
                                 }.prepareLogIn()
                             }
                         }, Modifier.padding(10.dp)) {
