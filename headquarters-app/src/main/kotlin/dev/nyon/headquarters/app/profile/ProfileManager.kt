@@ -14,6 +14,7 @@ import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.rauschig.jarchivelib.ArchiverFactory
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
@@ -37,9 +38,12 @@ suspend fun Profile.init() {
         val name = asset.name.dropWhile { it != '-' }.drop(1)
         name.startsWith("jdk_${arch}_${os.name.lowercase()}_hotspot_") && name.endsWith(os.commonFileEnding)
     } ?: error("cannot find java package matching your system")
-    val fileName = "${minecraftVersion.javaVersion.majorVersion}${os.commonFileEnding}"
-    // TODO unpack package
-    ktorClient.downloadFile(Url(asset.url), javaVersionsDir.resolve(fileName))
+    val filePath = javaVersionsDir.resolve("java_${minecraftVersion.javaVersion.majorVersion}${os.commonFileEnding}")
+    ktorClient.downloadFile(Url(asset.browser_download_url), filePath)
+    ArchiverFactory.createArchiver(filePath.toFile()).extract(
+        filePath.toFile(),
+        javaVersionsDir.resolve("java_${minecraftVersion.javaVersion.majorVersion}").toFile()
+    )
 
     val assetIndex = assetsDir.resolve("indexes/${minecraftVersion.assetIndex.id}.json")
     if (assetIndex.notExists()) {
