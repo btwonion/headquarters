@@ -21,8 +21,7 @@ class FabricCreateProcess(
     override val profileDir: Path,
     override val minecraftVersion: VersionPackage,
     private val loaderProfile: LoaderProfile
-) :
-    LoaderCreateProcess {
+) : LoaderCreateProcess {
 
     override suspend fun installLibraries() {
         val loaderVersion = (fabricConnector.getLoadersOfGameVersion(

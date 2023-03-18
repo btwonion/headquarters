@@ -3,6 +3,7 @@ package dev.nyon.headquarters.app.profile
 import dev.nyon.headquarters.app.*
 import dev.nyon.headquarters.app.loader.FabricCreateProcess
 import dev.nyon.headquarters.app.loader.VanillaCreateProcess
+import dev.nyon.headquarters.app.util.commonArchiver
 import dev.nyon.headquarters.app.util.commonFileEnding
 import dev.nyon.headquarters.app.util.downloadFile
 import dev.nyon.headquarters.app.util.requestReleases
@@ -14,7 +15,6 @@ import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.rauschig.jarchivelib.ArchiverFactory
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
@@ -40,7 +40,7 @@ suspend fun Profile.init() {
     } ?: error("cannot find java package matching your system")
     val filePath = javaVersionsDir.resolve("java_${minecraftVersion.javaVersion.majorVersion}${os.commonFileEnding}")
     ktorClient.downloadFile(Url(asset.browser_download_url), filePath)
-    ArchiverFactory.createArchiver(filePath.toFile()).extract(
+    os.commonArchiver.extract(
         filePath.toFile(),
         javaVersionsDir.resolve("java_${minecraftVersion.javaVersion.majorVersion}").toFile()
     )

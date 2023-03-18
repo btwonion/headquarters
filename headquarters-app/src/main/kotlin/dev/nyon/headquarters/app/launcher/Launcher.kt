@@ -1,13 +1,16 @@
 package dev.nyon.headquarters.app.launcher
 
-import dev.nyon.headquarters.app.*
+import dev.nyon.headquarters.app.assetsDir
+import dev.nyon.headquarters.app.javaVersionsDir
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
 import dev.nyon.headquarters.app.launcher.auth.MinecraftCredentials
 import dev.nyon.headquarters.app.launcher.auth.MinecraftProfile
 import dev.nyon.headquarters.app.launcher.auth.XBoxAuthResponse
+import dev.nyon.headquarters.app.librariesDir
 import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.version
+import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
-import dev.nyon.headquarters.connector.mojang.models.`package`.Os
 import dev.nyon.headquarters.connector.mojang.models.`package`.VersionPackage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,7 +31,7 @@ suspend fun Profile.launch(
                 .resolve("bin/java").absolutePathString()
         )
         addVanillaArguments(this@launch) {
-            addFabricArguments(this@launch)
+            if (loader == Loader.Fabric) addFabricArguments(this@launch)
         }
 
         replaceVariables(this@launch, minecraftCredentials, xSTSCredentials, mcProfile, minecraftVersion)

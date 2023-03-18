@@ -44,6 +44,7 @@ class Profile() : RealmObject {
 
     @Ignore
     var loaderProfile: LoaderProfile = emptyLoaderProfile
+
     var modPack: Project? = null
     var memory: Int = 4
     var mods: RealmList<Project> = realmListOf()
@@ -54,6 +55,7 @@ class Profile() : RealmObject {
     }
 
     suspend fun initLoaderProfile() {
+        // TODO implement quilt loader loading
         loaderProfile = fabricConnector.getLoaderProfile(loaderVersion, minecraftVersionID)
             ?: error("LoaderProfile for fabric loader version '$loaderVersion' and minecraft version '$minecraftVersionID' cannot be found!")
     }
