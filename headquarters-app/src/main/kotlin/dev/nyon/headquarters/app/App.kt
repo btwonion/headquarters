@@ -1,6 +1,6 @@
 package dev.nyon.headquarters.app
 
-import dev.nyon.headquarters.app.launcher.auth.*
+import dev.nyon.headquarters.app.launcher.auth.encryptionKey
 import dev.nyon.headquarters.app.profile.realm
 import dev.nyon.headquarters.app.util.encryptBlowfish
 import dev.nyon.headquarters.connector.fabric.FabricConnector
@@ -9,11 +9,9 @@ import dev.nyon.headquarters.connector.mojang.MojangConnector
 import dev.nyon.headquarters.connector.mojang.models.`package`.Os
 import dev.nyon.headquarters.connector.quilt.QuiltConnector
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,12 +52,16 @@ val ktorClient = HttpClient(CIO) {
     install(ContentNegotiation) {
         json(json)
     }
+    install(Logging) {
+        logger = Logger.DEFAULT
+        level = LogLevel.NONE
+    }
 }
 val modrinthConnector: ModrinthConnector = ModrinthConnector(ktorClient, json)
 val fabricConnector: FabricConnector = FabricConnector(ktorClient, json)
 val mojangConnector: MojangConnector = MojangConnector(ktorClient, json)
 val quiltConnector: QuiltConnector = QuiltConnector(ktorClient, json)
 
-suspend fun initApp() {
+fun initApp() {
     realm
 }

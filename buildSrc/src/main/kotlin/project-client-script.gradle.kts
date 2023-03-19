@@ -18,4 +18,6 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:${BuildConstants.ktorVersion}")
     implementation("io.ktor:ktor-serialization-kotlinx-json:${BuildConstants.ktorVersion}")
     implementation("io.ktor:ktor-client-content-negotiation:${BuildConstants.ktorVersion}")
+    implementation("io.ktor:ktor-client-logging:${BuildConstants.ktorVersion}")
+    implementation("ch.qos.logback:logback-classic:${BuildConstants.logbackVersion}")
 }
