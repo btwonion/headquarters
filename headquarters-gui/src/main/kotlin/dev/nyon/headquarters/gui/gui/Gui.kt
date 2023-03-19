@@ -6,12 +6,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -20,23 +18,21 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
-import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
-import dev.nyon.headquarters.app.launcher.auth.mcAccounts
-import dev.nyon.headquarters.app.launcher.auth.saveAccountsFile
+import dev.nyon.headquarters.app.*
+import dev.nyon.headquarters.app.launcher.auth.*
 import dev.nyon.headquarters.app.launcher.launch
-import dev.nyon.headquarters.app.mojangConnector
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.init
 import dev.nyon.headquarters.app.profile.realm
-import dev.nyon.headquarters.app.quiltConnector
-import dev.nyon.headquarters.app.runningDir
 import dev.nyon.headquarters.app.util.fabricProfile
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.quilt.requests.getLoaderProfile
 import dev.nyon.headquarters.connector.quilt.requests.getLoadersOfGameVersion
 import dev.nyon.headquarters.gui.gui.screen.HomeScreen
 import dev.nyon.headquarters.gui.gui.screen.SearchScreen
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -55,6 +51,23 @@ fun initGui() {
                 }
             )
         }
+        val mcAccounts = remember {
+            mutableStateListOf<MinecraftAccountInfo>().also {
+                it.addAll(readAccountsFile())
+            }
+        }
+
+        LaunchedEffect(true) {
+            if (mcAccounts.isNotEmpty()) mcAccounts.forEach {
+                val mcProfile = ktorClient.get(Url(MinecraftAuth.minecraftProfileRequestUrl)) {
+                    header("Authorization", "Bearer ${it.accessToken}")
+                }.body<MinecraftProfile>()
+                if (mcProfile.name != it.username) it.username = mcProfile.name
+            }
+            saveAccountsFile(mcAccounts)
+        }
+
+        var currentAccount by remember { mutableStateOf(mcAccounts.firstOrNull()) }
 
         if (profile == null) appScope.launch {
             profile =
@@ -159,9 +172,41 @@ fun initGui() {
                             }
 
                             DropdownMenu(
-                                opened, { opened = false }, modifier = Modifier.background(theme.primary)
+                                opened, { opened = false }, modifier = Modifier.background(theme.primary).clip(
+                                    RoundedCornerShape(8.dp)
+                                )
                             ) {
+                                mcAccounts.forEachIndexed { index, account ->
+                                    DropdownMenuItem({
+                                        currentAccount = account
+                                    }, enabled = account != currentAccount) {
+                                        Text(
+                                            account.username,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxSize(),
+                                            fontWeight = if (account == currentAccount) FontWeight.Bold else null
+                                        )
+                                    }
+                                    if (index == mcAccounts.size - 1) Divider(Modifier.fillMaxWidth().padding(2.dp))
+                                }
 
+                                DropdownMenuItem({
+                                    appScope.launch {
+                                        MinecraftAuth {
+                                            if (mcAccounts.find { it.uuid == uuid } != null)
+                                                mcAccounts.removeAll { it.uuid == uuid }
+                                            currentAccount = this@MinecraftAuth
+                                            mcAccounts.add(this@MinecraftAuth)
+                                            saveAccountsFile(mcAccounts)
+                                        }.prepareLogIn()
+                                    }
+                                }, enabled = true) {
+                                    Text(
+                                        "Add account",
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
                             }
                         }
                     }
@@ -181,17 +226,14 @@ fun initGui() {
                         IconButton(onClick = {
                             //screen = Screen.Launch
                             appScope.launch {
-                                val account = mcAccounts.find { it.current } ?: mcAccounts.firstOrNull()
-                                if ((account != null) && (account.expireDate > Clock.System.now())) {
-                                    account.current = true
-                                    profile?.launch(account)
+                                if ((currentAccount != null) && (currentAccount!!.expireDate > Clock.System.now())) {
+                                    profile?.launch(currentAccount!!)
                                     return@launch
                                 }
                                 MinecraftAuth {
                                     profile?.launch(this@MinecraftAuth)
-                                    mcAccounts.add(this@MinecraftAuth.also { current = true })
-                                    mcAccounts.forEach { if (it != this@MinecraftAuth) it.current = false }
-                                    saveAccountsFile()
+                                    mcAccounts.add(this@MinecraftAuth.also { currentAccount = it })
+                                    saveAccountsFile(mcAccounts)
                                 }.prepareLogIn()
                             }
                         }, Modifier.padding(10.dp)) {

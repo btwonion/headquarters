@@ -10,7 +10,6 @@ data class MinecraftAccountInfo(
     val uuid: @Serializable(with = UUIDSerializer::class) UUID,
     val accessToken: String,
     val expireDate: Instant,
-    val username: String,
-    val uhs: String,
-    var current: Boolean = false
+    var username: String,
+    val uhs: String
 )

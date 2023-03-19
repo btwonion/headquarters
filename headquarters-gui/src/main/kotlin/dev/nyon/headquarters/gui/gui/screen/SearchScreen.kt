@@ -280,7 +280,6 @@ private fun LazyGridLayoutInfo.onReachEnd(buffer: Int = 5, onReachEnd: suspend (
 
 
 context(BoxScope)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProjectPage(selectedProject: ProjectResult?, searchScope: CoroutineScope, onClose: () -> Unit) {
     var project by remember { mutableStateOf<Project?>(null) }

@@ -41,7 +41,7 @@ class MinecraftAuth(private val callback: suspend MinecraftAccountInfo.() -> Uni
         private const val xSTSTokenUrl = "https://xsts.auth.xboxlive.com/xsts/authorize"
         private const val minecraftAccountRequestUrl =
             "https://api.minecraftservices.com/authentication/login_with_xbox"
-        private const val minecraftProfileRequestUrl = "https://api.minecraftservices.com/minecraft/profile"
+        const val minecraftProfileRequestUrl = "https://api.minecraftservices.com/minecraft/profile"
         const val xSTSRelyingPartyUrl = "rp://api.minecraftservices.com/"
         const val relyingPartyUrl = "http://auth.xboxlive.com"
     }
@@ -149,13 +149,13 @@ class MinecraftAuth(private val callback: suspend MinecraftAccountInfo.() -> Uni
 
 
 const val encryptionKey = "0123456789AB"
-val mcAccounts: MutableList<MinecraftAccountInfo> = run {
+fun saveAccountsFile(accounts: List<MinecraftAccountInfo>) =
+    accountsFile.writeText(encryptBlowfish(encryptionKey, json.encodeToString(accounts)))
+
+fun readAccountsFile(): List<MinecraftAccountInfo> {
     val raw = accountsFile.readText()
     val decrypted = decryptBlowfish(encryptionKey, raw)
     val accounts: MutableList<MinecraftAccountInfo> = json.decodeFromString(decrypted)
     accounts.removeIf { it.expireDate < Clock.System.now() }
-    return@run accounts
+    return accounts
 }
-
-fun saveAccountsFile() =
-    accountsFile.writeText(encryptBlowfish(encryptionKey, json.encodeToString(mcAccounts)))

@@ -21,7 +21,7 @@ dependencies {
 
     implementation(pluginDep("io.ktor.plugin", "2.2.4"))
 
-    implementation(pluginDep("org.jetbrains.compose", "1.3.1-rc01"))
+    implementation(pluginDep("org.jetbrains.compose", "1.3.1"))
 
     implementation("io.realm.kotlin:gradle-plugin:1.7.0")
 }
