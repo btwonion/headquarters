@@ -27,8 +27,13 @@ import androidx.compose.ui.unit.sp
 import com.mikepenz.markdown.Markdown
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
+import dev.nyon.headquarters.app.appScope
 import dev.nyon.headquarters.app.modrinthConnector
+import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.profile.assureModExists
+import dev.nyon.headquarters.app.util.updateProfile
 import dev.nyon.headquarters.connector.modrinth.models.project.Project
+import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import dev.nyon.headquarters.connector.modrinth.models.request.Facet
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
@@ -49,11 +54,12 @@ import kotlinx.datetime.Clock
 import java.awt.Desktop
 import java.net.URI
 import java.text.NumberFormat
+import dev.nyon.headquarters.app.profile.Project as ModProject
 
 context(BoxScope)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(theme: ColorScheme) {
+fun SearchScreen(theme: ColorScheme, profile: Profile) {
     var searchResponse by remember {
         mutableStateOf<SearchResult>(
             SearchResult.SearchResultSuccess(
@@ -78,7 +84,19 @@ fun SearchScreen(theme: ColorScheme) {
             }
 
             val result =
-                modrinthConnector.searchProjects(term, limit = 25, facets = listOf(Facet.Categories(listOf("fabric"))))
+                modrinthConnector.searchProjects(
+                    term,
+                    limit = 25,
+                    facets = listOf(
+                        Facet.Categories(
+                            when (profile.loader) {
+                                Loader.Fabric -> listOf("fabric")
+                                Loader.Quilt -> listOf("fabric", "quilt")
+                                else -> listOf()
+                            }
+                        )
+                    )
+                )
             searchResponse = result
             if (result is SearchResult.SearchResultSuccess) {
                 currentItems.clear()
@@ -172,7 +190,7 @@ fun SearchScreen(theme: ColorScheme) {
 
 
                 if (showPopup && selectedProject != null) {
-                    ProjectPage(selectedProject, searchScope) {
+                    ProjectPage(selectedProject, searchScope, profile) {
                         showPopup = false
                         selectedProject = null
                     }
@@ -281,7 +299,12 @@ private fun LazyGridLayoutInfo.onReachEnd(buffer: Int = 5, onReachEnd: suspend (
 
 context(BoxScope)
 @Composable
-private fun ProjectPage(selectedProject: ProjectResult?, searchScope: CoroutineScope, onClose: () -> Unit) {
+private fun ProjectPage(
+    selectedProject: ProjectResult?,
+    searchScope: CoroutineScope,
+    profile: Profile,
+    onClose: () -> Unit
+) {
     var project by remember { mutableStateOf<Project?>(null) }
     var latestVersion by remember { mutableStateOf<Version?>(null) }
     searchScope.launch {
@@ -300,7 +323,19 @@ private fun ProjectPage(selectedProject: ProjectResult?, searchScope: CoroutineS
                     Icon(FeatherIcons.X, "exit screen")
                 }
 
-                Button({}, Modifier.align(Alignment.CenterStart).padding(5.dp)) {
+                Button({
+                    val modProject = ModProject().apply {
+                        projectID = latestVersion!!.projectID
+                        versionID = latestVersion!!.id
+                        enabled = true
+                    }
+                    appScope.launch {
+                        updateProfile(profile.profileID) {
+                            it.mods.add(modProject)
+                        }
+                        profile.assureModExists(modProject)
+                    }
+                }, enabled = profile.mods.none { mod -> mod.projectID == project!!.id }, modifier = Modifier.align(Alignment.CenterStart).padding(5.dp)) {
                     Icon(FeatherIcons.DownloadCloud, "install")
                     Text(
                         "Install", Modifier.padding(5.dp), fontWeight = FontWeight.Bold, color = Color.White
@@ -483,7 +518,10 @@ private fun ProjectPage(selectedProject: ProjectResult?, searchScope: CoroutineS
                             val gridState = rememberLazyGridState()
                             val versions = remember { mutableStateListOf<Version>() }
                             searchScope.launch {
-                                versions.addAll(modrinthConnector.getVersions(project!!.versions)!!.reversed())
+                                versions.addAll(
+                                    modrinthConnector.getVersions(project!!.versions)!!
+                                        .filter { it.loaders.contains(profile.loader) }.reversed()
+                                )
                             }
 
                             LazyVerticalGrid(
@@ -522,7 +560,19 @@ private fun ProjectPage(selectedProject: ProjectResult?, searchScope: CoroutineS
                                                 fontStyle = FontStyle.Italic
                                             )
                                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                                Button({}, Modifier.padding(5.dp)) {
+                                                Button({
+                                                    val modProject = ModProject().apply {
+                                                        projectID = it.projectID
+                                                        versionID = it.id
+                                                        enabled = true
+                                                    }
+                                                    appScope.launch {
+                                                        updateProfile(profile.profileID) {
+                                                            it.mods.add(modProject)
+                                                        }
+                                                        profile.assureModExists(modProject)
+                                                    }
+                                                }, Modifier.padding(5.dp), enabled = profile.mods.none { mod -> mod.projectID == project!!.id }) {
                                                     Icon(FeatherIcons.DownloadCloud, "install")
                                                     Text(
                                                         "Install",

@@ -25,6 +25,7 @@ import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.init
 import dev.nyon.headquarters.app.profile.realm
 import dev.nyon.headquarters.app.util.fabricProfile
+import dev.nyon.headquarters.app.util.generateID
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.quilt.requests.getLoaderProfile
 import dev.nyon.headquarters.connector.quilt.requests.getLoadersOfGameVersion
@@ -41,15 +42,17 @@ fun initGui() {
     application {
         var screen by remember { mutableStateOf(Screen.Home) }
         var theme by remember { mutableStateOf(darkTheme) }
-        var profile by remember {
-            mutableStateOf(
-                realm.query<Profile>().find().firstOrNull()?.also {
-                    appScope.launch {
-                        it.initLoaderProfile()
-                        it.initMinecraftVersionPackage()
-                    }
-                }
-            )
+        val profiles = remember { mutableStateListOf<Profile>() }
+        var profile: Profile? by remember { mutableStateOf(null) }
+        val findPublisher = realm.query<Profile>().find()
+        profiles.addAll(findPublisher.toList())
+        LaunchedEffect(true) {
+            findPublisher.asFlow().collect {
+                val foundProfile = it.list.firstOrNull() ?: return@collect
+                profiles.removeIf { find -> find.profileID == foundProfile.profileID }
+                profiles.add(foundProfile)
+                if (profile?.profileID == foundProfile.profileID) profile = foundProfile
+            }
         }
         val mcAccounts = remember {
             mutableStateListOf<MinecraftAccountInfo>().also {
@@ -73,7 +76,7 @@ fun initGui() {
             profile =
                 Profile().apply {
                     name = "Profile 1"
-                    profileID = "abc"
+                    profileID = generateID()
                     loader = Loader.Quilt
                     minecraftVersion =
                         mojangConnector.getVersionPackage(mojangConnector.getVersionManifest()!!.latest.release)!!
@@ -146,7 +149,6 @@ fun initGui() {
                                     RoundedCornerShape(8.dp)
                                 )
                             ) {
-                                val profiles = realm.query<Profile>().find()
                                 profiles.forEachIndexed { index, localProfile ->
                                     DropdownMenuItem({
                                         profile = localProfile
@@ -240,10 +242,11 @@ fun initGui() {
                             Icon(FeatherIcons.Play, "launch")
                         }
 
+                        /* Add at a later point
                         IconButton({ screen = Screen.Discover }, Modifier.padding(10.dp)) {
                             Icon(FeatherIcons.Compass, "discover")
                         }
-
+                         */
                         IconButton({ screen = Screen.Search }, Modifier.padding(10.dp)) {
                             Icon(FeatherIcons.Search, "search")
                         }
@@ -268,7 +271,7 @@ fun initGui() {
                     Box(Modifier.fillMaxSize().background(theme.background)) {
                         when (screen) {
                             Screen.Home -> HomeScreen()
-                            Screen.Search -> SearchScreen(theme)
+                            Screen.Search -> SearchScreen(theme, profile!!)
                             else -> {}
                         }
                     }
