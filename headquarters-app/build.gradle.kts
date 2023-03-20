@@ -13,7 +13,6 @@ dependencies {
     val ktorVersion = BuildConstants.ktorVersion
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-cio:$ktorVersion")
-    implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
     implementation("org.rauschig:jarchivelib:1.2.0")
 }
 

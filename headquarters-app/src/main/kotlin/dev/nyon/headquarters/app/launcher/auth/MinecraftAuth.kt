@@ -13,7 +13,6 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
-import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -23,7 +22,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import org.slf4j.event.Level
 import java.awt.Desktop
 import java.util.*
 import kotlin.io.path.readText
@@ -68,11 +66,6 @@ class MinecraftAuth(private val callback: suspend MinecraftAccountInfo.() -> Uni
     }
 
     private fun Application.configure() {
-        install(CallLogging) {
-            level = Level.INFO
-            filter { call -> call.request.path().startsWith("/") }
-        }
-
         routing {
             get("/callback") {
                 appScope.launch {

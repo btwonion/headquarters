@@ -9,6 +9,7 @@ import dev.nyon.headquarters.connector.fabric.models.Arguments
 import dev.nyon.headquarters.connector.fabric.models.LoaderProfile
 import dev.nyon.headquarters.connector.fabric.requests.getLoaderProfile
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
+import dev.nyon.headquarters.connector.modrinth.models.project.version.VersionType
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.mojang.models.`package`.*
 import dev.nyon.headquarters.connector.quilt.requests.getLoaderProfile
@@ -51,6 +52,13 @@ class Profile() : RealmObject {
     var modPack: Project? = null
     var memory: Int = 4
     var mods: RealmList<Project> = realmListOf()
+    var defaultModReleaseTypeName: String = VersionType.Release.name
+    @Ignore
+    var defaultModReleaseType: VersionType = VersionType.Release
+        set(value) {
+            defaultModReleaseTypeName = defaultModReleaseType.name
+            field = value
+        }
     var resourcePacks: RealmList<Project> = realmListOf()
     suspend fun initMinecraftVersionPackage() {
         minecraftVersion = mojangConnector.getVersionPackage(minecraftVersionID)
@@ -58,12 +66,27 @@ class Profile() : RealmObject {
     }
 
     suspend fun initLoaderProfile() {
-        loaderProfile = if (loader == Loader.Quilt) quiltConnector.getLoaderProfile(loaderVersion, minecraftVersionID)?.fabricProfile()
+        loaderProfile = if (loader == Loader.Quilt) quiltConnector.getLoaderProfile(loaderVersion, minecraftVersionID)
+            ?.fabricProfile()
             ?: error("LoaderProfile for quilt loader version '$loaderVersion' and minecraft version '$minecraftVersionID' cannot be found!")
         else fabricConnector.getLoaderProfile(loaderVersion, minecraftVersionID)
             ?: error("LoaderProfile for fabric loader version '$loaderVersion' and minecraft version '$minecraftVersionID' cannot be found!")
 
     }
+}
+
+fun Profile.eventuallySupportedVersions(): List<String> {
+    if (minecraftVersion.type == MinecraftVersionType.Release && minecraftVersionID.count { it == '.' } == 2) {
+        val list = mutableListOf<String>()
+        val majorVersion = minecraftVersionID.dropLastWhile { it != '.' }.dropLast(1)
+        list.add(majorVersion)
+        val currentMinorVersion = minecraftVersionID.last { it != '.' }.digitToIntOrNull() ?: return list
+        (1..currentMinorVersion).forEach {
+            list.add("$majorVersion.$it")
+        }
+        return list
+    }
+    return listOf(minecraftVersionID)
 }
 
 private val emptyVersionPackage = VersionPackage(

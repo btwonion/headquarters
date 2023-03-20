@@ -57,7 +57,8 @@ suspend fun Profile.assureMojangLibraries() {
         ktorClient.downloadFile(Url(library.downloads.artifact.url), path)
     }
 
-    ktorClient.downloadFile(Url(minecraftVersion.downloads.client.url), profileDir.resolve("client.jar"))
+    val clientJarPath = profileDir.resolve("client.jar")
+    if (clientJarPath.notExists()) ktorClient.downloadFile(Url(minecraftVersion.downloads.client.url), clientJarPath)
 }
 
 suspend fun Profile.assureLauncherLibraries() {

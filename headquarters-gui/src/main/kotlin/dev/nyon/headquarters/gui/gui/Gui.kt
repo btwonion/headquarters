@@ -35,8 +35,11 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.notifications.UpdatedResults
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlin.time.Duration.Companion.minutes
 
 fun initGui() {
     application {
@@ -44,14 +47,21 @@ fun initGui() {
         var theme by remember { mutableStateOf(darkTheme) }
         val profiles = remember { mutableStateListOf<Profile>() }
         var profile: Profile? by remember { mutableStateOf(null) }
-        val findPublisher = realm.query<Profile>().find()
-        profiles.addAll(findPublisher.toList())
         LaunchedEffect(true) {
-            findPublisher.asFlow().collect {
-                val foundProfile = it.list.firstOrNull() ?: return@collect
-                profiles.removeIf { find -> find.profileID == foundProfile.profileID }
-                profiles.add(foundProfile)
-                if (profile?.profileID == foundProfile.profileID) profile = foundProfile
+            val findPublisher = realm.query<Profile>().find()
+            profiles.addAll(findPublisher.toList())
+            if (profiles.isNotEmpty()) profile = profiles.first()
+            findPublisher.asFlow().collect { change ->
+                when (change) {
+                    is UpdatedResults -> {
+                        val foundProfiles = realm.query(Profile::class).find().toList()
+                        profiles.clear()
+                        profiles.addAll(foundProfiles)
+                        profile = foundProfiles.find { it.profileID == profile?.profileID } ?: foundProfiles.first()
+                    }
+
+                    else -> {}
+                }
             }
         }
         val mcAccounts = remember {
@@ -62,9 +72,14 @@ fun initGui() {
 
         LaunchedEffect(true) {
             if (mcAccounts.isNotEmpty()) mcAccounts.forEach {
-                val mcProfile = ktorClient.get(Url(MinecraftAuth.minecraftProfileRequestUrl)) {
+                val profileResponse = ktorClient.get(Url(MinecraftAuth.minecraftProfileRequestUrl)) {
                     header("Authorization", "Bearer ${it.accessToken}")
-                }.body<MinecraftProfile>()
+                }
+                if (profileResponse.status == HttpStatusCode.Unauthorized) {
+                    mcAccounts.remove(it)
+                    return@forEach
+                }
+                val mcProfile = profileResponse.body<MinecraftProfile>()
                 if (mcProfile.name != it.username) it.username = mcProfile.name
             }
             saveAccountsFile(mcAccounts)
@@ -72,7 +87,7 @@ fun initGui() {
 
         var currentAccount by remember { mutableStateOf(mcAccounts.firstOrNull()) }
 
-        if (profile == null) appScope.launch {
+        if (realm.query(Profile::class).find().isEmpty()) appScope.launch {
             profile =
                 Profile().apply {
                     name = "Profile 1"
@@ -91,7 +106,7 @@ fun initGui() {
                         minecraftVersion.id
                     )?.fabricProfile()
                         ?: error("Cannot find compatible fabric loader for version '${minecraftVersion.id}'")
-                    profileDir = runningDir.resolve("profiles/Profile-1/")
+                    profileDir = runningDir.resolve("profiles/${name}_$profileID/")
                 }
             profile?.init()
             realm.write {
@@ -156,6 +171,7 @@ fun initGui() {
                                         Text(
                                             localProfile.name,
                                             textAlign = TextAlign.Center,
+                                            fontWeight = if (localProfile == profile) FontWeight.Bold else null,
                                             modifier = Modifier.fillMaxSize()
                                         )
                                     }
@@ -192,17 +208,24 @@ fun initGui() {
                                     if (index == mcAccounts.size - 1) Divider(Modifier.fillMaxWidth().padding(2.dp))
                                 }
 
+                                var enabled by remember { mutableStateOf(true) }
                                 DropdownMenuItem({
                                     appScope.launch {
+                                        enabled = false
+                                        launch {
+                                            delay(1.minutes)
+                                            enabled = true
+                                        }
                                         MinecraftAuth {
                                             if (mcAccounts.find { it.uuid == uuid } != null)
                                                 mcAccounts.removeAll { it.uuid == uuid }
                                             currentAccount = this@MinecraftAuth
                                             mcAccounts.add(this@MinecraftAuth)
                                             saveAccountsFile(mcAccounts)
+                                            enabled = true
                                         }.prepareLogIn()
                                     }
-                                }, enabled = true) {
+                                }, enabled = enabled) {
                                     Text(
                                         "Add account",
                                         textAlign = TextAlign.Center,

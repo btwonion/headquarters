@@ -31,17 +31,16 @@ import dev.nyon.headquarters.app.appScope
 import dev.nyon.headquarters.app.modrinthConnector
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.assureModExists
+import dev.nyon.headquarters.app.profile.eventuallySupportedVersions
 import dev.nyon.headquarters.app.util.updateProfile
 import dev.nyon.headquarters.connector.modrinth.models.project.Project
+import dev.nyon.headquarters.connector.modrinth.models.project.ProjectType
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import dev.nyon.headquarters.connector.modrinth.models.request.Facet
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
-import dev.nyon.headquarters.connector.modrinth.requests.getProject
-import dev.nyon.headquarters.connector.modrinth.requests.getVersion
-import dev.nyon.headquarters.connector.modrinth.requests.getVersions
-import dev.nyon.headquarters.connector.modrinth.requests.searchProjects
+import dev.nyon.headquarters.connector.modrinth.requests.*
 import dev.nyon.headquarters.gui.util.color
 import dev.nyon.headquarters.gui.util.distance
 import dev.nyon.headquarters.gui.util.toPrettyString
@@ -90,12 +89,13 @@ fun SearchScreen(theme: ColorScheme, profile: Profile) {
                     facets = listOf(
                         Facet.Categories(
                             when (profile.loader) {
-                                Loader.Fabric -> listOf("fabric")
-                                Loader.Quilt -> listOf("fabric", "quilt")
-                                else -> listOf()
+                                Loader.Fabric -> mutableListOf("fabric")
+                                Loader.Quilt -> mutableListOf("fabric", "quilt")
+                                else -> mutableListOf()
                             }
-                        )
-                    )
+                        ),
+                        Facet.Version(profile.eventuallySupportedVersions()), Facet.ProjectType(listOf(ProjectType.Mod))
+                    ),
                 )
             searchResponse = result
             if (result is SearchResult.SearchResultSuccess) {
@@ -306,14 +306,21 @@ private fun ProjectPage(
     onClose: () -> Unit
 ) {
     var project by remember { mutableStateOf<Project?>(null) }
-    var latestVersion by remember { mutableStateOf<Version?>(null) }
+    val versions = remember { mutableStateListOf<Version>() }
     searchScope.launch {
         project = modrinthConnector.getProject(selectedProject!!.slug)
-        latestVersion = modrinthConnector.getVersion(project!!.versions.last())
+        versions.clear()
+        versions.addAll(
+            modrinthConnector.listVersions(
+                selectedProject.projectID,
+                loaders = mutableListOf(Loader.Fabric).also { if (profile.loader == Loader.Quilt) it.add(Loader.Fabric) },
+                profile.eventuallySupportedVersions()
+            )!!
+        )
     }
 
     ElevatedCard(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp)) {
-        if (project == null || latestVersion == null) Box(Modifier.fillMaxSize()) {
+        if (project == null) Box(Modifier.fillMaxSize()) {
             Text("Loading...", Modifier.align(Alignment.Center), fontSize = 20.sp)
         } else Column {
             Box(Modifier.fillMaxWidth()) {
@@ -323,19 +330,27 @@ private fun ProjectPage(
                     Icon(FeatherIcons.X, "exit screen")
                 }
 
-                Button({
-                    val modProject = ModProject().apply {
-                        projectID = latestVersion!!.projectID
-                        versionID = latestVersion!!.id
-                        enabled = true
-                    }
-                    appScope.launch {
-                        updateProfile(profile.profileID) {
-                            it.mods.add(modProject)
+                Button(
+                    {
+                        val firstVersion =
+                            versions.find { it.versionType == profile.defaultModReleaseType } ?: versions.first()
+                        val modProject = ModProject().apply {
+                            projectID = firstVersion.projectID
+                            versionID = firstVersion.id
+                            enabled = true
                         }
-                        profile.assureModExists(modProject)
-                    }
-                }, enabled = profile.mods.none { mod -> mod.projectID == project!!.id }, modifier = Modifier.align(Alignment.CenterStart).padding(5.dp)) {
+                        appScope.launch {
+                            launch {
+                                profile.assureModExists(modProject)
+                            }
+                            updateProfile(profile.profileID) {
+                                it.mods.add(modProject)
+                            }
+                        }
+                    },
+                    enabled = profile.mods.none { mod -> mod.projectID == project!!.id } && versions.isNotEmpty(),
+                    modifier = Modifier.align(Alignment.CenterStart).padding(5.dp)
+                ) {
                     Icon(FeatherIcons.DownloadCloud, "install")
                     Text(
                         "Install", Modifier.padding(5.dp), fontWeight = FontWeight.Bold, color = Color.White
@@ -449,7 +464,7 @@ private fun ProjectPage(
                         fontStyle = FontStyle.Italic
                     )
                     Text(
-                        "Loaders: ${latestVersion!!.loaders.joinToString { it.name }}",
+                        "Loaders: ${versions.firstOrNull()?.loaders?.joinToString { it.name }}",
                         Modifier.padding(top = 5.dp, start = 10.dp),
                         fontStyle = FontStyle.Italic
                     )
@@ -516,13 +531,6 @@ private fun ProjectPage(
 
                         ProjectViewScreen.Versions -> {
                             val gridState = rememberLazyGridState()
-                            val versions = remember { mutableStateListOf<Version>() }
-                            searchScope.launch {
-                                versions.addAll(
-                                    modrinthConnector.getVersions(project!!.versions)!!
-                                        .filter { it.loaders.contains(profile.loader) }.reversed()
-                                )
-                            }
 
                             LazyVerticalGrid(
                                 state = gridState,
@@ -560,19 +568,24 @@ private fun ProjectPage(
                                                 fontStyle = FontStyle.Italic
                                             )
                                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                                Button({
-                                                    val modProject = ModProject().apply {
-                                                        projectID = it.projectID
-                                                        versionID = it.id
-                                                        enabled = true
-                                                    }
-                                                    appScope.launch {
-                                                        updateProfile(profile.profileID) {
-                                                            it.mods.add(modProject)
+                                                Button(
+                                                    {
+                                                        val modProject = ModProject().apply {
+                                                            projectID = it.projectID
+                                                            versionID = it.id
+                                                            enabled = true
                                                         }
-                                                        profile.assureModExists(modProject)
-                                                    }
-                                                }, Modifier.padding(5.dp), enabled = profile.mods.none { mod -> mod.projectID == project!!.id }) {
+                                                        appScope.launch {
+                                                            launch {
+                                                                profile.assureModExists(modProject)
+                                                            }
+                                                            updateProfile(profile.profileID) {
+                                                                it.mods.add(modProject)
+                                                            }
+                                                        }
+                                                    },
+                                                    Modifier.padding(5.dp),
+                                                    enabled = profile.mods.none { mod -> mod.projectID == project!!.id }) {
                                                     Icon(FeatherIcons.DownloadCloud, "install")
                                                     Text(
                                                         "Install",
