@@ -6,7 +6,7 @@ Currently under heavy development
 
 ## Features
 
-- [ ] discover page (modpacks)
+- [ ] launcher (with settings)
 - [ ] news page
 - [ ] modrinth modpacks (creator and installer)
 - [x] search page

@@ -242,11 +242,6 @@ fun initGui() {
                             Icon(FeatherIcons.Play, "launch")
                         }
 
-                        /* Add at a later point
-                        IconButton({ screen = Screen.Discover }, Modifier.padding(10.dp)) {
-                            Icon(FeatherIcons.Compass, "discover")
-                        }
-                         */
                         IconButton({ screen = Screen.Search }, Modifier.padding(10.dp)) {
                             Icon(FeatherIcons.Search, "search")
                         }
