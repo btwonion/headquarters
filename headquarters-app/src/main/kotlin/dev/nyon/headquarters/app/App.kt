@@ -62,6 +62,6 @@ val fabricConnector: FabricConnector = FabricConnector(ktorClient, json)
 val mojangConnector: MojangConnector = MojangConnector(ktorClient, json)
 val quiltConnector: QuiltConnector = QuiltConnector(ktorClient, json)
 
-suspend fun initApp() {
+fun initApp() {
     realm
 }

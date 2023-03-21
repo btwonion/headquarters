@@ -107,7 +107,18 @@ fun SearchScreen(theme: ColorScheme, profile: Profile) {
     }
 
     gridState.onReachEnd {
-        val result = modrinthConnector.searchProjects(currentInput, offset = it, limit = 20)
+        val result = modrinthConnector.searchProjects(
+            currentInput, offset = it, limit = 20, facets = listOf(
+                Facet.Categories(
+                    when (profile.loader) {
+                        Loader.Fabric -> mutableListOf("fabric")
+                        Loader.Quilt -> mutableListOf("fabric", "quilt")
+                        else -> mutableListOf()
+                    }
+                ),
+                Facet.Version(profile.eventuallySupportedVersions()), Facet.ProjectType(listOf(ProjectType.Mod))
+            )
+        )
         if (result is SearchResult.SearchResultSuccess) currentItems.addAll(result.hits)
         searchResponse = result
     }
@@ -313,7 +324,7 @@ private fun ProjectPage(
         versions.addAll(
             modrinthConnector.listVersions(
                 selectedProject.projectID,
-                loaders = mutableListOf(Loader.Fabric).also { if (profile.loader == Loader.Quilt) it.add(Loader.Fabric) },
+                loaders = mutableListOf(Loader.Fabric).also { if (profile.loader == Loader.Quilt) it.add(Loader.Quilt) },
                 profile.eventuallySupportedVersions()
             )!!
         )
