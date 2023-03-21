@@ -1,4 +1,4 @@
-package dev.nyon.headquarters.gui.gui.screen
+package dev.nyon.headquarters.gui.screens
 
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable

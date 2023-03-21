@@ -5,14 +5,18 @@ import dev.nyon.headquarters.app.mojangConnector
 import dev.nyon.headquarters.app.quiltConnector
 import dev.nyon.headquarters.app.runningDir
 import dev.nyon.headquarters.app.util.fabricProfile
+import dev.nyon.headquarters.app.util.generateID
 import dev.nyon.headquarters.connector.fabric.models.Arguments
 import dev.nyon.headquarters.connector.fabric.models.LoaderProfile
 import dev.nyon.headquarters.connector.fabric.requests.getLoaderProfile
+import dev.nyon.headquarters.connector.modrinth.models.project.ProjectType
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.modrinth.models.project.version.VersionType
+import dev.nyon.headquarters.connector.modrinth.models.request.Facet
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.mojang.models.`package`.*
 import dev.nyon.headquarters.connector.quilt.requests.getLoaderProfile
+import dev.nyon.headquarters.connector.quilt.requests.getLoadersOfGameVersion
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
@@ -72,6 +76,47 @@ class Profile() : RealmObject {
         else fabricConnector.getLoaderProfile(loaderVersion, minecraftVersionID)
             ?: error("LoaderProfile for fabric loader version '$loaderVersion' and minecraft version '$minecraftVersionID' cannot be found!")
 
+    }
+}
+
+fun Profile?.generateFacets(): List<Facet<*>> = mutableListOf<Facet<*>>(Facet.ProjectType(listOf(ProjectType.Mod))).also {
+    if (this != null) it.addAll(
+        listOf(
+            Facet.Categories(
+                when (this.loader) {
+                    Loader.Fabric -> mutableListOf("fabric")
+                    Loader.Quilt -> mutableListOf("fabric", "quilt")
+                    else -> mutableListOf()
+                }
+            ),
+            Facet.Version(this.eventuallySupportedVersions())
+        )
+    )
+}
+suspend fun createNewProfile() {
+    val profile =
+        Profile().apply {
+            name = "Profile 1"
+            profileID = generateID()
+            loader = Loader.Quilt
+            minecraftVersion =
+                mojangConnector.getVersionPackage(mojangConnector.getVersionManifest()!!.latest.release)!!
+
+            val latestLoaderVersion = (quiltConnector.getLoadersOfGameVersion(
+                minecraftVersion.id
+            )?.first()
+                ?: error("Cannot find compatible fabric loader for version '${minecraftVersion.id}'")).loader.version
+            loaderVersion = latestLoaderVersion
+            loaderProfile = quiltConnector.getLoaderProfile(
+                latestLoaderVersion,
+                minecraftVersion.id
+            )?.fabricProfile()
+                ?: error("Cannot find compatible fabric loader for version '${minecraftVersion.id}'")
+            profileDir = runningDir.resolve("profiles/${name}_$profileID/")
+        }
+    profile.init()
+    realm.write {
+        copyToRealm(profile)
     }
 }
 
