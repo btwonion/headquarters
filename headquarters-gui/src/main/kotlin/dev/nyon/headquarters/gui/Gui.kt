@@ -16,7 +16,7 @@ import androidx.compose.ui.window.rememberWindowState
 import dev.nyon.headquarters.app.ktorClient
 import dev.nyon.headquarters.app.launcher.auth.*
 import dev.nyon.headquarters.app.profile.Profile
-import dev.nyon.headquarters.app.profile.createNewProfile
+import dev.nyon.headquarters.app.profile.createDefaultProfile
 import dev.nyon.headquarters.app.profile.realm
 import dev.nyon.headquarters.gui.look.SideBar
 import dev.nyon.headquarters.gui.look.TopBar
@@ -39,7 +39,7 @@ fun initGui() {
             val findPublisher = realm.query<Profile>().find()
             profiles.addAll(findPublisher.toList())
             if (profiles.isNotEmpty()) profile = profiles.first()
-            else createNewProfile()
+            else createDefaultProfile()
             findPublisher.asFlow().collect { change ->
                 when (change) {
                     is UpdatedResults -> {

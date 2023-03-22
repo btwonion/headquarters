@@ -12,7 +12,7 @@ import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.quilt.requests.getLoaderProfile
 import dev.nyon.headquarters.connector.quilt.requests.getLoadersOfGameVersion
 
-suspend fun createNewProfile() {
+suspend fun createDefaultProfile() {
     val profile =
         Profile().apply {
             name = "Profile 1"
