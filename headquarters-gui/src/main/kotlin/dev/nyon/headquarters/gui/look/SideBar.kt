@@ -40,7 +40,8 @@ fun SideBar(
     ) {
         // Launch screen button
         IconButton(onClick = {
-            //screen = Screen.Launch
+            screenSwitchCallback(Screen.Launch)
+            TODO("move code to lanch screen")
             appScope.launch {
                 if ((mcAccount != null) && (mcAccount.expireDate > Clock.System.now())) {
                     profile?.launch(mcAccount)
