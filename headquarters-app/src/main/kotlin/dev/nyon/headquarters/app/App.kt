@@ -1,7 +1,8 @@
 package dev.nyon.headquarters.app
 
 import dev.nyon.headquarters.app.launcher.auth.encryptionKey
-import dev.nyon.headquarters.app.profile.realm
+import dev.nyon.headquarters.app.profile.profileDB
+import dev.nyon.headquarters.app.user.userSettingDB
 import dev.nyon.headquarters.app.util.encryptBlowfish
 import dev.nyon.headquarters.connector.fabric.FabricConnector
 import dev.nyon.headquarters.connector.modrinth.ModrinthConnector
@@ -21,6 +22,7 @@ import kotlin.io.path.*
 
 val appScope = CoroutineScope(Dispatchers.Default)
 val runningDir = Path("${System.getProperty("user.home")}/headquarters/").createDirectories()
+val dataDir = runningDir.resolve("data/").createDirectories()
 val librariesDir = runningDir.resolve("libraries/").createDirectories()
 val assetsDir = runningDir.resolve("assets/").createDirectories().also {
     it.resolve("indexes/").createDirectories()
@@ -29,7 +31,7 @@ val assetsDir = runningDir.resolve("assets/").createDirectories().also {
     it.resolve("skins/").createDirectories()
 }
 val javaVersionsDir = runningDir.resolve("java-versions/").createDirectories()
-val accountsFile: Path = runningDir.resolve("minecraft-accounts").also {
+val accountsFile: Path = dataDir.resolve("minecraft-accounts").also {
     if (it.notExists()) {
         it.createFile()
         it.writeText(encryptBlowfish(encryptionKey, "[]"))
@@ -63,5 +65,6 @@ val mojangConnector: MojangConnector = MojangConnector(ktorClient, json)
 val quiltConnector: QuiltConnector = QuiltConnector(ktorClient, json)
 
 fun initApp() {
-    realm
+    profileDB
+    userSettingDB
 }

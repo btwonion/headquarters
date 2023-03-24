@@ -22,7 +22,6 @@ import kotlin.io.path.*
 suspend fun Profile.init() {
     val modsDir = profileDir.resolve("mods/").createDirectories()
     val resourcePackDir = profileDir.resolve("resourcepacks/").createDirectories()
-    profileDir.resolve("versions/").createDirectories()
 
     assureMojangLibraries()
     assureLauncherLibraries()

@@ -21,6 +21,7 @@ fun LaunchScreen(profile: Profile?) {
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-        
+
+
     }
 }

@@ -83,9 +83,9 @@ fun SearchScreen(theme: ColorScheme, profile: Profile?) {
 
             // Creates the search result surface
             SearchResultBox(
+                theme,
                 profile,
                 searchResponse,
-                theme,
                 gridState,
                 searchResults,
                 showPopup,

@@ -4,7 +4,7 @@ import dev.nyon.headquarters.app.appScope
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.Project
 import dev.nyon.headquarters.app.profile.assureModExists
-import dev.nyon.headquarters.app.util.updateProfile
+import dev.nyon.headquarters.app.profile.updateProfile
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import kotlinx.coroutines.launch
 

@@ -26,9 +26,9 @@ import dev.nyon.headquarters.gui.screens.search.popup.ProjectPopup
 context(ColumnScope)
 @Composable
 fun SearchResultBox(
+    theme: ColorScheme,
     profile: Profile?,
     searchResponse: SearchResult,
-    theme: ColorScheme,
     gridState: LazyGridState,
     searchResults: SnapshotStateList<ProjectResult>,
     showPopup: Boolean,
@@ -80,8 +80,7 @@ fun SearchResultBox(
                                 Modifier.align(Alignment.Center),
                                 fontSize = 20.sp,
                                 textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold,
-                                color = theme.primary
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }

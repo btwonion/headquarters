@@ -64,6 +64,7 @@ class Profile() : RealmObject {
             field = value
         }
     var resourcePacks: RealmList<Project> = realmListOf()
+    var extraStartArgs: RealmList<String> = realmListOf()
     suspend fun initMinecraftVersionPackage() {
         minecraftVersion = mojangConnector.getVersionPackage(minecraftVersionID)
             ?: error("VersionPackage for version '$minecraftVersionID' cannot be found!")

@@ -3,7 +3,6 @@ package dev.nyon.headquarters.app.profile
 import dev.nyon.headquarters.app.ktorClient
 import dev.nyon.headquarters.app.modrinthConnector
 import dev.nyon.headquarters.app.util.downloadFile
-import dev.nyon.headquarters.app.util.updateProfile
 import dev.nyon.headquarters.connector.modrinth.models.project.DependencyType
 import dev.nyon.headquarters.connector.modrinth.models.project.version.File
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader

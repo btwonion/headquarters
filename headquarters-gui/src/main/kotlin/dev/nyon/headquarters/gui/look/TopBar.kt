@@ -3,8 +3,6 @@ package dev.nyon.headquarters.gui.look
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -14,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
-import compose.icons.feathericons.Home
 import compose.icons.feathericons.Package
 import compose.icons.feathericons.User
 import dev.nyon.headquarters.app.appScope
@@ -22,7 +19,6 @@ import dev.nyon.headquarters.app.launcher.auth.MinecraftAccountInfo
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
 import dev.nyon.headquarters.app.launcher.auth.saveAccountsFile
 import dev.nyon.headquarters.app.profile.Profile
-import dev.nyon.headquarters.gui.Screen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
@@ -30,36 +26,20 @@ import kotlin.time.Duration.Companion.minutes
 context (ColumnScope)
 @Composable
 fun TopBar(
+    theme: ColorScheme,
     profile: Profile?,
     profiles: SnapshotStateList<Profile>,
     mcAccounts: SnapshotStateList<MinecraftAccountInfo>,
     mcAccount: MinecraftAccountInfo?,
-    theme: ColorScheme,
-    screenButtonClick: Screen.() -> Unit,
     profileSwitchCallback: Profile.() -> Unit,
     mcAccountSwitchCallback: MinecraftAccountInfo.() -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        // Home Button
-        Box(modifier = Modifier.background(theme.surfaceVariant)) {
-            IconButton({ screenButtonClick(Screen.Home) }, Modifier.padding(10.dp)) {
-                Icon(
-                    FeatherIcons.Home,
-                    "home"
-                )
-            }
-        }
+    Row(modifier = Modifier.fillMaxWidth().background(theme.primary), horizontalArrangement = Arrangement.End) {
+        // Profile management
+        ProfileBox(profile, profiles, profileSwitchCallback)
 
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth().background(theme.surfaceVariant)
-        ) {
-            // Profile management
-            ProfileBox(profile, profiles, theme, profileSwitchCallback)
-
-            // Minecraft account management
-            AccountBox(mcAccount, mcAccounts, theme, mcAccountSwitchCallback)
-        }
+        // Minecraft account management
+        AccountBox(theme, mcAccount, mcAccounts, mcAccountSwitchCallback)
     }
 }
 
@@ -68,7 +48,6 @@ context(RowScope)
 private fun ProfileBox(
     profile: Profile?,
     profiles: SnapshotStateList<Profile>,
-    theme: ColorScheme,
     profileSwitchCallback: Profile.() -> Unit
 ) {
     Box {
@@ -77,27 +56,26 @@ private fun ProfileBox(
             { Text(profile?.name ?: "Loading...") },
             { Icon(FeatherIcons.Package, "game profile") },
             { openedDropdownMenu = true },
-            Modifier.padding(5.dp),
-            contentColor = theme.primaryContainer
+            Modifier.padding(5.dp)
         )
 
         // Profile Picker
         DropdownMenu(
-            openedDropdownMenu, { openedDropdownMenu = false }, modifier = Modifier.background(theme.primary).clip(
-                RoundedCornerShape(8.dp)
-            )
+            openedDropdownMenu,
+            { openedDropdownMenu = false },
+            modifier = Modifier.clip(RoundedCornerShape(8.dp))
         ) {
             profiles.forEachIndexed { index, localProfile ->
                 DropdownMenuItem({
-                    profileSwitchCallback(localProfile)
-                }, enabled = profile == localProfile) {
                     Text(
                         localProfile.name,
                         textAlign = TextAlign.Center,
                         fontWeight = if (localProfile == profile) FontWeight.Bold else null,
                         modifier = Modifier.fillMaxSize()
                     )
-                }
+                }, {
+                    profileSwitchCallback(localProfile)
+                }, enabled = profile == localProfile)
                 if (index < profiles.size - 1) Divider()
             }
         }
@@ -107,42 +85,48 @@ private fun ProfileBox(
 context(RowScope)
 @Composable
 private fun AccountBox(
+    theme: ColorScheme,
     mcAccount: MinecraftAccountInfo?,
     mcAccounts: SnapshotStateList<MinecraftAccountInfo>,
-    theme: ColorScheme,
     mcAccountSwitchCallback: MinecraftAccountInfo.() -> Unit
 ) {
     Box {
         // User Button
         var openedDropdownMenu by remember { mutableStateOf(false) }
         IconButton({ openedDropdownMenu = true }, Modifier.padding(10.dp)) {
-            Icon(FeatherIcons.User, "account")
+            Icon(FeatherIcons.User, "account", tint = theme.onPrimary)
         }
 
         // Account Picker
         DropdownMenu(
-            openedDropdownMenu, { openedDropdownMenu = false }, modifier = Modifier.background(theme.primary).clip(
-                RoundedCornerShape(8.dp)
-            )
+            openedDropdownMenu,
+            { openedDropdownMenu = false },
+            modifier = Modifier.clip(RoundedCornerShape(8.dp))
         ) {
             // Minecraft accounts
             mcAccounts.forEachIndexed { index, account ->
                 DropdownMenuItem({
-                    mcAccountSwitchCallback(account)
-                }, enabled = account != mcAccount) {
                     Text(
                         account.username,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxSize(),
                         fontWeight = if (account == mcAccount) FontWeight.Bold else null
                     )
-                }
+                }, {
+                    mcAccountSwitchCallback(account)
+                }, enabled = account != mcAccount)
                 if (index == mcAccounts.size - 1) Divider(Modifier.fillMaxWidth().padding(2.dp))
             }
 
             // Add new account button
             var enabled by remember { mutableStateOf(true) }
             DropdownMenuItem({
+                Text(
+                    "Add account",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }, {
                 appScope.launch {
                     enabled = false
                     launch {
@@ -158,13 +142,7 @@ private fun AccountBox(
                         enabled = true
                     }.prepareLogIn()
                 }
-            }, enabled = enabled) {
-                Text(
-                    "Add account",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+            }, enabled = enabled)
         }
     }
 }

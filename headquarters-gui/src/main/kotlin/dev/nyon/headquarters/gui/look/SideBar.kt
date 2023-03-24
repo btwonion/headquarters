@@ -2,47 +2,32 @@ package dev.nyon.headquarters.gui.look
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
 import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.launcher.auth.MinecraftAccountInfo
-import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
-import dev.nyon.headquarters.app.launcher.auth.saveAccountsFile
-import dev.nyon.headquarters.app.launcher.launch
-import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.user.updateUserSetting
 import dev.nyon.headquarters.gui.Screen
-import dev.nyon.headquarters.gui.darkTheme
-import dev.nyon.headquarters.gui.lightTheme
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 context(RowScope)
 @Composable
 fun SideBar(
-    profile: Profile?,
-    mcAccount: MinecraftAccountInfo?,
-    mcAccounts: SnapshotStateList<MinecraftAccountInfo>,
     theme: ColorScheme,
-    mcAccountSwitchCallback: MinecraftAccountInfo.() -> Unit,
-    screenSwitchCallback: Screen.() -> Unit,
-    themeSwitchCallback: ColorScheme.() -> Unit
+    screenSwitchCallback: Screen.() -> Unit
 ) {
     Column(
-        Modifier.fillMaxHeight().background(theme.surfaceVariant),
+        Modifier.fillMaxHeight().background(theme.primary),
         verticalArrangement = Arrangement.Bottom
     ) {
         // Launch screen button
         IconButton(onClick = {
             screenSwitchCallback(Screen.Launch)
-            TODO("move code to lanch screen")
-            appScope.launch {
+            // ("move code to launch screen")
+            /* appScope.launch {
                 if ((mcAccount != null) && (mcAccount.expireDate > Clock.System.now())) {
                     profile?.launch(mcAccount)
                     return@launch
@@ -53,27 +38,34 @@ fun SideBar(
                     saveAccountsFile(mcAccounts)
                 }.prepareLogIn()
             }
+             */
         }, Modifier.padding(10.dp)) {
-            Icon(FeatherIcons.Play, "launch")
+            Icon(FeatherIcons.Play, "launch", tint = theme.onPrimary)
         }
 
         // Search screen button
         IconButton({ screenSwitchCallback(Screen.Search) }, Modifier.padding(10.dp)) {
-            Icon(FeatherIcons.Search, "search")
+            Icon(FeatherIcons.Search, "search", tint = theme.onPrimary)
         }
 
         // Profiles screen button
         IconButton({ screenSwitchCallback(Screen.Profiles) }, Modifier.padding(10.dp)) {
-            Icon(FeatherIcons.Archive, "profiles")
+            Icon(FeatherIcons.Archive, "profiles", tint = theme.onPrimary)
         }
 
         // Color switcher
         Spacer(Modifier.size(20.dp))
         IconButton({
-            themeSwitchCallback(if (theme == darkTheme) lightTheme else darkTheme)
+            appScope.launch {
+                updateUserSetting {
+                    it.whiteTheme = theme != lightColorScheme()
+                }
+            }
         }, Modifier.padding(10.dp)) {
             Icon(
-                if (theme == darkTheme) FeatherIcons.Sun else FeatherIcons.Moon, "toggle theme"
+                if (theme == darkColorScheme()) FeatherIcons.Sun else FeatherIcons.Moon,
+                "toggle theme",
+                tint = theme.onPrimary
             )
         }
     }

@@ -1,5 +1,6 @@
 package dev.nyon.headquarters.app.profile
 
+import dev.nyon.headquarters.app.appScope
 import dev.nyon.headquarters.app.mojangConnector
 import dev.nyon.headquarters.app.quiltConnector
 import dev.nyon.headquarters.app.runningDir
@@ -11,6 +12,7 @@ import dev.nyon.headquarters.connector.modrinth.models.request.Facet
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.quilt.requests.getLoaderProfile
 import dev.nyon.headquarters.connector.quilt.requests.getLoadersOfGameVersion
+import kotlinx.coroutines.launch
 
 suspend fun createDefaultProfile() {
     val profile =
@@ -33,8 +35,10 @@ suspend fun createDefaultProfile() {
                 ?: error("Cannot find compatible fabric loader for version '${minecraftVersion.id}'")
             profileDir = runningDir.resolve("profiles/${name}_$profileID/")
         }
-    profile.init()
-    realm.write {
+    appScope.launch {
+        profile.init()
+    }
+    profileDB.write {
         copyToRealm(profile)
     }
 }
