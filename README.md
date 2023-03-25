@@ -7,6 +7,7 @@ Currently under heavy development
 ## Features
 
 - [ ] launcher (with settings)
+- [ ] profile manager
 - [ ] news page
 - [ ] modrinth modpacks (creator and installer)
 - [x] search page
