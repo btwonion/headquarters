@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -24,9 +25,9 @@ tasks {
     }
 
     withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "17"
-            freeCompilerArgs += listOf("-Xcontext-receivers", "-opt-in=kotlin.RequiresOptIn")
+        compilerOptions {
+            freeCompilerArgs.addAll(listOf("-Xcontext-receivers", "-opt-in=kotlin.RequiresOptIn"))
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 }
