@@ -1,9 +1,8 @@
+@file:Suppress("SpellCheckingInspection")
 package dev.nyon.headquarters.app
 
-import dev.nyon.headquarters.app.launcher.auth.encryptionKey
-import dev.nyon.headquarters.app.profile.profileDB
-import dev.nyon.headquarters.app.user.userSettingDB
-import dev.nyon.headquarters.app.util.encryptBlowfish
+import dev.nyon.headquarters.app.database.profileDB
+import dev.nyon.headquarters.app.database.userSettingsDB
 import dev.nyon.headquarters.connector.fabric.FabricConnector
 import dev.nyon.headquarters.connector.modrinth.ModrinthConnector
 import dev.nyon.headquarters.connector.mojang.MojangConnector
@@ -17,8 +16,8 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
-import java.nio.file.Path
-import kotlin.io.path.*
+import kotlin.io.path.Path
+import kotlin.io.path.createDirectories
 
 val appScope = CoroutineScope(Dispatchers.Default)
 val runningDir = Path("${System.getProperty("user.home")}/headquarters/").createDirectories()
@@ -31,12 +30,6 @@ val assetsDir = runningDir.resolve("assets/").createDirectories().also {
     it.resolve("skins/").createDirectories()
 }
 val javaVersionsDir = runningDir.resolve("java-versions/").createDirectories()
-val accountsFile: Path = dataDir.resolve("minecraft-accounts").also {
-    if (it.notExists()) {
-        it.createFile()
-        it.writeText(encryptBlowfish(encryptionKey, "[]"))
-    }
-}
 val os = Os.values().find { System.getProperty("os.name").lowercase().startsWith(it.name.lowercase()) }
     ?: error("Cannot determine os!")
 val arch = run {
@@ -66,5 +59,5 @@ val quiltConnector: QuiltConnector = QuiltConnector(ktorClient, json)
 
 fun initApp() {
     profileDB
-    userSettingDB
+    userSettingsDB
 }

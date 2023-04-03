@@ -13,12 +13,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.profile.Profile
-import dev.nyon.headquarters.app.profile.updateProfile
-import io.realm.kotlin.ext.toRealmList
+import dev.nyon.headquarters.app.database.updateProfile
+import dev.nyon.headquarters.app.database.models.Profile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 context(BoxScope)
@@ -49,10 +47,8 @@ fun LaunchScreen(profile: Profile?) {
                 jvmArgsInput,
                 {
                     jvmArgsInput = it
-                    if (profile != null) appScope.launch {
-                        updateProfile(profile.profileID) { newProfile ->
-                            newProfile.extraJvmArgs = jvmArgsInput.split(" ").toRealmList()
-                        }
+                    if (profile != null) updateProfile(profile.profileID) {
+                        this.extraJvmArgs = jvmArgsInput.split(" ").toMutableList()
                     }
                 },
                 singleLine = true,
@@ -65,8 +61,8 @@ fun LaunchScreen(profile: Profile?) {
                 {
                     gameArgsInput = it
                     if (profile != null) appScope.launch {
-                        updateProfile(profile.profileID) { newProfile ->
-                            newProfile.extraGameStartArgs = gameArgsInput.split(" ").toRealmList()
+                        updateProfile(profile.profileID) {
+                            this.extraGameStartArgs = gameArgsInput.split(" ").toMutableList()
                         }
                     }
                 },
@@ -82,8 +78,8 @@ fun LaunchScreen(profile: Profile?) {
             {
                 maxMemoryInput = it.toIntOrNull() ?: 4
                 if (profile != null) appScope.launch {
-                    updateProfile(profile.profileID) { newProfile ->
-                        newProfile.memory = maxMemoryInput
+                    updateProfile(profile.profileID) {
+                        this.memory = maxMemoryInput
                     }
                 }
             },

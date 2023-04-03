@@ -20,11 +20,11 @@ import androidx.compose.ui.unit.sp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.DownloadCloud
 import compose.icons.feathericons.X
-import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.connector.modrinth.models.project.Project
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
-import dev.nyon.headquarters.gui.screens.search.addProject
+import dev.nyon.headquarters.gui.screens.search.addMod
 
 context(ColumnScope)
 @Composable
@@ -41,8 +41,8 @@ fun ProjectViewTopBar(profile: Profile?, versions: SnapshotStateList<Version>, p
         Button(
             {
                 val firstVersion =
-                    versions.find { it.versionType == profile!!.defaultModReleaseType } ?: versions.first()
-                profile!!.addProject(firstVersion)
+                    versions.find { it.versionType == profile!!.defaultProjectReleaseType } ?: versions.first()
+                profile!!.addMod(firstVersion)
             },
             enabled = profile != null && profile.mods.none { mod -> mod.projectID == project!!.id } && versions.isNotEmpty(),
             modifier = Modifier.align(Alignment.CenterStart).padding(5.dp)

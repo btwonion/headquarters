@@ -1,6 +1,7 @@
 package dev.nyon.headquarters.app.launcher
 
 import dev.nyon.headquarters.app.*
+import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAccountInfo
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
 import dev.nyon.headquarters.app.profile.*
@@ -44,6 +45,7 @@ suspend fun Profile.fileCheck() {
     assureMojangLibraries()
 }
 
+@Suppress("SpellCheckingInspection")
 private fun MutableList<String>.replaceVariables(
     profile: Profile,
     accountInfo: MinecraftAccountInfo

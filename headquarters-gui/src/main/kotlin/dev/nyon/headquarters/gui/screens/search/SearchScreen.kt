@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.nyon.headquarters.app.modrinthConnector
-import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.app.profile.generateFacets
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult

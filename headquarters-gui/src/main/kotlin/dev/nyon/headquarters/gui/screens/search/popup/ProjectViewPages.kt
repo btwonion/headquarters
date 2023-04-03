@@ -24,11 +24,11 @@ import androidx.compose.ui.unit.sp
 import com.mikepenz.markdown.Markdown
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.DownloadCloud
-import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.connector.modrinth.models.project.Project
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
-import dev.nyon.headquarters.gui.screens.search.addProject
+import dev.nyon.headquarters.gui.screens.search.addMod
 import dev.nyon.headquarters.gui.util.color
 import dev.nyon.headquarters.gui.util.distance
 import io.kamel.image.KamelImage
@@ -132,7 +132,7 @@ fun VersionsProjectView(profile: Profile?, project: Project?, versions: Snapshot
                     // Creates install button for specific version
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                         Button(
-                            { profile!!.addProject(it) },
+                            { profile!!.addMod(it) },
                             Modifier.padding(5.dp),
                             enabled = profile != null && profile.mods.none { mod -> mod.projectID == project!!.id }) {
                             Icon(FeatherIcons.DownloadCloud, "install")

@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.nyon.headquarters.app.modrinthConnector
-import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.app.profile.eventuallySupportedVersions
 import dev.nyon.headquarters.connector.modrinth.models.project.Project
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader

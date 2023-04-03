@@ -1,16 +1,16 @@
 package dev.nyon.headquarters.gui.screens.search
 
 import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.database.updateProfile
+import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.app.profile.Project
 import dev.nyon.headquarters.app.profile.assureModExists
-import dev.nyon.headquarters.app.profile.updateProfile
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Version
 import kotlinx.coroutines.launch
 
-fun Profile.addProject(version: Version) {
+fun Profile.addMod(version: Version) {
     val modProject =
-        Project().apply {
+        Project(projectID = version.projectID, versionID = version.id).apply {
             projectID = version.projectID
             versionID = version.id
             enabled = true
@@ -20,7 +20,7 @@ fun Profile.addProject(version: Version) {
             assureModExists(modProject)
         }
         updateProfile(profileID) {
-            it.mods.add(modProject)
+            this.mods.add(modProject)
         }
     }
 }

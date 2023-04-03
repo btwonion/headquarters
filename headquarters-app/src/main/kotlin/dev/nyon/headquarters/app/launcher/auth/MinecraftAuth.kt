@@ -8,12 +8,10 @@ import dev.nyon.headquarters.app.util.encryptBlowfish
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +21,10 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import java.awt.Desktop
+import java.nio.file.Path
 import java.util.*
+import kotlin.io.path.createFile
+import kotlin.io.path.notExists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.time.Duration.Companion.minutes
@@ -140,6 +141,12 @@ class MinecraftAuth(private val callback: suspend MinecraftAccountInfo.() -> Uni
     }
 }
 
+val accountsFile: Path = dataDir.resolve("minecraft-accounts").also {
+    if (it.notExists()) {
+        it.createFile()
+        it.writeText(encryptBlowfish(encryptionKey, "[]"))
+    }
+}
 
 const val encryptionKey = "0123456789AB"
 fun saveAccountsFile(accounts: List<MinecraftAccountInfo>) =

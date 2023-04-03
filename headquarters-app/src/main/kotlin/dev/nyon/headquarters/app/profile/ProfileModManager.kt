@@ -1,5 +1,7 @@
 package dev.nyon.headquarters.app.profile
 
+import dev.nyon.headquarters.app.database.models.Profile
+import dev.nyon.headquarters.app.database.updateProfile
 import dev.nyon.headquarters.app.ktorClient
 import dev.nyon.headquarters.app.modrinthConnector
 import dev.nyon.headquarters.app.util.downloadFile
@@ -28,17 +30,14 @@ suspend fun Profile.assureModExists(project: Project) {
         if (matchingProject != null) {
             val matchingProjectVersion = modrinthConnector.getVersion(matchingProject.versionID)!!
             if (matchingProjectVersion.published > dependencyVersion.published) return@forEach
-            updateProfile(profileID) { realmProfile ->
-                realmProfile.mods.first { it.versionID == matchingProject.versionID }.versionID = dependencyVersion.id
+            updateProfile(profileID) {
+                this.mods.first { it.versionID == matchingProject.versionID }.versionID = dependencyVersion.id
             }
             modsDir.resolve(matchingProjectVersion.files.first { it.primary }.fileName).deleteIfExists()
         }
         files.add(dependencyVersion.files.first { it.primary })
         if (matchingProject == null) updateProfile(profileID) {
-            it.mods.add(Project().apply {
-                versionID = dependencyVersion.id
-                projectID = dependencyVersion.projectID
-            })
+            this.mods.add(Project(versionID = dependencyVersion.id, projectID = dependencyVersion.projectID))
         }
     }
     files.forEach {

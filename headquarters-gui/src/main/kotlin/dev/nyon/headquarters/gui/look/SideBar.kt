@@ -8,10 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.*
-import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.user.updateUserSetting
+import dev.nyon.headquarters.app.database.updateUserSettings
 import dev.nyon.headquarters.gui.Screen
-import kotlinx.coroutines.launch
 
 context(RowScope)
 @Composable
@@ -56,10 +54,8 @@ fun SideBar(
         // Color switcher
         Spacer(Modifier.size(20.dp))
         IconButton({
-            appScope.launch {
-                updateUserSetting {
-                    it.whiteTheme = theme != lightColorScheme()
-                }
+            updateUserSettings {
+                this.whiteTheme = theme != lightColorScheme()
             }
         }, Modifier.padding(10.dp)) {
             Icon(

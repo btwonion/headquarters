@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
 import dev.nyon.headquarters.gui.screens.search.popup.ProjectPopup

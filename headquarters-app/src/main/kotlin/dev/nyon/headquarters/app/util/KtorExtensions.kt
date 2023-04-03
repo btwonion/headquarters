@@ -4,11 +4,12 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.utils.io.core.*
+import io.ktor.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
-import kotlin.io.path.*
+import kotlin.io.path.createFile
+import kotlin.io.path.writeBytes
 
 suspend inline fun HttpClient.downloadFile(
     url: Url,
@@ -19,20 +20,6 @@ suspend inline fun HttpClient.downloadFile(
 }.execute { response ->
     withContext(Dispatchers.IO) {
         val channel = response.bodyAsChannel()
-
-        val partPath = path.parent!!.resolve(path.name + ".part")
-        if (partPath.notExists()) partPath.createFile()
-
-        try {
-            while (!channel.isClosedForRead) {
-                val packet = channel.readRemaining(200000000.toLong())
-                while (!packet.isEmpty) {
-                    partPath.writeBytes(packet.readBytes())
-                }
-            }
-            partPath.moveTo(path, overwrite = true)
-        } finally {
-            partPath.deleteIfExists()
-        }
+        path.createFile().writeBytes(channel.toByteArray())
     }
 }

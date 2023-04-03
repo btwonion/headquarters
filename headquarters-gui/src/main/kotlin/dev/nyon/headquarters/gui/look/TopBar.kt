@@ -18,7 +18,7 @@ import dev.nyon.headquarters.app.appScope
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAccountInfo
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
 import dev.nyon.headquarters.app.launcher.auth.saveAccountsFile
-import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.database.models.Profile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes

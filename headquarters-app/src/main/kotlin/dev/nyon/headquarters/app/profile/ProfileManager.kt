@@ -1,7 +1,9 @@
+@file:Suppress("SpellCheckingInspection")
 package dev.nyon.headquarters.app.profile
 
 import dev.nyon.headquarters.app.*
-import dev.nyon.headquarters.app.loader.FabricCreateProcess
+import dev.nyon.headquarters.app.database.models.Profile
+import dev.nyon.headquarters.app.loader.FabricBasedLoaderCreateProcess
 import dev.nyon.headquarters.app.loader.VanillaCreateProcess
 import dev.nyon.headquarters.app.util.commonArchiver
 import dev.nyon.headquarters.app.util.commonFileEnding
@@ -62,7 +64,7 @@ suspend fun Profile.assureMojangLibraries() {
 
 suspend fun Profile.assureLauncherLibraries() {
     when (loader) {
-        Loader.Fabric, Loader.Quilt -> FabricCreateProcess(
+        Loader.Fabric, Loader.Quilt -> FabricBasedLoaderCreateProcess(
             profileDir,
             this.minecraftVersion,
             loaderProfile

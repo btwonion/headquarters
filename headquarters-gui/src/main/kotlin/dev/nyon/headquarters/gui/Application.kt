@@ -8,8 +8,8 @@ import kotlinx.coroutines.launch
 lateinit var guiScope: CoroutineScope
 suspend fun main() = coroutineScope {
     guiScope = this
-    initApp()
     launch {
+        initApp()
         initGui()
     }
     println("Successfully started")

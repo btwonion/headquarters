@@ -10,7 +10,7 @@ import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 
-class FabricCreateProcess(
+class FabricBasedLoaderCreateProcess(
     override val profileDir: Path,
     override val minecraftVersion: VersionPackage,
     private val loaderProfile: LoaderProfile

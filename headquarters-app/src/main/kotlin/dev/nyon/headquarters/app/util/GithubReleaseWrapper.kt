@@ -1,3 +1,4 @@
+@file:Suppress("SpellCheckingInspection", "PropertyName")
 package dev.nyon.headquarters.app.util
 
 import dev.nyon.headquarters.app.ktorClient

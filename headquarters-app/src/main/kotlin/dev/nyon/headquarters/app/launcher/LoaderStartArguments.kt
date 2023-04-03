@@ -2,7 +2,7 @@ package dev.nyon.headquarters.app.launcher
 
 import dev.nyon.headquarters.app.arch
 import dev.nyon.headquarters.app.os
-import dev.nyon.headquarters.app.profile.Profile
+import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.connector.mojang.models.`package`.Argument
 import dev.nyon.headquarters.connector.mojang.models.`package`.RuleAction
 

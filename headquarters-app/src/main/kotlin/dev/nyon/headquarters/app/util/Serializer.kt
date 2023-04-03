@@ -6,7 +6,10 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import java.nio.file.Path
 import java.util.*
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 
 object UUIDSerializer : KSerializer<UUID> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("uuid", PrimitiveKind.STRING)
@@ -37,5 +40,16 @@ object OldUUIDSerializer : KSerializer<UUID> {
     override fun serialize(encoder: Encoder, value: UUID) {
         encoder.encodeString(value.toString().replace("-", ""))
     }
+}
 
+object PathSerializer : KSerializer<Path> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("path", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): Path {
+        return Path(decoder.decodeString())
+    }
+
+    override fun serialize(encoder: Encoder, value: Path) {
+        encoder.encodeString(value.absolutePathString())
+    }
 }
