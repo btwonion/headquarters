@@ -8,9 +8,8 @@ Currently under heavy development
 
 - [ ] launcher (with settings)
 - [ ] profile manager
-- [ ] news page
 - [ ] modrinth modpacks (creator and installer)
-- [x] search page
+- [x] mod search page
 
 ### Other
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I3I8F1WX4)
