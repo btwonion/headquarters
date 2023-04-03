@@ -16,7 +16,7 @@ fun MutableList<String>.addQuiltArguments(profile: Profile) {
 }
 
 fun MutableList<String>.addVanillaArguments(profile: Profile, jvmLibsCompletedCallback: () -> Unit) {
-    fun download(list: List<Argument>) {
+    fun addConditionalArguments(list: List<Argument>) {
         list.forEach { argument ->
             when (argument) {
                 is Argument.SimpleArgument -> {
@@ -39,10 +39,10 @@ fun MutableList<String>.addVanillaArguments(profile: Profile, jvmLibsCompletedCa
     }
 
     add("-Xmx${profile.memory}G")
-    add("-XX:+UnlockExperimentalVMOptions")
-    add("-XX:+UseG1GC")
-    download(profile.minecraftVersion.arguments.jvm)
+    addAll(profile.extraJvmArgs)
+    addConditionalArguments(profile.minecraftVersion.arguments.jvm)
     add(profile.minecraftVersion.logging.client!!.argument)
     jvmLibsCompletedCallback()
-    download(profile.minecraftVersion.arguments.game)
+    addConditionalArguments(profile.minecraftVersion.arguments.game)
+    addAll(profile.extraGameStartArgs)
 }

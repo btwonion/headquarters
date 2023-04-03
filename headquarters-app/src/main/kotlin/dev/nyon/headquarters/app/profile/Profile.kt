@@ -5,18 +5,14 @@ import dev.nyon.headquarters.app.mojangConnector
 import dev.nyon.headquarters.app.quiltConnector
 import dev.nyon.headquarters.app.runningDir
 import dev.nyon.headquarters.app.util.fabricProfile
-import dev.nyon.headquarters.app.util.generateID
 import dev.nyon.headquarters.connector.fabric.models.Arguments
 import dev.nyon.headquarters.connector.fabric.models.LoaderProfile
 import dev.nyon.headquarters.connector.fabric.requests.getLoaderProfile
-import dev.nyon.headquarters.connector.modrinth.models.project.ProjectType
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.modrinth.models.project.version.VersionType
-import dev.nyon.headquarters.connector.modrinth.models.request.Facet
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import dev.nyon.headquarters.connector.mojang.models.`package`.*
 import dev.nyon.headquarters.connector.quilt.requests.getLoaderProfile
-import dev.nyon.headquarters.connector.quilt.requests.getLoadersOfGameVersion
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
@@ -64,7 +60,8 @@ class Profile() : RealmObject {
             field = value
         }
     var resourcePacks: RealmList<Project> = realmListOf()
-    var extraStartArgs: RealmList<String> = realmListOf()
+    var extraJvmArgs: RealmList<String> = realmListOf("-XX:+UnlockExperimentalVMOptions", "-XX:+UseG1GC")
+    var extraGameStartArgs: RealmList<String> = realmListOf()
     suspend fun initMinecraftVersionPackage() {
         minecraftVersion = mojangConnector.getVersionPackage(minecraftVersionID)
             ?: error("VersionPackage for version '$minecraftVersionID' cannot be found!")
