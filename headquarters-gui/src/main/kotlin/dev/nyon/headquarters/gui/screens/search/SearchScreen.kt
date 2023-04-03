@@ -1,22 +1,25 @@
 package dev.nyon.headquarters.gui.screens.search
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.lazy.grid.LazyGridLayoutInfo
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import compose.icons.feathericons.*
 import dev.nyon.headquarters.app.modrinthConnector
 import dev.nyon.headquarters.app.profile.Profile
 import dev.nyon.headquarters.app.profile.generateFacets
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
-import dev.nyon.headquarters.connector.modrinth.requests.*
-import io.ktor.http.*
-import io.ktor.http.content.*
-import kotlinx.coroutines.*
+import dev.nyon.headquarters.connector.modrinth.requests.searchProjects
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 context(BoxScope)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +80,10 @@ fun SearchScreen(theme: ColorScheme, profile: Profile?) {
                     input, {
                         input = it
                         search(true)
-                    }, modifier = Modifier.fillMaxWidth().padding(10.dp).align(Alignment.TopCenter), maxLines = 1
+                    }, modifier = Modifier.fillMaxWidth().padding(10.dp).align(Alignment.TopCenter), maxLines = 1,
+                    supportingText = {
+                        Text("Search for mods, which are published on Modrinth")
+                    }
                 )
             }
 
