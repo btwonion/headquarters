@@ -12,9 +12,6 @@ object BuildConstants {
     const val mordantVersion = "2.0.0-beta11"
     const val cliktVersion = "3.5.2"
 
-    const val kmongoVersion = "4.8.0"
-    const val realmVersion = "1.7.0"
-
     const val connectorVersion = "1.4.5"
 
     const val composeIconVersion = "1.0.0"

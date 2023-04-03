@@ -4,7 +4,6 @@ plugins {
     `compose-script`
     `kotlin-project-script`
     `project-client-script`
-    `realm-script`
 }
 
 repositories {
