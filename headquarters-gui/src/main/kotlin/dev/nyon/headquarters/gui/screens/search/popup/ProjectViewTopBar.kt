@@ -47,7 +47,7 @@ fun ProjectViewTopBar(
             {
                 val firstVersion =
                     versions.find { it.versionType == profile!!.defaultProjectReleaseType } ?: versions.first()
-                profile!!.addMod(firstVersion)
+                profile?.addMod(firstVersion)
             },
             enabled = profile != null && profile.mods.none { mod -> mod.projectID == project!!.id } && versions.isNotEmpty(),
             modifier = Modifier.align(Alignment.CenterStart).padding(5.dp),

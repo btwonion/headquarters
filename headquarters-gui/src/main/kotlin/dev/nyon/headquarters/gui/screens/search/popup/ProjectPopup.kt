@@ -6,7 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +44,7 @@ fun ProjectPopup(
                 loaders = if (profile == null) listOf() else mutableListOf(Loader.Fabric).also {
                     if (profile.loader == Loader.Quilt) it.add(Loader.Quilt)
                 },
-                profile?.eventuallySupportedVersions() ?: listOf()
+                if (profile?.minecraftVersion == null) listOf() else profile.eventuallySupportedVersions()
             )!!
         )
     }

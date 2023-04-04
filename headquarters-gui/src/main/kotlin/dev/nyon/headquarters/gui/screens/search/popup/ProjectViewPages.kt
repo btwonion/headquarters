@@ -161,7 +161,7 @@ fun VersionsProjectView(
                     // Creates install button for specific version
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                         Button(
-                            { profile!!.addMod(it) },
+                            { profile?.addMod(it) },
                             Modifier.padding(5.dp),
                             enabled = profile != null && profile.mods.none { mod -> mod.projectID == project!!.id },
                             colors = ButtonDefaults.buttonColors(
