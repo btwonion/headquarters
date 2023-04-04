@@ -93,15 +93,15 @@ fun initGui() {
                     Row {
                         // Creates the sidebar
                         SideBar(
-                            theme
+                            theme, screen
                         ) { screen = this }
 
                         // Creates the main surface
-                        Box(Modifier.fillMaxSize()) {
+                        Box(Modifier.fillMaxSize().background(theme.surface)) {
                             when (screen) {
-                                Screen.Search -> SearchScreen(theme, profile!!)
+                                Screen.Search -> SearchScreen(theme, profile!!, exits)
 
-                                Screen.Launch -> LaunchScreen(profile)
+                                Screen.Launch -> LaunchScreen(theme, profile)
                                 else -> {}
                             }
                         }

@@ -4,10 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,8 +27,18 @@ import io.ktor.http.*
 context(LazyGridItemScope)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProjectItem(project: ProjectResult, onClick: () -> Unit) {
-    ElevatedCard(onClick, modifier = Modifier.height(135.dp)) {
+fun ProjectItem(
+    project: ProjectResult,
+    theme: ColorScheme,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    ElevatedCard(
+        onClick,
+        modifier = Modifier.height(135.dp),
+        enabled = enabled,
+        colors = CardDefaults.elevatedCardColors(theme.primaryContainer, theme.onPrimaryContainer)
+    ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             KamelImage(
                 lazyPainterResource(data = Url(project.iconUrl ?: "https://cdn-raw.modrinth.com//placeholder.svg")),

@@ -15,10 +15,10 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.Package
 import compose.icons.feathericons.User
 import dev.nyon.headquarters.app.appScope
+import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAccountInfo
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
 import dev.nyon.headquarters.app.launcher.auth.saveAccountsFile
-import dev.nyon.headquarters.app.database.models.Profile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
@@ -34,9 +34,9 @@ fun TopBar(
     profileSwitchCallback: Profile.() -> Unit,
     mcAccountSwitchCallback: MinecraftAccountInfo.() -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxWidth().background(theme.primary), horizontalArrangement = Arrangement.End) {
+    Row(modifier = Modifier.fillMaxWidth().background(theme.surfaceVariant), horizontalArrangement = Arrangement.End) {
         // Profile management
-        ProfileBox(profile, profiles, profileSwitchCallback)
+        ProfileBox(profile, profiles, theme, profileSwitchCallback)
 
         // Minecraft account management
         AccountBox(theme, mcAccount, mcAccounts, mcAccountSwitchCallback)
@@ -48,6 +48,7 @@ context(RowScope)
 private fun ProfileBox(
     profile: Profile?,
     profiles: SnapshotStateList<Profile>,
+    theme: ColorScheme,
     profileSwitchCallback: Profile.() -> Unit
 ) {
     Box {
@@ -56,7 +57,9 @@ private fun ProfileBox(
             { Text(profile?.name ?: "Loading...") },
             { Icon(FeatherIcons.Package, "game profile") },
             { openedDropdownMenu = true },
-            Modifier.padding(5.dp)
+            Modifier.padding(5.dp),
+            containerColor = theme.onSurfaceVariant,
+            contentColor = contentColorFor(theme.onSurfaceVariant)
         )
 
         // Profile Picker
@@ -94,7 +97,7 @@ private fun AccountBox(
         // User Button
         var openedDropdownMenu by remember { mutableStateOf(false) }
         IconButton({ openedDropdownMenu = true }, Modifier.padding(10.dp)) {
-            Icon(FeatherIcons.User, "account", tint = theme.onPrimary)
+            Icon(FeatherIcons.User, "account", tint = theme.onSurfaceVariant)
         }
 
         // Account Picker

@@ -9,6 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -21,8 +22,8 @@ import java.awt.Desktop
 import java.net.URI
 
 @Composable
-fun ProjectSpec(icon: ImageVector, text: String, link: String) {
-    val annotatedLinkString = buildAnnotatedLinkString(text, link)
+fun ProjectSpec(icon: ImageVector, text: String, link: String, color: Color = Color.Unspecified) {
+    val annotatedLinkString = buildAnnotatedLinkString(text, link, color = color)
 
     Row(Modifier.padding(start = 10.dp, top = 10.dp)) {
         Icon(icon, text.lowercase().replace(" ", "_"))
@@ -41,13 +42,15 @@ fun buildAnnotatedLinkString(
     text: String,
     link: String,
     fontStyle: FontStyle? = null,
-    fontSize: TextUnit = TextUnit.Unspecified
+    fontSize: TextUnit = TextUnit.Unspecified,
+    color: Color = Color.Unspecified
 ) =
     buildAnnotatedString {
         append(text)
 
         addStyle(
             style = SpanStyle(
+                color,
                 textDecoration = TextDecoration.Underline,
                 fontStyle = fontStyle,
                 fontSize = fontSize

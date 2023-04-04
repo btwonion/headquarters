@@ -2,6 +2,7 @@ package dev.nyon.headquarters.gui.screens.launch
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -13,8 +14,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.nyon.headquarters.app.appScope
-import dev.nyon.headquarters.app.database.updateProfile
 import dev.nyon.headquarters.app.database.models.Profile
+import dev.nyon.headquarters.app.database.updateProfile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -22,13 +23,14 @@ import kotlin.time.Duration.Companion.seconds
 context(BoxScope)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LaunchScreen(profile: Profile?) {
+fun LaunchScreen(theme: ColorScheme, profile: Profile?) {
     Column(Modifier.fillMaxSize()) {
         Text(
             "${profile?.name ?: "Loading..."} - ${profile?.minecraftVersionID}",
             Modifier.align(Alignment.CenterHorizontally).padding(top = 20.dp),
             fontSize = 50.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = theme.onBackground
         )
 
         Row(

@@ -8,20 +8,18 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikepenz.markdown.Markdown
+import com.mikepenz.markdown.MarkdownDefaults
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.DownloadCloud
 import dev.nyon.headquarters.app.database.models.Profile
@@ -39,25 +37,44 @@ import kotlinx.datetime.Clock
 // Displays title/author and readme
 context(ColumnScope)
 @Composable
-fun OverviewProjectView(project: Project?, selectedProject: ProjectResult) {
+fun OverviewProjectView(project: Project?, selectedProject: ProjectResult, theme: ColorScheme) {
     LazyColumn(Modifier.fillMaxSize()) {
         item {
             Text(
                 project!!.title,
-                fontSize = 18.sp,
+                fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 5.dp)
+                modifier = Modifier.padding(top = 5.dp),
+                color = theme.onSecondaryContainer
             )
             Text(
                 "by ${selectedProject.author}",
-                fontSize = 16.sp,
-                modifier = Modifier.padding(top = 5.dp)
+                fontSize = 18.sp,
+                modifier = Modifier.padding(top = 5.dp),
+                color = theme.onSecondaryContainer
             )
         }
 
         item {
             Spacer(Modifier.height(50.dp))
-            Markdown(project!!.body)
+            Markdown(
+                project!!.body,
+                colors = MarkdownDefaults.markdownColors(
+                    theme.onTertiaryContainer,
+                    theme.tertiaryContainer,
+                    theme.onTertiary
+                ),
+                typography = MarkdownDefaults.markdownTypography(
+                    MaterialTheme.typography.headlineLarge,
+                    MaterialTheme.typography.titleLarge,
+                    MaterialTheme.typography.headlineMedium,
+                    MaterialTheme.typography.titleMedium,
+                    MaterialTheme.typography.headlineSmall,
+                    MaterialTheme.typography.titleSmall,
+                    MaterialTheme.typography.bodyLarge,
+                    MaterialTheme.typography.bodyMedium
+                )
+            )
         }
     }
 }
@@ -65,7 +82,7 @@ fun OverviewProjectView(project: Project?, selectedProject: ProjectResult) {
 // Displays all project gallery images
 context(ColumnScope)
 @Composable
-fun GalleryProjectView(project: Project?) {
+fun GalleryProjectView(project: Project?, theme: ColorScheme) {
     LazyColumn(Modifier.fillMaxSize()) {
         items(project!!.gallery) {
             Column(Modifier.padding(top = 10.dp, bottom = 10.dp)) {
@@ -75,9 +92,12 @@ fun GalleryProjectView(project: Project?) {
                     Modifier.align(Alignment.Start).width(800.dp)
                 )
                 if (it.title != null) Text(
-                    it.title!!, fontSize = 16.sp, textDecoration = TextDecoration.Underline
+                    it.title!!,
+                    fontSize = 16.sp,
+                    textDecoration = TextDecoration.Underline,
+                    color = theme.onSecondaryContainer
                 )
-                if (it.description != null) Text(it.description!!, fontSize = 14.sp)
+                if (it.description != null) Text(it.description!!, fontSize = 14.sp, color = theme.onSecondaryContainer)
             }
         }
     }
@@ -86,7 +106,12 @@ fun GalleryProjectView(project: Project?) {
 // Lists all project versions matching the profile's requirements
 context(ColumnScope)
 @Composable
-fun VersionsProjectView(profile: Profile?, project: Project?, versions: SnapshotStateList<Version>) {
+fun VersionsProjectView(
+    profile: Profile?,
+    project: Project?,
+    versions: SnapshotStateList<Version>,
+    theme: ColorScheme
+) {
     val gridState = rememberLazyGridState()
 
     LazyVerticalGrid(
@@ -94,18 +119,22 @@ fun VersionsProjectView(profile: Profile?, project: Project?, versions: Snapshot
         columns = GridCells.Adaptive(800.dp),
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(15.dp),
-        verticalArrangement = Arrangement.spacedBy(15.dp)
+        verticalArrangement = Arrangement.spacedBy(15.dp),
     ) {
         items(versions) {
-            Card(Modifier.padding(5.dp)) {
-                Row(Modifier.fillMaxWidth()) {
+            Card(
+                Modifier.padding(5.dp),
+                colors = CardDefaults.cardColors(theme.secondary, theme.onSecondary)
+            ) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     // Displays if project is Release/Beta/Alpha
                     Text(
                         it.versionType.name,
                         color = it.versionType.color,
-                        modifier = Modifier.padding(start = 5.dp)
+                        modifier = Modifier.padding(start = 10.dp)
                             .align(Alignment.CenterVertically),
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
                     )
                     // Displays version name
                     Text(
@@ -134,13 +163,19 @@ fun VersionsProjectView(profile: Profile?, project: Project?, versions: Snapshot
                         Button(
                             { profile!!.addMod(it) },
                             Modifier.padding(5.dp),
-                            enabled = profile != null && profile.mods.none { mod -> mod.projectID == project!!.id }) {
+                            enabled = profile != null && profile.mods.none { mod -> mod.projectID == project!!.id },
+                            colors = ButtonDefaults.buttonColors(
+                                theme.tertiaryContainer,
+                                theme.onTertiaryContainer,
+                                theme.tertiaryContainer.copy(alpha = 0.12f),
+                                theme.onTertiaryContainer.copy(alpha = 0.12f)
+                            )
+                        ) {
                             Icon(FeatherIcons.DownloadCloud, "install")
                             Text(
                                 "Install",
                                 Modifier.padding(5.dp),
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
@@ -149,12 +184,12 @@ fun VersionsProjectView(profile: Profile?, project: Project?, versions: Snapshot
                 // Displays loader and supported game versions
                 Text(
                     "${it.loaders.joinToString { it.name }} - ${it.gameVersions.joinToString()}",
-                    Modifier.padding(start = 5.dp),
-                    fontSize = 16.sp
+                    Modifier.padding(start = 10.dp),
+                    fontSize = 18.sp
                 )
                 // Displays changelog for the specific version if existent
                 if (it.changelog != null) Markdown(
-                    it.changelog!!, modifier = Modifier.padding(5.dp).padding(top = 20.dp)
+                    it.changelog!!, modifier = Modifier.padding(10.dp).padding(top = 20.dp)
                 )
             }
         }

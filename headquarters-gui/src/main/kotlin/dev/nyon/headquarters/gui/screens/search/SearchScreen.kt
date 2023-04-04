@@ -9,11 +9,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.nyon.headquarters.app.modrinthConnector
 import dev.nyon.headquarters.app.database.models.Profile
+import dev.nyon.headquarters.app.modrinthConnector
 import dev.nyon.headquarters.app.profile.generateFacets
 import dev.nyon.headquarters.connector.modrinth.models.result.ProjectResult
 import dev.nyon.headquarters.connector.modrinth.models.result.SearchResult
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 context(BoxScope)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(theme: ColorScheme, profile: Profile?) {
+fun SearchScreen(theme: ColorScheme, profile: Profile?, exits: SnapshotStateList<() -> Unit>) {
     var searchResponse by remember {
         mutableStateOf<SearchResult>(
             SearchResult.SearchResultSuccess(
@@ -72,33 +73,32 @@ fun SearchScreen(theme: ColorScheme, profile: Profile?) {
         searchResponse = result
     }
 
-    Box {
-        Column {
-            // Creates the input field
-            Box(Modifier.fillMaxWidth()) {
-                TextField(
-                    input, {
-                        input = it
-                        search(true)
-                    }, modifier = Modifier.fillMaxWidth().padding(10.dp).align(Alignment.TopCenter), maxLines = 1,
-                    supportingText = {
-                        Text("Search for mods, which are published on Modrinth")
-                    }
-                )
-            }
-
-            // Creates the search result surface
-            SearchResultBox(
-                theme,
-                profile,
-                searchResponse,
-                gridState,
-                searchResults,
-                showPopup,
-                selectedProject,
-                { showPopup = this },
-                { selectedProject = this })
+    Column {
+        // Creates the input field
+        Box(Modifier.fillMaxWidth()) {
+            TextField(
+                input, {
+                    input = it
+                    search(true)
+                }, modifier = Modifier.fillMaxWidth().padding(10.dp).align(Alignment.TopCenter), maxLines = 1,
+                supportingText = {
+                    Text("Search for mods, which are published on Modrinth")
+                }
+            )
         }
+
+        // Creates the search result surface
+        SearchResultBox(
+            theme,
+            profile,
+            searchResponse,
+            gridState,
+            searchResults,
+            showPopup,
+            selectedProject,
+            exits,
+            { showPopup = this },
+            { selectedProject = this })
     }
 }
 

@@ -33,6 +33,7 @@ fun SearchResultBox(
     searchResults: SnapshotStateList<ProjectResult>,
     showPopup: Boolean,
     selectedProject: ProjectResult?,
+    exits: SnapshotStateList<() -> Unit>,
     showPopupCallback: Boolean.() -> Unit,
     selectedProjectCallback: ProjectResult?.() -> Unit
 ) {
@@ -71,7 +72,7 @@ fun SearchResultBox(
                 // Prints error if no project could be found
                 if (searchResponse.totalHits <= 0) {
                     ElevatedCard(
-                        colors = CardDefaults.elevatedCardColors(theme.primaryContainer, theme.primary),
+                        colors = CardDefaults.elevatedCardColors(theme.onBackground, theme.primary),
                         modifier = Modifier.size(400.dp, 100.dp).align(Alignment.Center)
                     ) {
                         Box(Modifier.fillMaxSize()) {
@@ -94,7 +95,7 @@ fun SearchResultBox(
                     verticalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     items(searchResults) {
-                        ProjectItem(it) {
+                        ProjectItem(it, theme, !showPopup) {
                             selectedProjectCallback(it)
                             showPopupCallback(true)
                         }
@@ -106,7 +107,7 @@ fun SearchResultBox(
 
         // Open ProjectPopup
         if (showPopup && selectedProject != null) {
-            ProjectPopup(selectedProject, appScope, profile) {
+            ProjectPopup(selectedProject, appScope, profile, theme, exits) {
                 showPopupCallback(false)
                 selectedProjectCallback(null)
             }
