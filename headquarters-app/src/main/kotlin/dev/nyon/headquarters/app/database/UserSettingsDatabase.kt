@@ -27,4 +27,4 @@ private val updater = appScope.launch {
 }
 
 inline fun updateUserSettings(crossinline transformation: UserSettings.() -> Unit) =
-    appScope.launch { userSettings.update { foundSettings -> foundSettings.apply(transformation) } }
+    appScope.launch { userSettings.update { foundSetting -> foundSetting.copy().apply(transformation) } }

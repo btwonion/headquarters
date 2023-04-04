@@ -37,7 +37,7 @@ private val updater = appScope.launch {
 inline fun updateProfile(id: String, crossinline transformation: Profile.() -> Unit) {
     appScope.launch {
         profiles.update { foundProfiles ->
-            foundProfiles.apply { first { it.profileID == id }.apply(transformation) }
+            foundProfiles.apply { first { it.profileID == id }.copy().apply(transformation) }
         }
     }
 }
