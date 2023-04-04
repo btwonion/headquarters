@@ -1,5 +1,6 @@
 package dev.nyon.headquarters.gui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +9,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
@@ -25,6 +31,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun initGui() {
     application {
         var userSettings by remember { mutableStateOf(UserSettings()) }
@@ -69,11 +76,18 @@ fun initGui() {
                 }
                 saveAccountsFile(mcAccounts)
             }
-
+            val exits = remember { mutableStateListOf<() -> Unit>() }
 
             Window(
                 onCloseRequest = { this.exitApplication() },
                 title = "Headquarters",
+                onKeyEvent = {
+                    if (it.key == Key.Escape && it.type == KeyEventType.KeyDown) {
+                        (exits.lastOrNull() ?: return@Window true)()
+                        exits.removeLastOrNull()
+                    }
+                    true
+                },
                 state = rememberWindowState(WindowPlacement.Maximized)
             ) {
                 // Splits the window in two spaces
