@@ -6,6 +6,6 @@ import dev.nyon.headquarters.connector.modrinth.models.project.version.VersionTy
 val VersionType.color
     get() = when (this) {
         VersionType.Alpha -> Color(0x99db3162)
-        VersionType.Beta -> Color(0x99f7bb43)
+        VersionType.Beta -> Color(0x99C26D1A)
         VersionType.Release -> Color(0x9924a54e)
     }
