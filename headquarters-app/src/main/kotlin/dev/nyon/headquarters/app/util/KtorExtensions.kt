@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
 import kotlin.io.path.createFile
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.writeBytes
 
 suspend inline fun HttpClient.downloadFile(
@@ -20,6 +21,7 @@ suspend inline fun HttpClient.downloadFile(
 }.execute { response ->
     withContext(Dispatchers.IO) {
         val channel = response.bodyAsChannel()
+        path.deleteIfExists()
         path.createFile().writeBytes(channel.toByteArray())
     }
 }
