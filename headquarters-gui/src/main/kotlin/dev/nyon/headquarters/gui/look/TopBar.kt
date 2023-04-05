@@ -58,7 +58,7 @@ private fun ProfileBox(
             { Icon(FeatherIcons.Package, "game profile") },
             { openedDropdownMenu = true },
             Modifier.padding(5.dp),
-            containerColor = theme.onSurfaceVariant,
+            containerColor = theme.surfaceVariant,
             contentColor = contentColorFor(theme.onSurfaceVariant)
         )
 
