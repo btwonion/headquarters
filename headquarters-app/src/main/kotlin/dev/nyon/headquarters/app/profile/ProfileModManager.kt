@@ -17,7 +17,7 @@ suspend fun Profile.assureModExists(project: Project) {
     val version = modrinthConnector.getVersion(project.versionID) ?: return
     val files = mutableListOf<File>()
     val modsDir = profileDir.resolve("mods/")
-    files.add(version.files.first { it.primary })
+    files.add(version.files.firstOrNull { it.primary } ?: version.files.first())
     version.dependencies?.forEach { dependency ->
         if (dependency.dependencyType != DependencyType.Required) return@forEach
         if (mods.any { mod -> mod.versionID == dependency.versionID }) return@forEach
