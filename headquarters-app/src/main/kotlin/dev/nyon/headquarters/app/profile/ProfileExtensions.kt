@@ -35,7 +35,7 @@ suspend fun createDefaultProfile(): Profile {
 }
 
 fun Profile.eventuallySupportedVersions(): List<String> = when {
-    minecraftVersion.type == MinecraftVersionType.Release && minecraftVersionID.count { it == '.' } == 2 -> {
+    minecraftVersion?.type == MinecraftVersionType.Release && minecraftVersionID.count { it == '.' } == 2 -> {
         val list = mutableListOf<String>()
         val majorVersion = minecraftVersionID.dropLastWhile { it != '.' }.dropLast(1)
         list.add(majorVersion)
@@ -46,7 +46,7 @@ fun Profile.eventuallySupportedVersions(): List<String> = when {
         list
     }
 
-    minecraftVersion.type == MinecraftVersionType.Snapshot
+    minecraftVersion?.type == MinecraftVersionType.Snapshot
             && minecraftVersionID.contains("-rc")
             || minecraftVersionID.contains("-pre")
     -> {
@@ -74,7 +74,7 @@ fun Profile?.generateFacets(): List<Facet<*>> =
                         else -> mutableListOf()
                     }
                 ),
-                Facet.Version(this.eventuallySupportedVersions())
+                Facet.Version(if (minecraftVersion != null) this.eventuallySupportedVersions() else listOf("1.19.4"))
             )
         )
     }

@@ -21,6 +21,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.app.database.models.UserSettings
+import dev.nyon.headquarters.app.database.profilesTrigger
 import dev.nyon.headquarters.app.ktorClient
 import dev.nyon.headquarters.app.launcher.auth.*
 import dev.nyon.headquarters.gui.look.SideBar
@@ -30,6 +31,7 @@ import dev.nyon.headquarters.gui.screens.search.SearchScreen
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import dev.nyon.headquarters.app.database.profiles as dbProfiles
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun initGui() {
@@ -49,9 +51,9 @@ fun initGui() {
             var profile: Profile? by remember { mutableStateOf(null) }
             // Listens for profile changes
             LaunchedEffect(true) {
-                dev.nyon.headquarters.app.database.profiles.collect { list ->
-                    profiles = mutableStateListOf(*list.toTypedArray())
-                    profile = list.firstOrNull { it.profileID == profile?.profileID && it.selected } ?: list.first()
+                profilesTrigger.collect { _ ->
+                    profiles = mutableStateListOf(*dbProfiles.toTypedArray())
+                    profile = dbProfiles.firstOrNull { it.selected } ?: dbProfiles.firstOrNull()
                 }
             }
 

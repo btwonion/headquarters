@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,13 +43,21 @@ fun ProjectViewTopBar(
         }
 
         // Adds overall install button
+        var enabled by remember { mutableStateOf((profile != null) && profile.mods.none { mod -> mod.projectID == project!!.id } && versions.isNotEmpty()) }
+        enabled =
+            (profile != null) && profile.mods.none { mod -> mod.projectID == project!!.id } && versions.isNotEmpty()
         Button(
             {
                 val firstVersion =
-                    versions.find { it.versionType == profile!!.defaultProjectReleaseType } ?: versions.first()
+                    versions.firstOrNull {
+                        it.versionType == profile!!.defaultProjectReleaseType && it.gameVersions.contains(
+                            profile.minecraftVersionID
+                        ) && it.loaders.contains(profile.loader)
+                    } ?: versions.first()
                 profile?.addMod(firstVersion)
+                enabled = false
             },
-            enabled = profile != null && profile.mods.none { mod -> mod.projectID == project!!.id } && versions.isNotEmpty(),
+            enabled = enabled,
             modifier = Modifier.align(Alignment.CenterStart).padding(5.dp),
             colors = ButtonDefaults.buttonColors(theme.secondary, theme.onSecondary)
         ) {

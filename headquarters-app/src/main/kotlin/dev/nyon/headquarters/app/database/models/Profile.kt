@@ -36,10 +36,10 @@ data class Profile(
     var extraGameStartArgs: MutableList<String>
 ) : DatabaseEntry<Unit> {
     @Transient
-    lateinit var minecraftVersion: VersionPackage
+    var minecraftVersion: VersionPackage? = null
 
     @Transient
-    lateinit var loaderProfile: LoaderProfile
+    var loaderProfile: LoaderProfile? = null
     suspend fun initMinecraftVersionPackage() {
         minecraftVersion = mojangConnector.getVersionPackage(minecraftVersionID)
             ?: error("VersionPackage for version '$minecraftVersionID' cannot be found!")

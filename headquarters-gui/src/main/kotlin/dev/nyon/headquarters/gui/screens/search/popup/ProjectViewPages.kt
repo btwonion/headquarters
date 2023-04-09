@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,9 +60,9 @@ fun OverviewProjectView(project: Project?, selectedProject: ProjectResult, theme
             Markdown(
                 project!!.body,
                 colors = MarkdownDefaults.markdownColors(
-                    theme.onTertiaryContainer,
-                    theme.tertiaryContainer,
-                    theme.onTertiary
+                    theme.onSecondaryContainer,
+                    theme.secondaryContainer,
+                    theme.onSecondary
                 ),
                 typography = MarkdownDefaults.markdownTypography(
                     MaterialTheme.typography.headlineLarge,
@@ -160,10 +160,13 @@ fun VersionsProjectView(
                     LinkText(annotatedLinkString, Modifier.padding(start = 15.dp).align(Alignment.CenterVertically))
                     // Creates install button for specific version
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                        var enabled by remember { mutableStateOf((profile != null) && profile.mods.none { mod -> mod.projectID == project!!.id }) }
+                        enabled =
+                            (profile != null) && profile.mods.none { mod -> mod.projectID == project!!.id }
                         Button(
-                            { profile?.addMod(it) },
+                            { profile?.addMod(it); enabled = false },
                             Modifier.padding(5.dp),
-                            enabled = profile != null && profile.mods.none { mod -> mod.projectID == project!!.id },
+                            enabled = enabled,
                             colors = ButtonDefaults.buttonColors(
                                 theme.tertiaryContainer,
                                 theme.onTertiaryContainer,
@@ -171,7 +174,10 @@ fun VersionsProjectView(
                                 theme.onTertiaryContainer.copy(alpha = 0.12f)
                             )
                         ) {
-                            Icon(FeatherIcons.DownloadCloud, "install")
+                            Icon(
+                                FeatherIcons.DownloadCloud,
+                                "install"
+                            )
                             Text(
                                 "Install",
                                 Modifier.padding(5.dp),

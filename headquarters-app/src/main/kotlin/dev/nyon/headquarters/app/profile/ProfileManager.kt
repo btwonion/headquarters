@@ -45,7 +45,7 @@ private suspend fun Path.downloadProjects(projects: List<Project>) {
 
 suspend fun Profile.assureMojangLibraries() {
     val libraries =
-        minecraftVersion.libraries.filter {
+        minecraftVersion!!.libraries.filter {
             if (it.rules == null) return@filter true
             if (it.rules!!.any { rule -> rule.os?.name == os }) return@filter true
             false
@@ -59,31 +59,31 @@ suspend fun Profile.assureMojangLibraries() {
     }
 
     val clientJarPath = profileDir.resolve("client.jar")
-    if (clientJarPath.notExists()) ktorClient.downloadFile(Url(minecraftVersion.downloads.client.url), clientJarPath)
+    if (clientJarPath.notExists()) ktorClient.downloadFile(Url(minecraftVersion!!.downloads.client.url), clientJarPath)
 }
 
 suspend fun Profile.assureLauncherLibraries() {
     when (loader) {
         Loader.Fabric, Loader.Quilt -> FabricBasedLoaderCreateProcess(
             profileDir,
-            this.minecraftVersion,
-            loaderProfile
+            this.minecraftVersion!!,
+            loaderProfile!!
         ).installLibraries()
 
-        else -> VanillaCreateProcess(profileDir, this.minecraftVersion).installLibraries()
+        else -> VanillaCreateProcess(profileDir, this.minecraftVersion!!).installLibraries()
     }
 }
 
 suspend fun Profile.assureAssets() {
-    val assetIndex = assetsDir.resolve("indexes/${minecraftVersion.assetIndex.id}.json")
+    val assetIndex = assetsDir.resolve("indexes/${minecraftVersion!!.assetIndex.id}.json")
     if (assetIndex.notExists()) {
-        ktorClient.downloadFile(Url(minecraftVersion.assetIndex.url), assetIndex)
+        ktorClient.downloadFile(Url(minecraftVersion!!.assetIndex.url), assetIndex)
         assureAssets()
     }
     val logFilePath =
-        profileDir.resolve(minecraftVersion.logging.client!!.file.url.takeLastWhile { it != '/' })
+        profileDir.resolve(minecraftVersion!!.logging.client!!.file.url.takeLastWhile { it != '/' })
     if (logFilePath.notExists())
-        ktorClient.downloadFile(Url(minecraftVersion.logging.client!!.file.url), logFilePath)
+        ktorClient.downloadFile(Url(minecraftVersion!!.logging.client!!.file.url), logFilePath)
     var logConfig = logFilePath.readText()
     logConfig = logConfig.replace(
         "\"logs/latest.log\"",
@@ -96,7 +96,7 @@ suspend fun Profile.assureAssets() {
     logFilePath.writeText(logConfig)
 
     val objectDir = assetsDir.resolve("objects/")
-    val assetString = ktorClient.get(minecraftVersion.assetIndex.url).bodyAsText()
+    val assetString = ktorClient.get(minecraftVersion!!.assetIndex.url).bodyAsText()
     val assetObject = Json.parseToJsonElement(assetString).jsonObject["objects"]
     assetObject?.jsonObject?.values?.map { it.jsonObject }?.forEach {
         val hash = it["hash"]?.jsonPrimitive?.content
@@ -110,17 +110,17 @@ suspend fun Profile.assureAssets() {
 }
 
 suspend fun Profile.assureJavaVersion() {
-    if (javaVersionsDir.resolve("java_${minecraftVersion.javaVersion.majorVersion}").exists()) return
+    if (javaVersionsDir.resolve("java_${minecraftVersion!!.javaVersion.majorVersion}").exists()) return
     val release =
-        requestReleases("adoptium/temurin17-binaries").first { it.name.startsWith("jdk-${minecraftVersion.javaVersion.majorVersion}") }
+        requestReleases("adoptium/temurin17-binaries").first { it.name.startsWith("jdk-${minecraftVersion!!.javaVersion.majorVersion}") }
     val asset = release.assets.find { asset ->
         val name = asset.name.dropWhile { it != '-' }.drop(1)
         name.startsWith("jdk_${arch}_${os.name.lowercase()}_hotspot_") && name.endsWith(os.commonFileEnding)
     } ?: error("cannot find java package matching your system")
-    val filePath = javaVersionsDir.resolve("java_${minecraftVersion.javaVersion.majorVersion}${os.commonFileEnding}")
+    val filePath = javaVersionsDir.resolve("java_${minecraftVersion!!.javaVersion.majorVersion}${os.commonFileEnding}")
     ktorClient.downloadFile(Url(asset.browser_download_url), filePath)
     os.commonArchiver.extract(
         filePath.toFile(),
-        javaVersionsDir.resolve("java_${minecraftVersion.javaVersion.majorVersion}").toFile()
+        javaVersionsDir.resolve("java_${minecraftVersion!!.javaVersion.majorVersion}").toFile()
     )
 }

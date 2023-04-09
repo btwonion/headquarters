@@ -4,7 +4,10 @@ import dev.nyon.headquarters.app.*
 import dev.nyon.headquarters.app.database.models.Profile
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAccountInfo
 import dev.nyon.headquarters.app.launcher.auth.MinecraftAuth
-import dev.nyon.headquarters.app.profile.*
+import dev.nyon.headquarters.app.profile.assureAssets
+import dev.nyon.headquarters.app.profile.assureJavaVersion
+import dev.nyon.headquarters.app.profile.assureLauncherLibraries
+import dev.nyon.headquarters.app.profile.assureMojangLibraries
 import dev.nyon.headquarters.connector.modrinth.models.project.version.Loader
 import dev.nyon.headquarters.connector.mojang.models.MinecraftVersionType
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +25,8 @@ suspend fun Profile.launch(
 
     val startArgs = buildList {
         add(
-            javaVersionsDir.resolve("java_${minecraftVersion.javaVersion.majorVersion}/").listDirectoryEntries().first()
+            javaVersionsDir.resolve("java_${minecraftVersion!!.javaVersion.majorVersion}/").listDirectoryEntries()
+                .first()
                 .resolve("bin/java").absolutePathString()
         )
         addVanillaArguments(this@launch) {
@@ -52,23 +56,23 @@ private fun MutableList<String>.replaceVariables(
 ) {
     val replacements = mapOf(
         "\${auth_player_name}" to accountInfo.username,
-        "\${version_name}" to profile.loaderProfile.id,
+        "\${version_name}" to profile.loaderProfile!!.id,
         "\${game_directory}" to profile.profileDir.absolutePathString(),
         "\${assets_root}" to assetsDir.absolutePathString(),
-        "\${assets_index_name}" to profile.minecraftVersion.assetIndex.id,
+        "\${assets_index_name}" to profile.minecraftVersion!!.assetIndex.id,
         "\${auth_uuid}" to accountInfo.uuid.toString(),
         "\${auth_access_token}" to accountInfo.accessToken,
         "\${clientid}" to MinecraftAuth.clientID,
         "\${auth_xuid}" to accountInfo.uhs,
         "\${user_type}" to "msa",
-        "\${version_type}" to MinecraftVersionType::class.java.getDeclaredField(profile.minecraftVersion.type.name)
+        "\${version_type}" to MinecraftVersionType::class.java.getDeclaredField(profile.minecraftVersion!!.type.name)
             .getAnnotation(SerialName::class.java).value,
         "\${natives_directory}" to librariesDir.absolutePathString(),
         "\${launcher_name}" to "headquarters",
         "\${launcher_version}" to version,
         "\${classpath}" to kotlin.run {
             buildList {
-                profile.loaderProfile.libraries.forEach {
+                profile.loaderProfile!!.libraries.forEach {
                     val split = it.name.split(":")
                     val fileName = "${split[1]}-${split[2]}.jar"
                     val artifactPath =
@@ -76,7 +80,7 @@ private fun MutableList<String>.replaceVariables(
                     add(artifactPath.absolutePathString())
                 }
 
-                profile.minecraftVersion.libraries.filter {
+                profile.minecraftVersion!!.libraries.filter {
                     if (it.rules == null) return@filter true
                     if (it.rules!!.any { rule -> rule.os?.name == os }) return@filter true
                     false
@@ -87,7 +91,7 @@ private fun MutableList<String>.replaceVariables(
                 add(profile.profileDir.resolve("client.jar").absolutePathString())
             }.joinToString((":"))
         },
-        "\${path}" to profile.profileDir.resolve(profile.minecraftVersion.logging.client!!.file.url.takeLastWhile { it != '/' })
+        "\${path}" to profile.profileDir.resolve(profile.minecraftVersion!!.logging.client!!.file.url.takeLastWhile { it != '/' })
             .absolutePathString()
     )
 

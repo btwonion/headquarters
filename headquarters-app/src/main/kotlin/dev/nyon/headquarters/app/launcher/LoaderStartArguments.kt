@@ -7,12 +7,12 @@ import dev.nyon.headquarters.connector.mojang.models.`package`.Argument
 import dev.nyon.headquarters.connector.mojang.models.`package`.RuleAction
 
 fun MutableList<String>.addFabricArguments(profile: Profile) {
-    addAll(profile.loaderProfile.arguments.jvm ?: listOf())
-    add(profile.loaderProfile.mainClass)
+    addAll(profile.loaderProfile!!.arguments.jvm ?: listOf())
+    add(profile.loaderProfile!!.mainClass)
 }
 
 fun MutableList<String>.addQuiltArguments(profile: Profile) {
-    add(profile.loaderProfile.mainClass)
+    add(profile.loaderProfile!!.mainClass)
 }
 
 fun MutableList<String>.addVanillaArguments(profile: Profile, jvmLibsCompletedCallback: () -> Unit) {
@@ -40,9 +40,9 @@ fun MutableList<String>.addVanillaArguments(profile: Profile, jvmLibsCompletedCa
 
     add("-Xmx${profile.memory}G")
     addAll(profile.extraJvmArgs)
-    addConditionalArguments(profile.minecraftVersion.arguments.jvm)
-    add(profile.minecraftVersion.logging.client!!.argument)
+    addConditionalArguments(profile.minecraftVersion!!.arguments.jvm)
+    add(profile.minecraftVersion!!.logging.client!!.argument)
     jvmLibsCompletedCallback()
-    addConditionalArguments(profile.minecraftVersion.arguments.game)
+    addConditionalArguments(profile.minecraftVersion!!.arguments.game)
     addAll(profile.extraGameStartArgs)
 }
