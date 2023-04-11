@@ -8,6 +8,7 @@ Currently under heavy development
 
 - [ ] launcher (with settings)
 - [ ] profile manager
+- [ ] user setting manager
 - [ ] modrinth modpacks (creator and installer)
 - [x] mod search page
 
