@@ -2,7 +2,8 @@
 
 > A modern Minecraft launcher with integrated mod and modpack manager
 
-Currently under heavy development
+This project is archived cause of the Modrinth launcher called [theseus](https://github.com/modrinth/theseus).
+It features all the goals I made this application for.
 
 ## Features
 
